@@ -1,11 +1,13 @@
 FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
-WORKDIR /app/services/parser-service
+ARG SERVICE_PATH=/app/services/parser-service
+
+WORKDIR $SERVICE_PATH
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
-    PYTHONPATH=/app/src
+    PYTHONPATH=$SERVICE_PATH/src
 
 RUN apk update \
     && apk add --no-cache uv \

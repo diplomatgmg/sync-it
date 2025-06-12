@@ -1,0 +1,10 @@
+name: ${ENV_PROJECT_NAME}
+
+
+services:
+  parser-service:
+    build:
+      context: ./services/parser-service/
+      target: ${ENV_MODE}
+    env_file:
+      - .env
