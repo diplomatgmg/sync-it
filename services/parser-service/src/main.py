@@ -1,11 +1,9 @@
 import time
 
 
-def main():
-    print("Hello from parser-service!")
+def main() -> None:
     time.sleep(10000)
 
 
 if __name__ == "__main__":
     main()
-
