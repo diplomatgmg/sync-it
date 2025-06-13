@@ -1,13 +1,15 @@
 FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
-ARG SERVICE_PATH=/app/services/parser-service
-
-WORKDIR $SERVICE_PATH
+ARG SERVICE_PATH=services/parser-service/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
-    PYTHONPATH=$SERVICE_PATH/src
+    PYTHONPATH=/app/libs \
+    PATH="/app/.venv/bin:$PATH"
+
+WORKDIR /app
 
 RUN apk update \
     && apk add --no-cache uv \
@@ -20,10 +22,15 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
+COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}
 
 FROM deps-base AS deps-dev
 
-RUN uv sync --frozen --no-install-project
+RUN uv sync --frozen --dev
+
+FROM deps-base AS deps-prod
+
+RUN uv sync --frozen --no-dev
 
 
 # ================================= #
@@ -31,6 +38,9 @@ RUN uv sync --frozen --no-install-project
 # ================================= #
 FROM deps-dev AS development
 
-COPY ./src ./src
+COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
+COPY ./libs/logger ./libs/logger
 
-CMD ["uv", "run", "src/main.py"]
+WORKDIR /app/${SERVICE_PATH}/src
+
+CMD ["hupper", "-q", "-m", "main"]

@@ -1,0 +1,23 @@
+[project]
+name = "syncit"
+version = "0.1.0"
+requires-python = "==3.13.4"
+dependencies = [
+    "parser-service",
+    "pydantic>=2.11.6",
+]
+
+
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
+    "mypy>=1.16.0",
+    "ruff>=0.11.13",
+]
+
+[tool.uv.sources]
+parser-service = { workspace = true }
+
+[tool.uv.workspace]
+members = ["services/parser-service"]
+

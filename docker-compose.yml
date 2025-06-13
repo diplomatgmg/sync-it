@@ -1,12 +1,10 @@
-name: ${ENV_PROJECT_NAME}
-
-
 services:
   parser-service:
+    container_name: parser-service
     build:
-      context: ./services/parser-service/
+      context: .
+      dockerfile: ./services/parser-service/Dockerfile
       target: ${ENV_MODE}
-    env_file:
-      - .env
     volumes:
       - ./services/parser-service/src:/app/services/parser-service/src
+      - ./libs/logger:/app/libs/logger
