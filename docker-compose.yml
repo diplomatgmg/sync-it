@@ -8,3 +8,5 @@ services:
       target: ${ENV_MODE}
     env_file:
       - .env
+    volumes:
+      - ./services/parser-service/src:/app/services/parser-service/src

@@ -17,9 +17,11 @@ RUN apk update \
 # ============================ #
 #         DEPS INSTALLING      #
 # ============================ #
-FROM deps-base AS deps-dev
+FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
+
+FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --no-install-project
 
@@ -27,7 +29,7 @@ RUN uv sync --frozen --no-install-project
 # ================================= #
 #           DEVELOPMENT             #
 # ================================= #
-FROM builder AS development
+FROM deps-dev AS development
 
 COPY ./src ./src
 

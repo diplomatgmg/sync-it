@@ -5,6 +5,7 @@ description = "Vacancy parser service"
 requires-python = "==3.13.4"
 dependencies = [
     "pydantic>=2.11.5",
+    "pydantic-settings>=2.9.1",
 ]
 
 [dependency-groups]
