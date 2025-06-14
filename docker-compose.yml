@@ -1,12 +1,23 @@
 services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: postgres
+    env_file: .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
   parser-service:
     container_name: parser-service
     build:
       context: .
-      dockerfile: ./services/parser-service/Dockerfile
+      dockerfile: services/parser_service/Dockerfile
       target: ${ENV_MODE}
-    env_file:
-      - .env
+    env_file: .env
     volumes:
-      - ./services/parser-service/src:/app/services/parser-service/src
+      - ./services/parser_service/src:/app/services/parser_service/src
       - ./libs/logger:/app/libs/logger
+
+volumes:
+  postgres-data:

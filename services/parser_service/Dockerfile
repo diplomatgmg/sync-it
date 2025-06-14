@@ -1,7 +1,7 @@
 FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
-ARG SERVICE_PATH=services/parser-service/
+ARG SERVICE_PATH=services/parser_service/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
