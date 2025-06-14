@@ -27,12 +27,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 from libs.database.config import db_config
 # isort: on
 
-# govnokod for run migrations without docker
-original_host = db_config.host
-db_config.host = "localhost"
 db_url = db_config.url.render_as_string(hide_password=False)
-db_config.host = original_host
-
 config.set_main_option("sqlalchemy.url", db_url)
 
 

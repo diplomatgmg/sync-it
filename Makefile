@@ -18,17 +18,19 @@ stop: # compose stop
 venv: # create venv
 	@uv sync --frozen
 
+MYPY_DIRS := $(shell find services -type d -name src)
+
 lint: # run linters and formatters
 	@uv run ruff check . && \
 	uv run isort . --check-only && \
 	uv run ruff format --check . && \
-	uv run mypy .
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
 
 lint-fix: # run linters and formatters with fix
 	@uv run ruff check . && \
 	uv run isort . && \
 	uv run ruff format . && \
-	uv run mypy .
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
 
 mm: # create migration for service
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \

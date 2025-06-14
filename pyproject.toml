@@ -1,16 +1,16 @@
 [project]
 name = "syncit"
-version = "0.1.0"
+dynamic = ["version"]
 requires-python = "==3.13.4"
 dependencies = [
     "parser",
+    "gpt-api",
     "alembic>=1.16.1",
     "asyncpg>=0.30.0",
     "pydantic>=2.11.6",
     "pydantic-settings>=2.9.1",
     "sqlalchemy>=2.0.41",
     "uvloop>=0.21.0",
-    "greenlet>=3.2.3",
 ]
 
 
@@ -22,11 +22,18 @@ dev = [
     "ruff>=0.11.13",
 ]
 
+[tool.setuptools]
+packages = ["libs", "services"]
+
 [tool.uv.sources]
 parser = { workspace = true }
+gpt-api = { workspace = true }
 
 [tool.uv.workspace]
-members = ["services/parser"]
+members = [
+    "services/parser",
+    "services/gpt-api",
+]
 
 [tool.ruff]
 fix = true
@@ -38,7 +45,7 @@ lint.ignore = ["I", "D", "DOC", "CPY001", "COM812"]
 extend-exclude = ["libs/database/migrations"]
 
 [tool.mypy]
-mypy_path = "services/parser/src"
+mypy_path = "services/parser/src:services/gpt-api/src"
 plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin"
 incremental = true
 warn_return_any = true

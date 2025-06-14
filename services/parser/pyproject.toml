@@ -1,6 +1,6 @@
 [project]
 name = "parser"
-version = "0.1.0"
+dynamic = ["version"]
 dependencies = [
     "httpx>=0.28.1",
 ]

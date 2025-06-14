@@ -2,7 +2,7 @@ FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
 ARG APP_PATH=/app
-ARG SERVICE_PATH=services/parser/
+ARG SERVICE_PATH=services/gpt-api/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -41,8 +41,8 @@ FROM deps-dev AS development
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/logger ./libs/logger
-COPY ./libs/database ./libs/database
+COPY ./libs/environment ./libs/environment
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 
-CMD ["hupper", "-q", "-m", "main", "-w", "."]
+CMD ["python", "main.py"]
