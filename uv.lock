@@ -4,7 +4,7 @@ requires-python = "==3.13.4"
 
 [manifest]
 members = [
-    "parser-service",
+    "parser",
     "syncit",
 ]
 
@@ -220,9 +220,9 @@ wheels = [
 ]
 
 [[package]]
-name = "parser-service"
+name = "parser"
 version = "0.1.0"
-source = { virtual = "services/parser_service" }
+source = { virtual = "services/parser" }
 dependencies = [
     { name = "httpx" },
 ]
@@ -368,7 +368,7 @@ dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
     { name = "greenlet" },
-    { name = "parser-service" },
+    { name = "parser" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "sqlalchemy" },
@@ -388,7 +388,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.16.1" },
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "greenlet", specifier = ">=3.2.3" },
-    { name = "parser-service", virtual = "services/parser_service" },
+    { name = "parser", virtual = "services/parser" },
     { name = "pydantic", specifier = ">=2.11.6" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },

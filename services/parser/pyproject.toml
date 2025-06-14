@@ -1,5 +1,5 @@
 [project]
-name = "parser_service"
+name = "parser"
 version = "0.1.0"
 dependencies = [
     "httpx>=0.28.1",

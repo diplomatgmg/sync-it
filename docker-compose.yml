@@ -1,3 +1,5 @@
+name: ${ENV_PROJECT_NAME}
+
 services:
   postgres:
     image: postgres:17.5-alpine
@@ -7,17 +9,26 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
 
-  parser-service:
-    container_name: parser-service
+  parser:
+    container_name: parser
     build:
       context: .
-      dockerfile: services/parser_service/Dockerfile
+      dockerfile: services/parser/Dockerfile
       target: ${ENV_MODE}
     env_file: .env
     volumes:
-      - ./services/parser_service/src:/app/services/parser_service/src
+      - ./services/parser/src:/app/services/parser/src
       - ./libs/logger:/app/libs/logger
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres-data:

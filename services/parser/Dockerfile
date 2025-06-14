@@ -1,15 +1,15 @@
-FROM python:3.13.4-alpine AS base
+FROM python:${PYTHON_VERSION}-alpine AS base
 FROM base AS builder
 
-ARG SERVICE_PATH=services/parser_service/
+ARG SERVICE_PATH=services/parser/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
-    PYTHONPATH=/app/libs \
-    PATH="/app/.venv/bin:$PATH"
+    PYTHONPATH=$DOCKER_DOCKER_APP_PATH \
+    PATH="$DOCKER_APP_PATH/.venv/bin:$PATH"
 
-WORKDIR /app
+WORKDIR $DOCKER_APP_PATH
 
 RUN apk update \
     && apk add --no-cache uv \
@@ -40,7 +40,8 @@ FROM deps-dev AS development
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/logger ./libs/logger
+COPY ./libs/database ./libs/database
 
-WORKDIR /app/${SERVICE_PATH}/src
+WORKDIR $DOCKER_APP_PATH/${SERVICE_PATH}/src
 
 CMD ["hupper", "-q", "-m", "main"]

@@ -1,6 +1,7 @@
-from pydantic import SecretStr, Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
+
 
 __all__ = ["db_config"]
 

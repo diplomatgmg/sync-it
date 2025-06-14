@@ -3,7 +3,7 @@ name = "syncit"
 version = "0.1.0"
 requires-python = "==3.13.4"
 dependencies = [
-    "parser_service",
+    "parser",
     "alembic>=1.16.1",
     "asyncpg>=0.30.0",
     "pydantic>=2.11.6",
@@ -23,10 +23,10 @@ dev = [
 ]
 
 [tool.uv.sources]
-parser_service = { workspace = true }
+parser = { workspace = true }
 
 [tool.uv.workspace]
-members = ["services/parser_service"]
+members = ["services/parser"]
 
 [tool.ruff]
 fix = true
@@ -35,10 +35,10 @@ line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
 lint.ignore = ["I", "D", "DOC", "CPY001", "COM812"]
-extend-exclude = ["alembic"]
+extend-exclude = ["libs/database/migrations"]
 
 [tool.mypy]
-mypy_path="libs:services/parser_service/src"
+mypy_path = "services/parser/src"
 plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin"
 incremental = true
 warn_return_any = true

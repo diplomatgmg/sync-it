@@ -1,7 +1,8 @@
 from collections.abc import Sequence
 
-from logger import get_logger
 from parsers.base import BaseParser
+
+from libs.logger import get_logger
 
 
 __all__ = ["HHParser"]

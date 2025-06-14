@@ -1,8 +1,10 @@
 import asyncio
 
-from logger import get_logger
 from parsers.hh import HHParser
 import uvloop
+
+from libs.logger import get_logger
+
 
 logger = get_logger(__name__)
 

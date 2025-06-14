@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
-from logger import get_logger
+from libs.logger import get_logger
 
 
 __all__ = ["BaseParser"]
