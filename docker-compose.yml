@@ -26,7 +26,8 @@ services:
     env_file: .env
     volumes:
       - ./services/parser/src:/app/services/parser/src
-      - ./libs/logger:/app/libs/logger
+      - ./libs:/app/libs
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,8 +45,7 @@ services:
       - "${GPT_API_PORT}:${GPT_API_PORT}"
     volumes:
       - ./services/gpt-api/src:/app/services/gpt-api/src
-      - ./libs/logger:/app/libs/logger
-      - ./libs/environment:/app/libs/environment
+      - ./libs:/app/libs
     networks:
       - app-network
     healthcheck:
@@ -54,6 +54,28 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  telegram-parser-api:
+    container_name: telegram-parser-api
+    build:
+      context: .
+      dockerfile: services/telegram-parser-api/Dockerfile
+      target: ${ENV_MODE}
+    env_file: .env
+    ports:
+      - "${TELEGRAM_PARSER_API_PORT}:${TELEGRAM_PARSER_API_PORT}"
+    volumes:
+      - ./services/telegram-parser-api/src:/app/services/telegram-parser-api/src
+      - ./libs:/app/libs
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://telegram-parser-api:${TELEGRAM_PARSER_API_PORT}/health" ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
 
 networks:
   app-network:

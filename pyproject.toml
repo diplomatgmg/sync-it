@@ -5,12 +5,17 @@ requires-python = "==3.13.4"
 dependencies = [
     "parser",
     "gpt-api",
+    "telegram-parser-api",
     "alembic>=1.16.1",
     "asyncpg>=0.30.0",
     "pydantic>=2.11.6",
     "pydantic-settings>=2.9.1",
     "sqlalchemy>=2.0.41",
     "uvloop>=0.21.0",
+    "pyrogram>=2.0.106",
+    "greenlet>=3.2.3",
+    "sqlparse>=0.5.3",
+    "httpx>=0.28.1",
 ]
 
 
@@ -28,11 +33,13 @@ packages = ["libs", "services"]
 [tool.uv.sources]
 parser = { workspace = true }
 gpt-api = { workspace = true }
+telegram-parser-api = { workspace = true }
 
 [tool.uv.workspace]
 members = [
     "services/parser",
     "services/gpt-api",
+    "services/telegram-parser-api",
 ]
 
 [tool.ruff]
@@ -41,11 +48,15 @@ unsafe-fixes = true
 line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
-lint.ignore = ["I", "D", "DOC", "CPY001", "COM812"]
+lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF003"]
 extend-exclude = ["libs/database/migrations"]
 
 [tool.mypy]
-mypy_path = "services/parser/src:services/gpt-api/src"
+mypy_path = [
+    "services/parser/src",
+    "services/gpt-api/src",
+    "services/telegram-parser-api/src",
+]
 plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin"
 incremental = true
 warn_return_any = true
