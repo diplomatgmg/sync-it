@@ -1,5 +1,5 @@
 [project]
-name = "parser"
+name = "vacancy-parser"
 dynamic = ["version"]
 dependencies = [
     "httpx>=0.28.1",

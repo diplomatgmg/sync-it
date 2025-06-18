@@ -2,7 +2,7 @@ FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
 ARG APP_PATH=/app
-ARG SERVICE_PATH=services/parser/
+ARG SERVICE_PATH=services/vacancy-parser
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -23,7 +23,7 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
-COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}
+COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/
 
 FROM deps-base AS deps-dev
 

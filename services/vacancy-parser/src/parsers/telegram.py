@@ -38,6 +38,8 @@ class TelegramParser(BaseParser):
             logger.info("No new messages for channel '%s'", channel_link)
             return
 
+        logger.info("Got %s new messages", len(newest_messages))
+
         vacancies = [
             TelegramVacancy.create(
                 channel_link=channel_link,

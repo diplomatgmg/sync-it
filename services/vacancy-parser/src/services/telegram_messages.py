@@ -27,8 +27,5 @@ async def get_newest_telegram_messages(
         response.raise_for_status()
 
     data = TelegramChannelMessagesResponse(**response.json())
-    messages = data.messages
 
-    logger.info("Got %s new messages", len(messages))
-
-    return messages
+    return data.messages

@@ -17,15 +17,15 @@ services:
       start_period: 5s
       start_interval: 5s
 
-  parser:
-    container_name: parser
+  vacancy-parser:
+    container_name: vacancy-parser
     build:
       context: .
-      dockerfile: services/parser/Dockerfile
+      dockerfile: services/vacancy-parser/Dockerfile
       target: ${ENV_MODE}
     env_file: .env
     volumes:
-      - ./services/parser/src:/app/services/parser/src
+      - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
       - ./libs:/app/libs
 
     depends_on:
