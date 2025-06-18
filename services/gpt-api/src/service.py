@@ -1,17 +1,28 @@
 from typing import cast
 
+from fastapi import HTTPException
 from g4f.Provider import Blackbox  # type: ignore[import-untyped]
 from g4f.client import AsyncClient  # type: ignore[import-untyped]
+
+from libs.logger import get_logger
 
 
 __all__ = ["get_gpt_response"]
 
 
+logger = get_logger(__name__)
+
+
 async def get_gpt_response(prompt: str) -> str:
     client = AsyncClient()
-    response = await client.chat.completions.create(
-        model="gpt-4o-mini",
-        provider=Blackbox,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return cast("str", response.choices[0].message.content)
+
+    try:
+        response = await client.chat.completions.create(
+            provider=Blackbox,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return cast("str", response.choices[0].message.content)
+    except Exception as e:
+        msg = "Failed to get GPT response"
+        logger.exception(msg, exc_info=e)
+        raise HTTPException(status_code=500, detail=msg) from e
