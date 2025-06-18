@@ -32,12 +32,12 @@ def setup_alchemy_logging() -> None:
 
     @event.listens_for(Engine, "after_cursor_execute")
     def after_cursor_execute(
-            conn: Connection,
-            _cursor: Any,
-            statement: str,
-            _parameters: Any,
-            context: PGExecutionContext_asyncpg,
-            _executemany: Any,
+        conn: Connection,
+        _cursor: Any,
+        statement: str,
+        _parameters: Any,
+        context: PGExecutionContext_asyncpg,
+        _executemany: Any,
     ) -> None:
         total = time.time() - conn.info["query_start_time"].pop(-1)
 

@@ -3,4 +3,5 @@ name = "parser"
 dynamic = ["version"]
 dependencies = [
     "httpx>=0.28.1",
+    "telethon>=1.40.0",
 ]

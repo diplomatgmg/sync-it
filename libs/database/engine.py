@@ -1,12 +1,10 @@
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from libs.database.config import db_config
 from libs.database.logging import setup_alchemy_logging
-from libs.environment.config import env_config
 
 
 __all__ = ["get_async_session"]
@@ -15,7 +13,7 @@ __all__ = ["get_async_session"]
 setup_alchemy_logging()
 
 
-engine = create_async_engine(db_config.url, echo=env_config.debug)
+engine = create_async_engine(db_config.url)
 
 async_session_factory = async_sessionmaker(
     bind=engine,

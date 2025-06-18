@@ -1,10 +1,53 @@
+from abc import abstractmethod
+
+from schemas import TelegramChannelUrl
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from typing import Any, Self
+
+from utils import generate_hash
+
+# len("https://t.me/s/") + len("channel_name")  # noqa: ERA001
+MAX_CHANNEL_LINK_LENGTH = 143
 
 
 class Base(DeclarativeBase, AsyncAttrs):
-    __table_args__ = {"schema": "parser"}  # noqa: RUF012
+    __table_args__: Any = {"schema": "parser"}  # noqa: RUF012
 
 
-class RawVacancy(Base):
-    __tablename__ = "raw_vacancy"
+class BaseVacancy(Base):
+    __abstract__ = True
+
+    hash: Mapped[str] = mapped_column(String(32), primary_key=True, unique=True)
+
+    @abstractmethod
+    def create(self, *args: Any, **kwargs: Any) -> Self:
+        """Создает экземпляр вакансии автоматически генерируя хеша"""
+
+
+class TelegramVacancy(BaseVacancy):
+    __tablename__ = "telegram_vacancy"
+
+    channel_link: Mapped[TelegramChannelUrl] = mapped_column(String(MAX_CHANNEL_LINK_LENGTH))
+    message_id: Mapped[int]
+    message: Mapped[str] = mapped_column(String(4096))
+
+    __table_args__ = (
+        UniqueConstraint(
+            "channel_link",
+            "message_id",
+            name="uq_telegram_vacancy_channel_message"
+        ),
+        Base.__table_args__
+    )
+
+    @classmethod
+    def create(cls, channel_link: TelegramChannelUrl, message_id: int, message: str) -> "TelegramVacancy":
+        hash_value = generate_hash(f"{channel_link}:{message_id}")
+        return cls(
+            hash=hash_value,
+            channel_link=str(channel_link),
+            message_id=message_id,
+            message=message,
+        )

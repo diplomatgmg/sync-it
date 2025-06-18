@@ -25,7 +25,6 @@ load_dotenv(PROJECT_ROOT / ".env")
 # service and libs imports. Prefer use project root imports
 # isort: off
 from libs.database.config import DatabaseConfig # need use NEW db_config for replace db_config.host
-
 # isort: on
 
 db_config = DatabaseConfig()
@@ -34,7 +33,7 @@ db_config.host = "localhost"
 db_url = db_config.url.render_as_string(hide_password=False)
 config.set_main_option("sqlalchemy.url", db_url)
 
-target_metadata = importlib.import_module(f"services.{service}.src.database.models").Base.metadata
+target_metadata = importlib.import_module(f"database.models").Base.metadata
 
 
 def run_migrations_offline() -> None:
