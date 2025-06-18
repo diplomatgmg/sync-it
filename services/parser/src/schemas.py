@@ -1,6 +1,6 @@
 import re
 
-from pydantic import AnyUrl, UrlConstraints, BaseModel
+from pydantic import AnyUrl, BaseModel, UrlConstraints
 
 
 __all__ = [

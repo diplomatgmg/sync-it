@@ -1,19 +1,17 @@
 import httpx
+from schemas import TelegramChannelMessage, TelegramChannelMessagesResponse
+
+from libs.logger import get_logger
 
 
 __all__ = ["get_newest_telegram_messages"]
-
-from libs.logger import get_logger
-from schemas import TelegramChannelMessage
-from schemas import TelegramChannelMessagesResponse
 
 
 logger = get_logger(__name__)
 
 
 async def get_newest_telegram_messages(
-        channel_username: str,
-        last_message_id: int | None = None
+    channel_username: str, last_message_id: int | None = None
 ) -> list[TelegramChannelMessage]:
     """Возвращает список актуальных сообщений относительно переданного last_message_id"""
     logger.debug("Getting messages from telegram api services")

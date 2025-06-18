@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from schemas import ChannelMessagesResponse
 from services.channel_messages import get_messages_by_ids, get_newest_message_id
 

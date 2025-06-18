@@ -1,12 +1,12 @@
 from abc import abstractmethod
+from typing import Any, Self
 
 from schemas import TelegramChannelUrl
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from typing import Any, Self
-
 from utils import generate_hash
+
 
 # len("https://t.me/s/") + len("channel_name")  # noqa: ERA001
 MAX_CHANNEL_LINK_LENGTH = 143
@@ -34,12 +34,8 @@ class TelegramVacancy(BaseVacancy):
     message: Mapped[str] = mapped_column(String(4096))
 
     __table_args__ = (
-        UniqueConstraint(
-            "channel_link",
-            "message_id",
-            name="uq_telegram_vacancy_channel_message"
-        ),
-        Base.__table_args__
+        UniqueConstraint("channel_link", "message_id", name="uq_telegram_vacancy_channel_message"),
+        Base.__table_args__,
     )
 
     @classmethod

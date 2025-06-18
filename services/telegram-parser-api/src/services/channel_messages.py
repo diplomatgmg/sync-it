@@ -36,9 +36,9 @@ async def get_newest_message_id(channel_username: str) -> int | None:
 
     soup = BeautifulSoup(response.text, "html.parser")
     last_message_widget = soup.select("div.tgme_widget_message")[-1]
-    data_post = last_message_widget.attrs.get("data-post")
+    data_post = last_message_widget.attrs["data-post"]
 
-    newest_message_id = int(data_post.split("/")[-1])
+    newest_message_id = int(str(data_post).split("/")[-1])
     logger.debug("Newest message id is %s", newest_message_id)
 
     return newest_message_id
@@ -80,7 +80,7 @@ async def _fetch_message(client: httpx.AsyncClient, channel_username: str, messa
                 return None
 
             for br in message_text_block.find_all("br"):
-                br.replace_with("\n")
+                br.replace_with("\n")  # type: ignore[arg-type]
 
             return ChannelMessage(
                 message_id=message_id,
