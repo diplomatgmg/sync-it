@@ -17,6 +17,23 @@ services:
       start_period: 5s
       start_interval: 5s
 
+  redis:
+    image: redis:8.0.2-alpine
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    command: [ "redis-server", "--port", "${REDIS_PORT}" ]
+    volumes:
+      - redis-data:/var/lib/redis/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping" ]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
+
   vacancy-parser:
     container_name: vacancy-parser
     build:
@@ -33,6 +50,23 @@ services:
         condition: service_healthy
     networks:
       - app-network
+
+  vacancy-parser-worker:
+    container_name: vacancy-parser-worker
+    build:
+      context: .
+      dockerfile: services/vacancy-parser/Dockerfile
+      target: ${ENV_MODE}
+    command: ["celery", "-A", "celery_app.app", "worker", "-l", "${LOG_LEVEL}"]
+    env_file: .env
+    networks:
+      - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
+      - ./libs:/app/libs
 
   gpt-api:
     container_name: gpt-api
@@ -84,3 +118,4 @@ networks:
 
 volumes:
   postgres-data:
+  redis-data:
