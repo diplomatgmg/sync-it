@@ -51,7 +51,7 @@ services:
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://gpt-api:${GPT_API_PORT}/health" ]
       interval: 60s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 10s
 
