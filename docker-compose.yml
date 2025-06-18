@@ -68,6 +68,23 @@ services:
       - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
       - ./libs:/app/libs
 
+  vacancy-parser-beat:
+    container_name: vacancy-parser-beat
+    build:
+      context: .
+      dockerfile: services/vacancy-parser/Dockerfile
+      target: ${ENV_MODE}
+    command: [ "celery", "-A", "celery_app.app", "beat", "-l", "${LOG_LEVEL}" ]
+    env_file: .env
+    networks:
+      - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
+      - ./libs:/app/libs
+
   gpt-api:
     container_name: gpt-api
     build:
