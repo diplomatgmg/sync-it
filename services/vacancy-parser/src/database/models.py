@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any, Self
 
 from schemas import TelegramChannelUrl
-from sqlalchemy import String, UniqueConstraint, DateTime, func
+from sqlalchemy import DateTime, String, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from utils import generate_hash

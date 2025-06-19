@@ -4,6 +4,7 @@ from parsers import TelegramParser
 
 from libs.database.engine import get_async_session
 
+
 __all__ = ["load_telegram_vacancies"]
 
 

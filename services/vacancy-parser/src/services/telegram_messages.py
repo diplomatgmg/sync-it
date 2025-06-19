@@ -1,8 +1,9 @@
+from core.config import parser_config
 import httpx
 from schemas import TelegramChannelMessage, TelegramChannelMessagesResponse
 
 from libs.logger import get_logger
-from core.config import parser_config
+
 
 __all__ = ["get_newest_telegram_messages"]
 
