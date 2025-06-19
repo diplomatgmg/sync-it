@@ -85,6 +85,24 @@ services:
       - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
       - ./libs:/app/libs
 
+  flower:
+    container_name: flower
+    build:
+      context: .
+      dockerfile: services/vacancy-parser/Dockerfile
+      target: ${ENV_MODE}
+    env_file: .env
+    ports:
+      - "${FLOWER_PORT}:${FLOWER_PORT}"
+    networks:
+      - app-network
+    command: ["celery", "-A", "celery_app.app", "flower"]
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+    - ./libs:/app/libs
+
   gpt-api:
     container_name: gpt-api
     build:
