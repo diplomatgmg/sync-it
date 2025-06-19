@@ -19,8 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("CREATE SCHEMA IF NOT EXISTS parser")  # added manually
+    op.execute("CREATE SCHEMA IF NOT EXISTS vacancy_parser")  # added manually
 
 
 def downgrade() -> None:
-    op.execute("DROP SCHEMA IF EXISTS parser CASCADE")  # added manually
+    op.execute("DROP SCHEMA IF EXISTS vacancy_parser CASCADE")  # added manually

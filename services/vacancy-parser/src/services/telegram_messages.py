@@ -2,7 +2,7 @@ import httpx
 from schemas import TelegramChannelMessage, TelegramChannelMessagesResponse
 
 from libs.logger import get_logger
-
+from core.config import parser_config
 
 __all__ = ["get_newest_telegram_messages"]
 
@@ -16,7 +16,7 @@ async def get_newest_telegram_messages(
     """Возвращает список актуальных сообщений относительно переданного last_message_id"""
     logger.debug("Getting messages from telegram api services")
 
-    url = f"http://telegram-parser-api:8001/api/v1/channel/{channel_username}/messages"  # FIXME hardcore
+    url = f"{parser_config.telegram_parser_service_url}/api/v1/channel/{channel_username}/messages"
 
     params = {}
     if last_message_id is not None:

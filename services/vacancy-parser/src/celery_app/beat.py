@@ -6,8 +6,8 @@ __all__ = [
 ]
 
 beat_schedule = {
-    "example-task-every-5-seconds": {
-        "task": "example_task",
-        "schedule": timedelta(seconds=5),
-    },
+    "load-telegram-vacancies-every-hour": {
+        "task": "load_telegram_vacancies",
+        "schedule": timedelta(hours=1),
+    }
 }

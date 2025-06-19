@@ -1,8 +1,9 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Any, Self
 
 from schemas import TelegramChannelUrl
-from sqlalchemy import String, UniqueConstraint
+from sqlalchemy import String, UniqueConstraint, DateTime, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from utils import generate_hash
@@ -13,7 +14,7 @@ MAX_CHANNEL_LINK_LENGTH = 143
 
 
 class Base(DeclarativeBase, AsyncAttrs):
-    __table_args__: Any = {"schema": "parser"}  # noqa: RUF012
+    pass
 
 
 class BaseVacancy(Base):
@@ -26,6 +27,15 @@ class BaseVacancy(Base):
         """Создает экземпляр вакансии автоматически генерируя хеша"""
 
 
+class Vacancy(BaseVacancy):
+    __table_args__ = {"schema": "vacancy_parser"}  # noqa: RUF012
+    __tablename__ = "vacancy"
+
+    name: Mapped[str] = mapped_column(String(256))
+    link: Mapped[str] = mapped_column(String(256))
+    created_at: Mapped[datetime] = mapped_column(DateTime())
+
+
 class TelegramVacancy(BaseVacancy):
     __tablename__ = "telegram_vacancy"
 
@@ -35,7 +45,7 @@ class TelegramVacancy(BaseVacancy):
 
     __table_args__ = (
         UniqueConstraint("channel_link", "message_id", name="uq_telegram_vacancy_channel_message"),
-        Base.__table_args__,
+        {"schema": "vacancy_parser"},
     )
 
     @classmethod

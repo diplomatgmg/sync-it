@@ -33,6 +33,7 @@ db_config.host = "localhost"
 db_url = db_config.url.render_as_string(hide_password=False)
 config.set_main_option("sqlalchemy.url", db_url)
 
+# we use PATH. Full path is services.vacancy-parser.src.database.models
 target_metadata = importlib.import_module(f"database.models").Base.metadata
 
 
@@ -73,6 +74,6 @@ def run_migrations_online() -> None:
 
 
 if context.is_offline_mode():
-    run_migrations_offline()
+    raise Exception("Offline mode not supported")
 else:
     run_migrations_online()

@@ -44,7 +44,6 @@ services:
     volumes:
       - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
       - ./libs:/app/libs
-
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,8 +84,8 @@ services:
       - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
       - ./libs:/app/libs
 
-  flower:
-    container_name: flower
+  vacancy-parser-flower:
+    container_name: vacancy-parser-flower
     build:
       context: .
       dockerfile: services/vacancy-parser/Dockerfile
@@ -96,7 +95,7 @@ services:
       - "${FLOWER_PORT}:${FLOWER_PORT}"
     networks:
       - app-network
-    command: ["celery", "-A", "celery_app.app", "flower"]
+    command: ["celery", "-A", "celery_app.app", "flower", "-l", "${LOG_LEVEL}"]
     depends_on:
       redis:
         condition: service_healthy

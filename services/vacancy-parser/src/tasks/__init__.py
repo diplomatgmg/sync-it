@@ -1,4 +1,6 @@
-from tasks.example import example_task
+from tasks.load_vacancies import load_telegram_vacancies
 
 
-__all__ = ["example_task"]
+__all__ = [
+"load_telegram_vacancies",
+]
