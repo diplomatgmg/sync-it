@@ -1,11 +1,14 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas import TelegramChannelUrl
-
+from pydantic import Field
 
 __all__ = ["parser_config"]
 
 
 class ParserConfig(BaseSettings):
+    host: str
+    port: int = Field(ge=1, le=65535)
+
     hh_client_id: str
     hh_client_secret: str
     hh_access_token: str

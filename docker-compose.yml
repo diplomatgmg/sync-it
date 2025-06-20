@@ -40,6 +40,8 @@ services:
       context: .
       dockerfile: services/vacancy-parser/Dockerfile
       target: ${ENV_MODE}
+    ports:
+      - "${VACANCY_PARSER_PORT}:${VACANCY_PARSER_PORT}"
     env_file: .env
     volumes:
       - ./services/vacancy-parser/src:/app/services/vacancy-parser/src
