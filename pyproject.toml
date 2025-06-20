@@ -18,7 +18,7 @@ where = ["libs/common", "services"]
 
 [tool.uv.sources]
 gpt-api = { workspace = true }
-telegram-parser-api = { workspace = true }
+telegram-api = { workspace = true }
 vacancy-parser = { workspace = true }
 
 [tool.uv.workspace]
@@ -26,8 +26,8 @@ members = [
     "libs/common/database",
     "libs/common/redis-lib",
     "services/gpt-api",
+    "services/telegram-api",
     "services/vacancy-parser",
-    "services/telegram-parser-api",
 ]
 
 
@@ -44,8 +44,8 @@ extend-exclude = ["**/database/migrations/versions"]
 mypy_path = [
     "libs",
     "services/gpt-api/src",
+    "services/telegram-api/src",
     "services/vacancy-parser/src",
-    "services/telegram-parser-api/src",
 ]
 plugins = "pydantic.mypy"
 incremental = true

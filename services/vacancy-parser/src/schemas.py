@@ -4,6 +4,7 @@ from pydantic import BaseModel, HttpUrl, UrlConstraints
 
 
 __all__ = [
+    "HealthResponse",
     "TelegramChannelMessage",
     "TelegramChannelMessagesResponse",
     "TelegramChannelUrl",
@@ -53,3 +54,7 @@ class TelegramChannelMessage(BaseModel):
 
 class TelegramChannelMessagesResponse(BaseModel):
     messages: list[TelegramChannelMessage]
+
+
+class HealthResponse(BaseModel):
+    status: str

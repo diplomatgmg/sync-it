@@ -2,7 +2,7 @@ FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
 ARG APP_PATH=/app
-ARG SERVICE_NAME=telegram-parser-api
+ARG SERVICE_NAME=telegram-api
 ARG SERVICE_PATH=services/$SERVICE_NAME
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

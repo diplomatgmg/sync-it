@@ -123,22 +123,22 @@ services:
       retries: 3
       start_period: 10s
 
-  telegram-parser-api:
-    container_name: telegram-parser-api
+  telegram-api:
+    container_name: telegram-api
     build:
       context: .
-      dockerfile: services/telegram-parser-api/Dockerfile
+      dockerfile: services/telegram-api/Dockerfile
       target: ${ENV_MODE}
     env_file: .env
     ports:
-      - "${TELEGRAM_PARSER_API_PORT}:${TELEGRAM_PARSER_API_PORT}"
+      - "${TELEGRAM_API_PORT}:${TELEGRAM_API_PORT}"
     volumes:
-      - ./services/telegram-parser-api/src:/app/services/telegram-parser-api/src
+      - ./services/telegram-api/src:/app/services/telegram-api/src
       - ./libs:/app/libs
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://telegram-parser-api:${TELEGRAM_PARSER_API_PORT}/health" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://telegram-api:${TELEGRAM_API_PORT}/health" ]
       interval: 60s
       timeout: 5s
       retries: 3

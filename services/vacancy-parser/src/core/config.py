@@ -1,5 +1,3 @@
-import os
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas import TelegramChannelUrl
 
@@ -16,15 +14,9 @@ class ParserConfig(BaseSettings):
 
     telegram_channel_links: list[TelegramChannelUrl]  # https://t.me/s/<channel_name>
 
-    model_config = SettingsConfigDict(env_prefix="PARSER_")
+    telegram_api_url: str
 
-    @property
-    def telegram_parser_service_url(self) -> str:
-        api_port = os.getenv("TELEGRAM_PARSER_API_PORT")
-        if api_port is None:
-            raise ValueError("TELEGRAM_PARSER_API_PORT is not set")
-
-        return f"http://telegram-parser-api:{api_port}"
+    model_config = SettingsConfigDict(env_prefix="VACANCY_PARSER_")
 
 
 parser_config = ParserConfig()
