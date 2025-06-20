@@ -1,13 +1,12 @@
+from common.environment.config import env_config
+from common.logger import get_logger
+from common.logger.config import log_config
 from core.config import api_config
 from fastapi import FastAPI, HTTPException
 from schemas import HealthResponse, PromptRequest, PromptResponse
 from service import get_gpt_response
 from utils import validate_health_response
 import uvicorn
-
-from common.environment.config import env_config
-from common.logger import get_logger
-from common.logger.config import log_config
 
 
 logger = get_logger(__name__)

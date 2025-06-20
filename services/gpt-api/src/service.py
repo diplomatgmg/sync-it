@@ -1,10 +1,9 @@
 from typing import cast
 
+from common.logger import get_logger
 from fastapi import HTTPException
 from g4f.Provider import Blackbox  # type: ignore[import-untyped]
 from g4f.client import AsyncClient  # type: ignore[import-untyped]
-
-from common.logger import get_logger
 
 
 __all__ = ["get_gpt_response"]

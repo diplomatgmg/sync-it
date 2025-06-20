@@ -1,8 +1,7 @@
 from celery_app import app
+from common.database.engine import get_async_session
 from database.services.telegram_vacancy import TelegramVacancyService
 from parsers import TelegramParser
-
-from common.database.engine import get_async_session
 
 
 __all__ = ["load_telegram_vacancies"]

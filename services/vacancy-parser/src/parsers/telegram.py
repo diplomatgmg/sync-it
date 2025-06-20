@@ -1,11 +1,10 @@
+from common.logger import get_logger
 from core.config import parser_config
 from database.models import TelegramVacancy
 from database.services.telegram_vacancy import TelegramVacancyService
 from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
 from services.telegram_messages import get_newest_telegram_messages
-
-from common.logger import get_logger
 
 
 __all__ = ["TelegramParser"]

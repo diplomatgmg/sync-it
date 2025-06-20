@@ -1,13 +1,12 @@
 from api.v1 import router as v1_router
+from common.environment.config import env_config
+from common.logger import get_logger
+from common.logger.config import log_config
 from core.config import api_config
 from fastapi import FastAPI, HTTPException
 import httpx
 from schemas import HealthResponse
 from utils import validate_health_response
-
-from common.environment.config import env_config
-from common.logger import get_logger
-from common.logger.config import log_config
 
 
 logger = get_logger(__name__)

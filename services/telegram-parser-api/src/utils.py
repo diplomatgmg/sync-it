@@ -1,6 +1,5 @@
-import httpx
-
 from common.logger import get_logger
+import httpx
 
 
 __all__ = ["validate_health_response"]

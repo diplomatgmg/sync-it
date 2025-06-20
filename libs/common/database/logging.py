@@ -3,13 +3,12 @@ import time
 from typing import Any
 import warnings
 
+from common.logger import get_logger
 from sqlalchemy import ClauseElement, Compiled, Connection, event
 from sqlalchemy.dialects.postgresql.asyncpg import PGExecutionContext_asyncpg
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SAWarning
 import sqlparse  # type: ignore[import-untyped]
-
-from common.logger import get_logger
 
 
 __all__ = ["setup_alchemy_logging"]

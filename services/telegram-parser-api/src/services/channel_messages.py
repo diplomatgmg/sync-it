@@ -1,10 +1,9 @@
 import asyncio
 
 from bs4 import BeautifulSoup
+from common.logger import get_logger
 import httpx
 from schemas import ChannelMessage
-
-from common.logger import get_logger
 
 
 __all__ = [

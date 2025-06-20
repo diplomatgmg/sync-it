@@ -1,10 +1,9 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
 from common.database.config import db_config
 from common.database.logging import setup_alchemy_logging
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 __all__ = ["get_async_session"]

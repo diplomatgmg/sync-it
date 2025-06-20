@@ -1,6 +1,5 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from common.environment.enums import EnvironmentEnum
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 __all__ = ["env_config"]

@@ -23,20 +23,20 @@ add: # add python package to service
 	fi; \
 	uv add $(word 2, $(MAKECMDGOALS)) --package $(word 3, $(MAKECMDGOALS))
 
-#MYPY_DIRS := $(shell find services -type d -name src)
-#
-#lint: # run linters and formatters
-#	@uv run ruff check . && \
-#	uv run isort . --check-only && \
-#	uv run ruff format --check . && \
-#	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
-#
-#lint-fix: # run linters and formatters with fix
-#	@uv run ruff check . && \
-#	uv run isort . && \
-#	uv run ruff format . && \
-#	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
-#
+MYPY_DIRS := libs $(shell find services -type d -name src)
+
+lint: # run linters and formatters
+	@uv run ruff check . && \
+	uv run isort . --check-only && \
+	uv run ruff format --check . && \
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &) wait
+
+lint-fix: # run linters and formatters with fix
+	@uv run ruff check . && \
+	uv run isort . && \
+	uv run ruff format . && \
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &) wait
+
 #mm: # create migration for service
 #	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
 #		echo "Usage: make mm s=<service_name> m=\"migration message\""; \

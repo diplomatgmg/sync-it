@@ -45,9 +45,7 @@ class TelegramVacancy(BaseVacancy):
     message_id: Mapped[int]
     message: Mapped[str] = mapped_column(String(4096))
 
-    __table_args__ = (
-        UniqueConstraint("channel_link", "message_id", name="uq_telegram_vacancy_channel_message"),
-    )
+    __table_args__ = (UniqueConstraint("channel_link", "message_id", name="uq_telegram_vacancy_channel_message"),)
 
     @classmethod
     def create(cls, channel_link: TelegramChannelUrl, message_id: int, message: str) -> "TelegramVacancy":

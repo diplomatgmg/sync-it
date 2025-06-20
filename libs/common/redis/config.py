@@ -1,7 +1,6 @@
+from common.redis.enums import RedisDbEnum
 from pydantic import Field, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from common.redis.enums import RedisDbEnum
 
 
 __all__ = ["RedisConnectionConfig"]

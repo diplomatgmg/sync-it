@@ -1,10 +1,9 @@
 from typing import Annotated
 
+from common.logger import get_logger
 from fastapi import APIRouter, HTTPException, Query
 from schemas import ChannelMessagesResponse
 from services.channel_messages import get_messages_by_ids, get_newest_message_id
-
-from common.logger import get_logger
 
 
 __all__ = ["router"]

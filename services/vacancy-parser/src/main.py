@@ -1,6 +1,5 @@
-import uvloop
-
 from common.logger import get_logger
+import uvloop
 
 
 logger = get_logger(__name__)
