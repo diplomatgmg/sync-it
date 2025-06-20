@@ -2,6 +2,7 @@
 name = "vacancy-parser"
 dynamic = ["version"]
 dependencies = [
+    "alembic>=1.16.2",
     "asyncpg>=0.30.0",
     "celery>=5.5.3",
     "flower>=2.0.1",

@@ -38,7 +38,7 @@ line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
 lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF003"]
-extend-exclude = ["libs/common/database/migrations"]
+extend-exclude = ["**/migrations/versions/"]
 
 [tool.mypy]
 mypy_path = [

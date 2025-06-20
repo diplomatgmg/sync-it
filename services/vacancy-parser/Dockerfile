@@ -48,6 +48,7 @@ RUN uv pip install \
 # ================================= #
 FROM deps-dev AS development
 
+COPY ${SERVICE_PATH}/alembic.ini ${SERVICE_PATH}/alembic.ini
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/redis ./libs/common/redis

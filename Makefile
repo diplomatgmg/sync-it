@@ -16,6 +16,7 @@ stop: # compose stop
 venv: # create venv
 	@uv sync --frozen --all-packages
 
+# FIXME use args instead $(MAKECMDGOALS)
 add: # add python package to service
 	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then \
 		echo "Usage: make add <package> <service>"; \
@@ -37,19 +38,24 @@ lint-fix: # run linters and formatters with fix
 	uv run ruff format . && \
 	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &) wait
 
-#mm: # create migration for service
-#	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
-#		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
-#		exit 1; \
-#	fi; \
-#	alembic -n $(s) revision --autogenerate -m "$(m)"
-#
-#migrate: # apply migrations for service
-#	@if [ -z "$(s)" ]; then \
-#		echo "Usage: make migrate s=<service_name>"; \
-#		exit 1; \
-#	fi; \
-#	alembic -n $(s) upgrade head
+mm: # create migration for service
+	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
+		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
+		exit 1; \
+	fi;
+	@docker compose exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
 
-%:
-	@:
+migrate: # apply migrations for service
+	@if [ -z "$(s)" ]; then \
+		echo "Usage: make migrate s=<service_name>"; \
+		exit 1; \
+	fi;
+	@docker compose exec --workdir /app/services/$(s) $(s) alembic upgrade head
+	@echo "Migrations applied for service $(s)"
+
+downgrade: # downgrade migration for service
+	@if [ -z "$(s)" ] || [ -z "$(r)" ]; then \
+		echo "Usage: make md s=<service_name> r=<revision>"; \
+		exit 1; \
+	fi; \
+	docker compose exec -w /app/services/$(s) $(s) alembic downgrade $(r)
