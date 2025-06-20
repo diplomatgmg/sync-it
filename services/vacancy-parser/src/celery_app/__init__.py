@@ -1,4 +1,7 @@
-from celery_app.app import app
+from celery_app.app import app, loop
 
 
-__all__ = ["app"]
+__all__ = [
+    "app",
+    "loop",
+]

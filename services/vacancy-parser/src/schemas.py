@@ -32,7 +32,6 @@ class TelegramChannelUrl(HttpUrl):
         self._validate_path_structure()
 
     def _validate_host(self) -> None:
-        """Ensure host is't.me'."""
         if self.host != "t.me":
             raise ValueError(f"Invalid Telegram URL host '{self.host}'. Host must be 't.me'")
 
