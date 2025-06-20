@@ -30,13 +30,13 @@ lint: # run linters and formatters
 	@uv run ruff check . && \
 	uv run isort . --check-only && \
 	uv run ruff format --check . && \
-	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &) wait
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
 
 lint-fix: # run linters and formatters with fix
 	@uv run ruff check . && \
 	uv run isort . && \
 	uv run ruff format . && \
-	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &) wait
+	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
 
 mm: # create migration for service
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \

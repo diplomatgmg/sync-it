@@ -37,8 +37,8 @@ unsafe-fixes = true
 line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
-lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF003"]
-extend-exclude = ["**/migrations/versions/"]
+lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF002", "RUF003"]
+extend-exclude = ["**/database/migrations/versions"]
 
 [tool.mypy]
 mypy_path = [
@@ -46,9 +46,6 @@ mypy_path = [
     "services/gpt-api/src",
     "services/vacancy-parser/src",
     "services/telegram-parser-api/src",
-]
-exclude = [
-    "libs/common/database/migrations",
 ]
 plugins = "pydantic.mypy"
 incremental = true

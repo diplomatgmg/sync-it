@@ -1,6 +1,6 @@
 from common.logger import get_logger
 from core.config import parser_config
-from database.models import TelegramVacancy
+from database.models.vacancy import TelegramVacancy
 from database.services.telegram_vacancy import TelegramVacancyService
 from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
@@ -41,7 +41,7 @@ class TelegramParser(BaseParser):
 
         vacancies = [
             TelegramVacancy.create(
-                channel_link=channel_link,
+                link=channel_link,
                 message_id=message.message_id,
                 message=message.text,
             )

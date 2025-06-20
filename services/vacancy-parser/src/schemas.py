@@ -1,6 +1,6 @@
 import re
 
-from pydantic import AnyUrl, BaseModel, UrlConstraints
+from pydantic import BaseModel, HttpUrl, UrlConstraints
 
 
 __all__ = [
@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-class TelegramChannelUrl(AnyUrl):
+class TelegramChannelUrl(HttpUrl):
     """
     A custom URL type for validating Telegram channel links.
 
