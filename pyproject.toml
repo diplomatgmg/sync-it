@@ -1,84 +1,26 @@
 [project]
-name = "syncit"
+name = "sync-it"
 dynamic = ["version"]
-requires-python = "==3.13.4"
+requires-python = ">=3.13"
 dependencies = [
-    "vacancy-parser",
-    "gpt-api",
-    "telegram-parser-api",
-    "alembic>=1.16.1",
-    "asyncpg>=0.30.0",
-    "pydantic>=2.11.6",
-    "pydantic-settings>=2.9.1",
-    "sqlalchemy>=2.0.41",
-    "uvloop>=0.21.0",
-    "pyrogram>=2.0.106",
-    "greenlet>=3.2.3",
-    "sqlparse>=0.5.3",
-    "httpx>=0.28.1",
-    "redis>=6.2.0",
-    "flower>=2.0.1",
 ]
-
 
 [dependency-groups]
-dev = [
-    "hupper>=1.12.1",
-    "isort>=6.0.1",
-    "mypy>=1.16.0",
-    "ruff>=0.11.13",
-]
+dev = []
 
-[tool.setuptools]
-packages = ["libs", "services"]
+[tool.setuptools.packages.find]
+where = ["libs/common", "services"]
 
 [tool.uv.sources]
-vacancy-parser = { workspace = true }
 gpt-api = { workspace = true }
 telegram-parser-api = { workspace = true }
+vacancy-parser = { workspace = true }
 
 [tool.uv.workspace]
 members = [
-    "services/vacancy-parser",
+    "libs/common/database",
+    "libs/common/redis-lib",
     "services/gpt-api",
     "services/telegram-parser-api",
+    "services/vacancy-parser",
 ]
-
-[tool.ruff]
-fix = true
-unsafe-fixes = true
-line-length = 120
-lint.preview = true
-lint.select = ["ALL"]
-lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF003"]
-extend-exclude = ["libs/database/migrations"]
-
-[tool.mypy]
-mypy_path = [
-    "services/vacancy-parser/src",
-    "services/gpt-api/src",
-    "services/telegram-parser-api/src",
-]
-plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin"
-incremental = true
-warn_return_any = true
-warn_unused_configs = true
-show_error_context = true
-disallow_subclassing_any = true
-disallow_any_generics = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-follow_imports_for_stubs = true
-explicit_package_bases = true
-
-[tool.isort]
-profile = "black"
-lines_after_imports = 2
-line_length = 120
-force_sort_within_sections = true
-float_to_top = true

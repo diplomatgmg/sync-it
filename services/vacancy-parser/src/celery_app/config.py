@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from libs.redis.config import RedisConnectionConfig
-from libs.redis.enums import RedisDbEnum
+from common.redis.config import RedisConnectionConfig
+from common.redis.enums import RedisDbEnum
 
 
 __all__ = ["celery_config"]

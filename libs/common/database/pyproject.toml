@@ -1,0 +1,7 @@
+[project]
+name = "database"
+dynamic = ["version"]
+dependencies = [
+    "sqlalchemy>=2.0.41",
+    "sqlparse>=0.5.3",
+]

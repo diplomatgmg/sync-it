@@ -9,7 +9,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SAWarning
 import sqlparse  # type: ignore[import-untyped]
 
-from libs.logger import get_logger
+from common.logger import get_logger
 
 
 __all__ = ["setup_alchemy_logging"]

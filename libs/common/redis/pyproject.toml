@@ -1,0 +1,6 @@
+[project]
+name = "redis-lib"
+dynamic = ["version"]
+dependencies = [
+    "redis>=6.2.0",
+]

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from libs.logger import get_logger
+from common.logger import get_logger
 
 
 __all__ = ["BaseParser"]

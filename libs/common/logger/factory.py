@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from libs.logger.config import log_config
+from common.logger.config import log_config
 
 
 __all__ = ["get_logger"]

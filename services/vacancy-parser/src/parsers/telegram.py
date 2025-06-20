@@ -5,7 +5,7 @@ from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
 from services.telegram_messages import get_newest_telegram_messages
 
-from libs.logger import get_logger
+from common.logger import get_logger
 
 
 __all__ = ["TelegramParser"]

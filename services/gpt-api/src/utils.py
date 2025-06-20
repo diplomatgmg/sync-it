@@ -1,4 +1,4 @@
-from libs.logger import get_logger
+from common.logger import get_logger
 
 
 __all__ = ["validate_health_response"]

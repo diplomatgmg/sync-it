@@ -2,7 +2,15 @@
 name = "vacancy-parser"
 dynamic = ["version"]
 dependencies = [
+    "asyncpg>=0.30.0",
     "celery>=5.5.3",
+    "flower>=2.0.1",
     "httpx>=0.28.1",
-    "telethon>=1.40.0",
+    "pydantic-settings>=2.9.1",
+    "uvloop>=0.21.0",
+]
+
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
 ]

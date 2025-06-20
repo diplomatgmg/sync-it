@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import httpx
 from schemas import ChannelMessage
 
-from libs.logger import get_logger
+from common.logger import get_logger
 
 
 __all__ = [

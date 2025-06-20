@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from libs.database.config import db_config
-from libs.database.logging import setup_alchemy_logging
+from common.database.config import db_config
+from common.database.logging import setup_alchemy_logging
 
 
 __all__ = ["get_async_session"]

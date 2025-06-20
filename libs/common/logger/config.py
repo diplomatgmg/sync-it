@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from libs.logger.enums import LogLevel
+from common.logger.enums import LogLevel
 
 
 __all__ = ["log_config"]

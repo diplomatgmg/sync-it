@@ -16,7 +16,7 @@ service = config.config_ini_section
 # add libs and services to path for fix import error
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
-sys.path.append(str(PROJECT_ROOT))
+sys.path.append(str(PROJECT_ROOT) / "libs")
 sys.path.append(str(PROJECT_ROOT / "services" / service / "src"))
 
 # load .env for pydantic settings
@@ -24,7 +24,7 @@ load_dotenv(PROJECT_ROOT / ".env")
 
 # service and libs imports. Prefer use project root imports
 # isort: off
-from libs.database.config import DatabaseConfig # need use NEW db_config for replace db_config.host
+from common.database.config import DatabaseConfig # need use NEW db_config for replace db_config.host
 # isort: on
 
 db_config = DatabaseConfig()
