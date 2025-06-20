@@ -3,10 +3,13 @@ from datetime import datetime
 from typing import Any, Self
 
 from schemas import TelegramChannelUrl
-from sqlalchemy import DateTime, String, UniqueConstraint
+from sqlalchemy import DateTime, MetaData, String, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from utils import generate_hash
+
+
+metadata_obj = MetaData(schema="vacancy_parser")
 
 
 # len("https://t.me/s/") + len("channel_name")  # noqa: ERA001
@@ -14,7 +17,7 @@ MAX_CHANNEL_LINK_LENGTH = 143
 
 
 class Base(DeclarativeBase, AsyncAttrs):
-    pass
+    metadata = metadata_obj
 
 
 class BaseVacancy(Base):
@@ -28,7 +31,6 @@ class BaseVacancy(Base):
 
 
 class Vacancy(BaseVacancy):
-    __table_args__ = {"schema": "vacancy_parser"}  # noqa: RUF012
     __tablename__ = "vacancy"
 
     name: Mapped[str] = mapped_column(String(256))
@@ -45,7 +47,6 @@ class TelegramVacancy(BaseVacancy):
 
     __table_args__ = (
         UniqueConstraint("channel_link", "message_id", name="uq_telegram_vacancy_channel_message"),
-        {"schema": "vacancy_parser"},
     )
 
     @classmethod
