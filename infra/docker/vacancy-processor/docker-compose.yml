@@ -3,18 +3,11 @@ services:
     container_name: vacancy-processor
     build:
       context: ${PROJECT_ROOT}
-      dockerfile: services/vacancy-processor/Dockerfile
+      dockerfile: infra/docker/vacancy-processor/Dockerfile
       target: ${ENV_MODE}
-    env_file: ${PROJECT_ROOT}/.env
+    env_file: ${PROJECT_ROOT}/infra/.env
     volumes:
       - ${PROJECT_ROOT}/services/vacancy-processor/src:/app/services/vacancy-processor/src
       - ${PROJECT_ROOT}/libs:/app/libs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      vacancy-parser:
-        condition: service_started
-      gpt-api:
-        condition: service_healthy
     networks:
       - app-network

@@ -1,0 +1,97 @@
+name: ${ENV_PROJECT_NAME}
+
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: postgres
+    env_file: ../.env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
+      start_interval: 5s
+
+  redis:
+    image: redis:8.0.2-alpine
+    container_name: redis
+    env_file: ../.env
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    command: [ "redis-server", "--port", "${REDIS_PORT}" ]
+    volumes:
+      - redis-data:/var/lib/redis/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping" ]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
+
+  gpt-api:
+    profiles:
+      - "gpt-api"
+    extends:
+      service: gpt-api
+      file: gpt-api/docker-compose.yml
+
+  telegram-api:
+    profiles:
+      - "telegram-api"
+    extends:
+      service: telegram-api
+      file: telegram-api/docker-compose.yml
+
+  vacancy-parser:
+    profiles:
+      - "vacancy-parser"
+    extends:
+      service: vacancy-parser
+      file: vacancy-parser/docker-compose.yml
+
+  vacancy-parser-worker:
+    profiles:
+      - "vacancy-parser"
+    extends:
+      service: vacancy-parser-worker
+      file: vacancy-parser/docker-compose.yml
+
+  vacancy-parser-beat:
+    profiles:
+      - "vacancy-parser"
+    extends:
+      service: vacancy-parser-beat
+      file: vacancy-parser/docker-compose.yml
+
+  vacancy-parser-flower:
+    profiles:
+      - "vacancy-parser"
+    extends:
+      service: vacancy-parser-flower
+      file: vacancy-parser/docker-compose.yml
+
+  vacancy-processor:
+    profiles:
+      - "vacancy-processor"
+    extends:
+      service: vacancy-processor
+      file: vacancy-processor/docker-compose.yml
+
+
+networks:
+  app-network:
+    driver: bridge
+
+
+volumes:
+  postgres-data:
+  redis-data:
