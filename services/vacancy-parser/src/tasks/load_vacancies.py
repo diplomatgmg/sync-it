@@ -1,6 +1,6 @@
 from celery_app import app, loop
 from common.database.engine import get_async_session
-from database.services.telegram_vacancy import TelegramVacancyService
+from database.services.vacancy import TelegramVacancyService
 from parsers import TelegramParser
 
 

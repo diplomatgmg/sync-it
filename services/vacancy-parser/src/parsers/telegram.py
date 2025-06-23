@@ -1,7 +1,7 @@
 from common.logger import get_logger
 from core.config import parser_config
 from database.models.vacancy import TelegramVacancy
-from database.services.telegram_vacancy import TelegramVacancyService
+from database.services.vacancy import TelegramVacancyService
 from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
 from services.telegram_messages import get_newest_telegram_messages
@@ -60,7 +60,6 @@ class TelegramParser(BaseParser):
         existing_hashes = await self.service.get_existing_hashes(vacancy_hashes)
 
         new_vacancies = [v for v in vacancies if v.hash not in existing_hashes]
-
         if not new_vacancies:
             logger.info("No new vacancies to save")
             return

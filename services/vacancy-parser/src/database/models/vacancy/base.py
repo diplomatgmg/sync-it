@@ -28,7 +28,7 @@ class BaseVacancy(Base):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-        if not kwargs.get("hash"):  # FIXME Проверить работу
+        if not kwargs.get("hash"):
             raise ValueError(f"Use {self.__class__.__name__}.create() instead {self.__class__.__name__}()")
 
         self.source = self.get_source()

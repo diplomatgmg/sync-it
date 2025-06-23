@@ -1,8 +1,8 @@
 """added telegram vacancy
 
-Revision ID: 154a77e206d7
+Revision ID: 8e716b7b2801
 Revises: 0d01a329e26b
-Create Date: 2025-06-20 18:01:17.281016
+Create Date: 2025-06-23 09:22:38.091246
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '154a77e206d7'
+revision: str = '8e716b7b2801'
 down_revision: Union[str, Sequence[str], None] = '0d01a329e26b'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

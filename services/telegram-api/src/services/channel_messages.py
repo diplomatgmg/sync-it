@@ -67,15 +67,15 @@ async def _fetch_message(client: httpx.AsyncClient, channel_username: str, messa
 
             soup = BeautifulSoup(response.text, "html.parser")
             data_post_value = f"{channel_username}/{message_id}"
-            message_block = soup.find("div", class_="tgme_widget_message", attrs={"data-post": data_post_value})
+            message_block = soup.select_one("div.tgme_widget_message", attrs={"data-post": data_post_value})
 
             if message_block is None:
-                logger.debug("Message block not found for message with id %s", message_id)
+                logger.warning("Message block not found for message with id %s", message_id)
                 return None
 
             message_text_block = soup.select_one("div.tgme_widget_message_text")
             if message_text_block is None:
-                logger.debug("Message text block not found for message with id %s", message_id)
+                logger.warning("Message text block not found for message with id %s", message_id)
                 return None
 
             for br in message_text_block.find_all("br"):

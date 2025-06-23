@@ -1,6 +1,7 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas import TelegramChannelUrl
-from pydantic import Field
+
 
 __all__ = ["parser_config"]
 
