@@ -1,5 +1,5 @@
 from common.logger import get_logger
-from core.config import parser_config
+from core.config import service_config
 from database.models.vacancy import TelegramVacancy
 from database.services.vacancy import TelegramVacancyService
 from parsers.base import BaseParser
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 class TelegramParser(BaseParser):
     def __init__(self, service: TelegramVacancyService) -> None:
         super().__init__(service)
-        self.channel_links = parser_config.telegram_channel_links
+        self.channel_links = service_config.telegram_channel_links
 
     async def parse(self) -> None:
         logger.info("Starting Telegram parser")

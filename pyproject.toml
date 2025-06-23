@@ -20,14 +20,17 @@ where = ["libs/common", "services"]
 gpt-api = { workspace = true }
 telegram-api = { workspace = true }
 vacancy-parser = { workspace = true }
+vacancy-processor = { workspace = true }
 
 [tool.uv.workspace]
 members = [
+    "libs/common/logger-lib",
     "libs/common/database",
     "libs/common/redis-lib",
     "services/gpt-api",
     "services/telegram-api",
     "services/vacancy-parser",
+    "services/vacancy-processor",
 ]
 
 
@@ -46,6 +49,7 @@ mypy_path = [
     "services/gpt-api/src",
     "services/telegram-api/src",
     "services/vacancy-parser/src",
+    "services/vacancy-processor/src",
 ]
 plugins = "pydantic.mypy"
 incremental = true

@@ -1,0 +1,11 @@
+[project]
+name = "vacancy-processor"
+dynamic = ["version"]
+dependencies = [
+    "uvloop>=0.21.0", # remove after adding fastapi?
+]
+
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
+]

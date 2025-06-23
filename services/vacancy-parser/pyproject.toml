@@ -9,10 +9,4 @@ dependencies = [
     "flower>=2.0.1",
     "httpx>=0.28.1",
     "pydantic-settings>=2.9.1",
-    "uvloop>=0.21.0",
-]
-
-[dependency-groups]
-dev = [
-    "hupper>=1.12.1",
 ]

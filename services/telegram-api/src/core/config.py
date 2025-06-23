@@ -2,14 +2,14 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-__all__ = ["api_config"]
+__all__ = ["service_config"]
 
 
-class ApiConfig(BaseSettings):
+class ServiceConfig(BaseSettings):
     host: str
     port: int = Field(ge=1, le=65535)
 
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_API_")
 
 
-api_config = ApiConfig()
+service_config = ServiceConfig()

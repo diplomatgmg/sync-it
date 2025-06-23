@@ -3,10 +3,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas import TelegramChannelUrl
 
 
-__all__ = ["parser_config"]
+__all__ = ["service_config"]
 
 
-class ParserConfig(BaseSettings):
+class ServiceConfig(BaseSettings):
     host: str
     port: int = Field(ge=1, le=65535)
 
@@ -23,4 +23,4 @@ class ParserConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="VACANCY_PARSER_")
 
 
-parser_config = ParserConfig()
+service_config = ServiceConfig()

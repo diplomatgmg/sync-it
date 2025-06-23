@@ -49,6 +49,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      telegram-api:
+        condition: service_started
     networks:
       - app-network
 
@@ -104,6 +106,24 @@ services:
     volumes:
     - ./libs:/app/libs
 
+  vacancy-processor:
+    container_name: vacancy-processor
+    build:
+      context: .
+      dockerfile: services/vacancy-processor/Dockerfile
+      target: ${ENV_MODE}
+    env_file: .env
+    volumes:
+      - ./services/vacancy-processor/src:/app/services/vacancy-processor/src
+      - ./libs:/app/libs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      vacancy-parser:
+        condition: service_started
+    networks:
+      - app-network
+
   gpt-api:
     container_name: gpt-api
     build:
@@ -145,6 +165,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+
 
 
 networks:
