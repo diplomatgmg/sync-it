@@ -1347,6 +1347,9 @@ requires-dist = [
 name = "vacancy-processor"
 source = { virtual = "services/vacancy-processor" }
 dependencies = [
+    { name = "alembic" },
+    { name = "asyncpg" },
+    { name = "sqlalchemy" },
     { name = "uvloop" },
 ]
 
@@ -1356,7 +1359,12 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "uvloop", specifier = ">=0.21.0" }]
+requires-dist = [
+    { name = "alembic", specifier = ">=1.16.2" },
+    { name = "asyncpg", specifier = ">=0.30.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.41" },
+    { name = "uvloop", specifier = ">=0.21.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "hupper", specifier = ">=1.12.1" }]
