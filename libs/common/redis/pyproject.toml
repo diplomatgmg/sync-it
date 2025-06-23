@@ -4,3 +4,6 @@ dynamic = ["version"]
 dependencies = [
     "redis>=6.2.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]

@@ -16,18 +16,12 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["libs/common", "services"]
 
-[tool.uv.sources]
-gpt-api = { workspace = true }
-telegram-api = { workspace = true }
-vacancy-parser = { workspace = true }
-vacancy-processor = { workspace = true }
-
 [tool.uv.workspace]
 members = [
-    "libs/common/environment-lib",
-    "libs/common/logger-lib",
-    "libs/common/database-lib",
-    "libs/common/redis-lib",
+    "libs/common/environment",
+    "libs/common/logger",
+    "libs/common/database",
+    "libs/common/redis",
     "services/gpt-api",
     "services/telegram-api",
     "services/vacancy-parser",
