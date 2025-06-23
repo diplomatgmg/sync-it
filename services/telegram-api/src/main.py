@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException
 import httpx
 from schemas import HealthResponse
 from utils import validate_health_response
+import uvicorn
 
 
 logger = get_logger(__name__)
@@ -28,8 +29,6 @@ async def healthcheck() -> HealthResponse:
 
 
 if __name__ == "__main__":
-    import uvicorn
-
     uvicorn.run(
         "main:app",
         host=service_config.host,

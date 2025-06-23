@@ -38,50 +38,50 @@ services:
       start_period: 5s
 
   gpt-api:
-    profiles:
-      - "gpt-api"
     extends:
       service: gpt-api
       file: gpt-api/docker-compose.yml
 
   telegram-api:
-    profiles:
-      - "telegram-api"
+    container_name: telegram-api
     extends:
       service: telegram-api
       file: telegram-api/docker-compose.yml
 
   vacancy-parser:
-    profiles:
-      - "vacancy-parser"
     extends:
       service: vacancy-parser
       file: vacancy-parser/docker-compose.yml
+    depends_on:
+      postgres:
+        condition: service_healthy
+      telegram-api:
+        condition: service_healthy
 
   vacancy-parser-worker:
-    profiles:
-      - "vacancy-parser"
     extends:
       service: vacancy-parser-worker
       file: vacancy-parser/docker-compose.yml
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   vacancy-parser-beat:
-    profiles:
-      - "vacancy-parser"
     extends:
       service: vacancy-parser-beat
       file: vacancy-parser/docker-compose.yml
+    depends_on:
+      redis:
+        condition: service_healthy
 
   vacancy-parser-flower:
-    profiles:
-      - "vacancy-parser"
     extends:
       service: vacancy-parser-flower
       file: vacancy-parser/docker-compose.yml
 
   vacancy-processor:
-    profiles:
-      - "vacancy-processor"
     extends:
       service: vacancy-processor
       file: vacancy-processor/docker-compose.yml

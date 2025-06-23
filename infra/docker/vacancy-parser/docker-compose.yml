@@ -16,6 +16,12 @@ services:
     container_name: vacancy-parser
     ports:
       - "${VACANCY_PARSER_PORT}:${VACANCY_PARSER_PORT}"
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://vacancy-parser:${VACANCY_PARSER_PORT}/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   vacancy-parser-worker:
     <<: *service-common

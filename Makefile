@@ -1,19 +1,15 @@
 COMPOSE_DIR := infra/docker
 COMPOSE_COMMAND := docker compose -f $(COMPOSE_DIR)/docker-compose.yml --env-file infra/.env
 SERVICES := gpt-api telegram-api vacancy-parser vacancy-processor
-MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
+MYPY_DIRS := libs/common $(foreach service,$(SERVICES),services/$(service)/src)
 
 define compose_action
 	@if [ -z "$(s)" ]; then \
-		echo $(COMPOSE_COMMAND) --profile "*" $(1) $(e); \
-		$(COMPOSE_COMMAND) --profile "*" $(1) $(e); \
-	elif echo "$(SERVICES)" | grep -w "$(s)" > /dev/null; then \
-		echo $(COMPOSE_COMMAND) --profile $(s) $(1) $(e); \
-		$(COMPOSE_COMMAND) --profile $(s) $(1) $(e); \
+		echo $(COMPOSE_COMMAND) $(1) $(e); \
+		$(COMPOSE_COMMAND) $(1) $(e); \
 	else \
-		echo "Unknown service: $(s)"; \
-		echo "Available services: $(SERVICES)"; \
-		exit 1; \
+		echo $(COMPOSE_COMMAND) $(1) $(e) $(s); \
+		$(COMPOSE_COMMAND) $(1) $(e) $(s); \
 	fi
 endef
 
@@ -47,13 +43,13 @@ lint: # run linters and formatters
 	@uv run ruff check . && \
 	uv run isort . --check-only && \
 	uv run ruff format --check . && \
-	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
+	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
 lint-fix: # run linters and formatters with fix
 	@uv run ruff check . && \
 	uv run isort . && \
 	uv run ruff format . && \
-	$(foreach dir, $(MYPY_DIRS), uv run mypy $(dir) &&) true
+	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
 mm: # create migration for service
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \

@@ -5,6 +5,7 @@ from common.logger.config import log_config
 from core.config import service_config
 from fastapi import FastAPI
 from schemas import HealthResponse
+import uvicorn
 
 
 logger = get_logger(__name__)
@@ -19,8 +20,6 @@ async def healthcheck() -> HealthResponse:
 
 
 if __name__ == "__main__":
-    import uvicorn
-
     uvicorn.run(
         "main:app",
         host=service_config.host,
