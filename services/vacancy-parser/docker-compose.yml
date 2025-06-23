@@ -1,0 +1,50 @@
+x-service-common: &service-common
+    build:
+        context: ${PROJECT_ROOT}
+        dockerfile: services/vacancy-parser/Dockerfile
+        target: ${ENV_MODE}
+    env_file: ${PROJECT_ROOT}/.env
+    volumes:
+        - ${PROJECT_ROOT}/services/vacancy-parser/src:/app/services/vacancy-parser/src
+        - ${PROJECT_ROOT}/libs:/app/libs
+    networks:
+      - app-network
+
+services:
+  vacancy-parser:
+    <<: *service-common
+    container_name: vacancy-parser
+    ports:
+      - "${VACANCY_PARSER_PORT}:${VACANCY_PARSER_PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      telegram-api:
+        condition: service_started
+
+
+  vacancy-parser-worker:
+    <<: *service-common
+    container_name: vacancy-parser-worker
+    command: [ "celery", "-A", "celery_app.app", "worker", "-l", "${LOG_LEVEL}" ]
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  vacancy-parser-beat:
+    <<: *service-common
+    container_name: vacancy-parser-beat
+    command: [ "celery", "-A", "celery_app.app", "beat", "-l", "${LOG_LEVEL}" ]
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  vacancy-parser-flower:
+    <<: *service-common
+    container_name: vacancy-parser-flower
+    ports:
+      - "${FLOWER_PORT}:${FLOWER_PORT}"
+    command: [ "celery", "-A", "celery_app.app", "flower", "-l", "${LOG_LEVEL}" ]
+    depends_on:
+      redis:
+        condition: service_healthy
