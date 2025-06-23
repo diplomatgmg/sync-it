@@ -25,14 +25,19 @@ FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
 COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/
+COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 
 FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --dev --package $SERVICE_NAME
+RUN uv pip install \
+    -e /app/libs/common/logger
 
 FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
+RUN uv pip install \
+    -e /app/libs/common/logger
 
 
 # ================================= #

@@ -24,8 +24,9 @@ vacancy-processor = { workspace = true }
 
 [tool.uv.workspace]
 members = [
+    "libs/common/environment-lib",
     "libs/common/logger-lib",
-    "libs/common/database",
+    "libs/common/database-lib",
     "libs/common/redis-lib",
     "services/gpt-api",
     "services/telegram-api",

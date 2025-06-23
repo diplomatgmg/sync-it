@@ -46,6 +46,7 @@ RUN uv pip install \
     -e /app/libs/common/database \
     -e /app/libs/common/redis
 
+
 # ================================= #
 #           DEVELOPMENT             #
 # ================================= #
@@ -54,6 +55,7 @@ FROM deps-dev AS development
 COPY ${SERVICE_PATH}/alembic.ini ${SERVICE_PATH}/alembic.ini
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
+COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/redis ./libs/common/redis
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src

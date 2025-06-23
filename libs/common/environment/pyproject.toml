@@ -1,0 +1,6 @@
+[project]
+name = "environment-lib"
+dynamic = ["version"]
+dependencies = [
+    "pydantic-settings>=2.9.1",
+]
