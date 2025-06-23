@@ -60,19 +60,19 @@ mm: # create migration for service
 		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
 		exit 1; \
 	fi;
-	@docker compose exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
+	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
 
 migrate: # apply migrations for service
 	@if [ -z "$(s)" ]; then \
 		echo "Usage: make migrate s=<service_name>"; \
 		exit 1; \
 	fi;
-	@docker compose exec --workdir /app/services/$(s) $(s) alembic upgrade head
+	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic upgrade head
 	@echo "Migrations applied for service $(s)"
 
 downgrade: # downgrade migration for service
 	@if [ -z "$(s)" ] || [ -z "$(r)" ]; then \
-		echo "Usage: make md s=<service_name> r=<revision>"; \
+		echo "Usage: make downgrade s=<service_name> r=<revision>"; \
 		exit 1; \
 	fi; \
-	docker compose exec -w /app/services/$(s) $(s) alembic downgrade $(r)
+	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic downgrade $(r)
