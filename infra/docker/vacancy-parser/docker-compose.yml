@@ -5,7 +5,7 @@ x-service-common: &service-common
       target: ${ENV_MODE}
     env_file: ${PROJECT_ROOT}/infra/.env
     volumes:
-        - ${PROJECT_ROOT}/services/vacancy-parser/src:/app/services/vacancy-parser/src
+        - ${PROJECT_ROOT}/services/vacancy-parser:/app/services/vacancy-parser
         - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network

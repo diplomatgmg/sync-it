@@ -9,7 +9,7 @@ services:
     ports:
       - "${GPT_API_PORT}:${GPT_API_PORT}"
     volumes:
-      - ${PROJECT_ROOT}/services/gpt-api/src:/app/services/gpt-api/src
+      - ${PROJECT_ROOT}/services/gpt-api:/app/services/gpt-api
       - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network

@@ -9,7 +9,7 @@ services:
     ports:
       - "${TELEGRAM_API_PORT}:${TELEGRAM_API_PORT}"
     volumes:
-      - ${PROJECT_ROOT}/services/telegram-api/src:/app/services/telegram-api/src
+      - ${PROJECT_ROOT}/services/telegram-api:/app/services/telegram-api
       - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network
