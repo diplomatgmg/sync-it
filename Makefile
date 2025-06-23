@@ -16,13 +16,16 @@ stop: # compose stop
 venv: # create venv
 	@uv sync --frozen --all-packages
 
-# FIXME use args instead $(MAKECMDGOALS)
 add: # add python package to service
-	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then \
-		echo "Usage: make add <package> <service>"; \
+	@if [ -z "$(p)" ] || [ -z "$(s)" ]; then \
+		echo "Usage: make add p=<package> s=<service> [dev=1]"; \
 		exit 1; \
 	fi; \
-	uv add $(word 2, $(MAKECMDGOALS)) --package $(word 3, $(MAKECMDGOALS))
+	if [ "$(dev)" = "1" ]; then \
+		uv add $(p) --package $(s) --dev; \
+	else \
+		uv add $(p) --package $(s); \
+	fi
 
 MYPY_DIRS := libs $(shell find services -type d -name src)
 
