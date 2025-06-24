@@ -8,8 +8,8 @@ define compose_action
 		echo $(COMPOSE_COMMAND) $(1) $(e); \
 		$(COMPOSE_COMMAND) $(1) $(e); \
 	else \
-		echo $(COMPOSE_COMMAND) $(1) $(e) $(s); \
-		$(COMPOSE_COMMAND) $(1) $(e) $(s); \
+		echo $(COMPOSE_COMMAND) $(1) $(s) $(e); \
+		$(COMPOSE_COMMAND) $(1) $(s) $(e); \
 	fi
 endef
 
