@@ -10,6 +10,12 @@ x-service-common: &service-common
     networks:
       - app-network
 
+x-healthcheck-common: &healthcheck-common
+    interval: 30s
+    timeout: 5s
+    retries: 3
+    start_period: 10s
+
 services:
   vacancy-parser:
     <<: *service-common
@@ -18,15 +24,15 @@ services:
       - "${VACANCY_PARSER_PORT}:${VACANCY_PARSER_PORT}"
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://vacancy-parser:${VACANCY_PARSER_PORT}/health" ]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      <<: *healthcheck-common
 
   vacancy-parser-worker:
     <<: *service-common
     container_name: vacancy-parser-worker
     command: [ "celery", "-A", "celery_app.app", "worker", "-l", "${LOG_LEVEL}" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "celery -A celery_app.app inspect ping -d celery@$$HOSTNAME" ]
+      <<: *healthcheck-common
 
   vacancy-parser-beat:
     <<: *service-common
