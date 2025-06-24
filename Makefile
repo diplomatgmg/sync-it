@@ -58,13 +58,20 @@ mm: # create migration for service
 	fi;
 	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
 
-migrate: # apply migrations for service
+migrate: # apply migrations for service or all if not specified
 	@if [ -z "$(s)" ]; then \
-		echo "Usage: make migrate s=<service_name>"; \
-		exit 1; \
-	fi;
-	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic upgrade head
-	@echo "Migrations applied for service $(s)"
+		for service in $(SERVICES); do \
+			if [ -f services/$$service/alembic.ini ]; then \
+				echo "Applying migrations for $$service..."; \
+				$(COMPOSE_COMMAND) exec --workdir /app/services/$$service $$service alembic upgrade head; \
+			fi; \
+		done; \
+		echo "Migrations applied for all services with alembic"; \
+	else \
+		echo "Applying migrations for service $(s)..."; \
+		$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic upgrade head; \
+		echo "Migrations applied for service $(s)"; \
+	fi
 
 downgrade: # downgrade migration for service
 	@if [ -z "$(s)" ] || [ -z "$(r)" ]; then \

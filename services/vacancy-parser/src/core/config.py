@@ -7,6 +7,8 @@ __all__ = ["service_config"]
 
 
 class ServiceConfig(BaseSettings):
+    db_schema: str = "vacancy_parser"
+
     host: str
     port: int = Field(ge=1, le=65535)
 

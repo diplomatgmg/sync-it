@@ -1349,6 +1349,7 @@ source = { virtual = "services/vacancy-processor" }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
+    { name = "httpx" },
     { name = "sqlalchemy" },
     { name = "uvloop" },
 ]
@@ -1362,6 +1363,7 @@ dev = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.16.2" },
     { name = "asyncpg", specifier = ">=0.30.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "uvloop", specifier = ">=0.21.0" },
 ]

@@ -85,6 +85,9 @@ services:
     extends:
       service: vacancy-processor
       file: vacancy-processor/docker-compose.yml
+    depends_on:
+      vacancy-parser:
+        condition: service_healthy
 
 
 networks:

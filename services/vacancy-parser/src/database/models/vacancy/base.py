@@ -20,7 +20,7 @@ class BaseVacancy(Base):
     __abstract__ = True
 
     hash: Mapped[str] = mapped_column(String(32), primary_key=True, unique=True)
-    source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource), index=True)
+    source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource, schema="vacancy_parser"), index=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

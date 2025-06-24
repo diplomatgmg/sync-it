@@ -1,6 +1,5 @@
-import asyncio
-
 from common.logger import get_logger
+from services.vacancy import get_newest_vacancies
 import uvloop
 
 
@@ -8,8 +7,8 @@ logger = get_logger(__name__)
 
 
 async def main() -> None:
-    await asyncio.sleep(1)
-    logger.info("Starting service")
+    vacancies = await get_newest_vacancies()
+    logger.info("Got %s vacancies", len(vacancies))
 
 
 if __name__ == "__main__":

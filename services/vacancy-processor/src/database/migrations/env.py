@@ -1,10 +1,11 @@
 import asyncio
-import importlib
+from typing import Any
 
 from alembic import context
 from common.database.config import db_config
+from core.config import service_config
 from database.models import Base
-from sqlalchemy import pool
+from sqlalchemy import pool, text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
@@ -12,10 +13,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 config = context.config
 config.set_main_option("sqlalchemy.url", db_config.url.render_as_string(hide_password=False))
 
-# Important for Alembic to detect the declared models.
-importlib.import_module("database.models.vacancy")
-
 target_metadata = Base.metadata
+
+
+def include_object(obj: Any, *_: Any) -> bool:
+    return getattr(obj, "schema", None) == service_config.db_schema
 
 
 def run_migrations_offline() -> None:
@@ -25,6 +27,9 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_schemas=True,
+        version_table_schema=service_config.db_schema,
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -32,9 +37,16 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_schemas=True,
+        version_table_schema=service_config.db_schema,
+        include_object=include_object,
+    )
 
     with context.begin_transaction():
+        connection.execute(text(f"CREATE SCHEMA IF NOT EXISTS {service_config.db_schema}"))
         context.run_migrations()
 
 
