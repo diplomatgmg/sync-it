@@ -5,6 +5,7 @@ from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.services.vacancy import VacancyService
 from fastapi import APIRouter, Depends
+from schemas import VacancyResponse
 from serializers import VacancySerializer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,9 +24,9 @@ async def _get_session() -> AsyncGenerator[AsyncSession]:
 
 
 @router.get("/vacancies")
-async def get_newest_vacancies(db: Annotated[AsyncSession, Depends(_get_session)]) -> list[VacancySerializer]:
+async def get_newest_vacancies(db: Annotated[AsyncSession, Depends(_get_session)]) -> VacancyResponse:
     """Возвращает последние актуальные вакансии."""
     service = VacancyService(db)
-    vacancies = await service.get_vacancies()
+    vacancy_models = await service.get_vacancies()
 
-    return [VacancySerializer.model_validate(v) for v in vacancies]
+    return VacancyResponse(vacancies=[VacancySerializer.model_validate(v) for v in vacancy_models])

@@ -1,6 +1,7 @@
 import re
 
 from pydantic import BaseModel, HttpUrl, UrlConstraints
+from serializers import VacancySerializer
 
 
 __all__ = [
@@ -8,6 +9,7 @@ __all__ = [
     "TelegramChannelMessage",
     "TelegramChannelMessagesResponse",
     "TelegramChannelUrl",
+    "VacancyResponse",
 ]
 
 
@@ -58,3 +60,7 @@ class TelegramChannelMessagesResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+
+class VacancyResponse(BaseModel):
+    vacancies: list[VacancySerializer]
