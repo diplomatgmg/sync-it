@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Literal
 
 from alembic import context
 from common.database.config import db_config
@@ -8,16 +8,25 @@ from database.models import Base
 from sqlalchemy import pool, text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.sql.schema import SchemaItem
 
 
 config = context.config
 config.set_main_option("sqlalchemy.url", db_config.url.render_as_string(hide_password=False))
 
+# Models imports
+# importlib.import_module("database.models.example_model")  # noqa: ERA001
 target_metadata = Base.metadata
 
 
-def include_object(obj: Any, *_: Any) -> bool:
-    return getattr(obj, "schema", None) == service_config.db_schema
+def include_object(
+    obj: SchemaItem,
+    _name: str | None,
+    type_: Literal["schema", "table", "column", "index", "unique_constraint", "foreign_key_constraint"],
+    _reflected: bool,  # noqa: FBT001
+    _compare_to: SchemaItem | None,
+) -> bool:
+    return not (type_ == "table" and getattr(obj, "schema", None) != service_config.db_schema)
 
 
 def run_migrations_offline() -> None:
