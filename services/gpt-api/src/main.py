@@ -1,9 +1,10 @@
+from api.v1 import router as v1_router
 from common.environment.config import env_config
 from common.logger import get_logger
 from common.logger.config import log_config
 from core.config import service_config
 from fastapi import FastAPI, HTTPException
-from schemas import HealthResponse, PromptRequest, PromptResponse
+from schemas import HealthResponse
 from service import get_gpt_response
 from utils import validate_health_response
 import uvicorn
@@ -12,16 +13,7 @@ import uvicorn
 logger = get_logger(__name__)
 
 app = FastAPI(title="GPT API Service")
-
-
-@app.post("/prompt")
-async def prompt_gpt(request: PromptRequest) -> PromptResponse:
-    try:
-        response_text = await get_gpt_response(request.prompt)
-        return PromptResponse(response=response_text)
-    except Exception as e:
-        logger.exception("Failed to get GPT response", exc_info=e)
-        raise HTTPException(status_code=500, detail=str(e)) from e
+app.include_router(v1_router, prefix="/api/v1")
 
 
 @app.get("/health")

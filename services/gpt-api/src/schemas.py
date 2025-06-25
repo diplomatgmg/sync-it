@@ -13,7 +13,7 @@ class PromptRequest(BaseModel):
 
 
 class PromptResponse(BaseModel):
-    response: str
+    message: str
 
 
 class HealthResponse(BaseModel):
