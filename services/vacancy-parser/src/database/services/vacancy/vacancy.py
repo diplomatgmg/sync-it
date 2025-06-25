@@ -2,7 +2,8 @@ from collections.abc import Iterable
 
 from database.models.vacancy import BaseVacancy
 from database.models.vacancy.enums import VacancySource
-from sqlalchemy import select
+from services.vacancy import find_duplicate_vacancy_by_fingerprint
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import required_attrs
 
@@ -50,3 +51,14 @@ class VacancyService:
         stmt = select(self.model.hash).where(self.model.hash.in_(hashes))
         result = await self.session.execute(stmt)
         return {row[0] for row in result.fetchall()}
+
+    @required_attrs("model")
+    async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
+        """Найти дубликат вакансии по содержимому."""
+        return await find_duplicate_vacancy_by_fingerprint(self.session, self.model, fingerprint)
+
+    async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
+        """Получить % схожести между двумя fingerprint."""
+        result = await self.session.execute(select(func.similarity(fingerprint1, fingerprint2)))
+        score = result.scalar() or 0.0
+        return round(score * 100, 2)

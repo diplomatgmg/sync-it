@@ -6,6 +6,7 @@ from database.services.vacancy import TelegramVacancyService
 from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
 from services.http import fetch_newest_telegram_messages
+from utils import generate_fingerprint
 
 
 __all__ = ["TelegramParser"]
@@ -42,15 +43,31 @@ class TelegramParser(BaseParser):
 
         logger.info("Got %s new messages", len(newest_messages))
 
-        vacancies = [
-            TelegramVacancy.create(
+        vacancies = []
+        for message in newest_messages:
+            fingerprint = generate_fingerprint(message.text)
+
+            duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
+            if duplicate:
+                logger.info(
+                    "Found duplicate vacancy with similarity %s%%. "
+                    "New vacancy link: %s/%s, "
+                    "Existing vacancy link: %s, ",
+                    await self.service.get_similarity_score(fingerprint, duplicate.fingerprint),
+                    channel_link,
+                    message.message_id,
+                    duplicate.link,
+                )
+                continue
+
+            vacancy = TelegramVacancy.create(
+                fingerprint=fingerprint,
                 link=f"{channel_link}/{message.message_id}",
                 channel_username=channel_link.channel_username,
                 message_id=message.message_id,
                 data=message.text,
             )
-            for message in newest_messages
-        ]
+            vacancies.append(vacancy)
 
         await self.save_vacancies(vacancies)
 

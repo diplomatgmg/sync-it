@@ -1,10 +1,12 @@
 from collections.abc import Awaitable, Callable
 from functools import wraps
 import hashlib
+import re
 from typing import Any, ParamSpec, TypeVar, cast
 
 
 __all__ = [
+    "generate_fingerprint",
     "generate_hash",
     "required_attrs",
 ]
@@ -36,3 +38,27 @@ def required_attrs(*attrs: str) -> Callable[[Callable[_P, Awaitable[_R]]], Calla
         return cast("Callable[_P, Awaitable[_R]]", wrapper)
 
     return decorator
+
+
+# Слова, которые часто встречаются в описании вакансии
+stop_words = {"и", "с", "в"}
+
+
+def generate_fingerprint(text: str) -> str:
+    """
+    Генерирует fingerprint (отпечаток) на основе переданного текста.
+    Fingerprint используется для поиска одинаковых вакансий на уровне БД, используя расширение pg_trgm.
+
+    Пример:
+    >>> generate_fingerprint("3+ years. Junior/Middle Python developer; (Ex@mp1e c0mpany) #deleted")
+    '(exmp1e 3 c0mpany) developer; junior/middle python years.'
+    """
+    # Удаляем слова, начинающиеся с хештега
+    text = re.sub(r"#\w+\s*", "", text)
+    # Удаляем URL-адресы
+    text = re.sub(r"https?://\S+|www\.\S+", "", text)
+    # Удаляем лишние символы
+    text = re.sub(r"[^а-яa-z0-9/;().\s]", "", text.lower())
+    filtered_words = [word for word in text.split() if word not in stop_words]
+    sorted_words = sorted(filtered_words)
+    return " ".join(sorted_words)

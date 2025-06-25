@@ -5,7 +5,7 @@ from database.models import Base
 from database.models.vacancy.enums import VacancySource
 from sqlalchemy import DateTime
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import String
+from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -19,7 +19,8 @@ def utcnow() -> datetime:
 class BaseVacancy(Base):
     __abstract__ = True
 
-    hash: Mapped[str] = mapped_column(String(32), primary_key=True, unique=True)
+    hash: Mapped[str] = mapped_column(String(32), primary_key=True)
+    fingerprint: Mapped[str] = mapped_column(Text)
     source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource, schema="vacancy_parser"), index=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
