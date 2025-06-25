@@ -67,15 +67,33 @@ async def _fetch_message(client: httpx.AsyncClient, channel_username: str, messa
 
             soup = BeautifulSoup(response.text, "html.parser")
             data_post_value = f"{channel_username}/{message_id}"
-            message_block = soup.select_one("div.tgme_widget_message", attrs={"data-post": data_post_value})
+            message_block = soup.select_one(f'div.tgme_widget_message[data-post="{data_post_value}"]')
 
             if message_block is None:
-                logger.warning("Message block not found for message with id %s", message_id)
+                # Если сообщение удалено
+                logger.debug("Message with id %s was deleted", message_id)
                 return None
 
-            message_text_block = soup.select_one("div.tgme_widget_message_text")
+            data_post = message_block.attrs.get("data-post")
+            if data_post != data_post_value:
+                logger.error(
+                    "Data-post value mismatch for message with id %s. Expected %s, got %s",
+                    message_id,
+                    data_post_value,
+                    data_post,
+                )
+                return None
+
+            is_not_supported_message = message_block.select_one("div.message_media_not_supported")
+            # Сообщение не поддерживается: Please open Telegram to view this post
+            if is_not_supported_message is not None:
+                logger.debug("Message with id %s is not supported", message_id)
+                return None
+
+            message_text_block = message_block.select_one("div.tgme_widget_message_text")
+            # Если в сообщении нет текста (Только картинки, видео, документы и т.д.)
             if message_text_block is None:
-                logger.warning("Message text block not found for message with id %s", message_id)
+                logger.debug("Message text block not found for message with id %s", message_id)
                 return None
 
             for br in message_text_block.find_all("br"):

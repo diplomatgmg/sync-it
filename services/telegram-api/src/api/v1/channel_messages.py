@@ -33,7 +33,7 @@ async def channel_messages(
         raise HTTPException(status_code=500, detail=msg)
 
     # +1 т.к. не нужно парсить уже известное сообщение и идем включительно до последнего сообщения
-    message_ids_to_parse = list(range(last_message_id + 1, newest_message_id + 1))
+    message_ids_to_parse = list(range(last_message_id, newest_message_id + 1))
     messages = await get_messages_by_ids(channel_username, message_ids_to_parse)
 
     return ChannelMessagesResponse(messages=messages)
