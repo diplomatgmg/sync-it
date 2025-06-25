@@ -1,7 +1,7 @@
 COMPOSE_DIR := infra/docker
 COMPOSE_COMMAND := docker compose -f $(COMPOSE_DIR)/docker-compose.yml --env-file infra/.env
 SERVICES := gpt-api telegram-api vacancy-parser vacancy-processor
-MYPY_DIRS := libs/common $(foreach service,$(SERVICES),services/$(service)/src)
+MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
 
 define compose_action
 	@if [ -z "$(s)" ]; then \
