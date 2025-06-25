@@ -3,7 +3,7 @@ from typing import Annotated
 from common.logger import get_logger
 from fastapi import APIRouter, HTTPException, Query
 from schemas import ChannelMessagesResponse
-from services.channel_messages import get_messages_by_ids, get_newest_message_id
+from services.http.telegram import fetch_detailed_message, fetch_newest_message_id
 
 
 __all__ = ["router"]
@@ -17,7 +17,7 @@ router = APIRouter()
 async def channel_messages(
     channel_username: str, last_message_id: Annotated[int | None, Query()] = None
 ) -> ChannelMessagesResponse:
-    newest_message_id = await get_newest_message_id(channel_username)
+    newest_message_id = await fetch_newest_message_id(channel_username)
     if newest_message_id is None:
         return ChannelMessagesResponse(messages=[])
 
@@ -34,6 +34,6 @@ async def channel_messages(
 
     # +1 т.к. не нужно парсить уже известное сообщение и идем включительно до последнего сообщения
     message_ids_to_parse = list(range(last_message_id, newest_message_id + 1))
-    messages = await get_messages_by_ids(channel_username, message_ids_to_parse)
+    messages = await fetch_detailed_message(channel_username, message_ids_to_parse)
 
     return ChannelMessagesResponse(messages=messages)

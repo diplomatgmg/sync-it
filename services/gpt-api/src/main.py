@@ -5,7 +5,7 @@ from common.logger.config import log_config
 from core.config import service_config
 from fastapi import FastAPI, HTTPException
 from schemas import HealthResponse
-from service import get_gpt_response
+from services.gpt import get_gpt_response
 from utils import validate_health_response
 import uvicorn
 

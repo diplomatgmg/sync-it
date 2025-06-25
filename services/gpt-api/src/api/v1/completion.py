@@ -1,7 +1,7 @@
 from common.logger import get_logger
 from fastapi import APIRouter, HTTPException
 from schemas import PromptRequest, PromptResponse
-from service import get_gpt_response
+from services.gpt import get_gpt_response
 
 
 logger = get_logger(__name__)

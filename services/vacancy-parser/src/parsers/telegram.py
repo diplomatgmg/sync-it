@@ -4,7 +4,7 @@ from database.models.vacancy import TelegramVacancy
 from database.services.vacancy import TelegramVacancyService
 from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
-from services.telegram_messages import get_newest_telegram_messages
+from services.http import fetch_newest_telegram_messages
 
 
 __all__ = ["TelegramParser"]
@@ -33,7 +33,7 @@ class TelegramParser(BaseParser):
         last_message_id = await self.service.get_last_message_id(channel_link)
         logger.info("Last message id for channel '%s' is %s", channel_link, last_message_id)
 
-        newest_messages = await get_newest_telegram_messages(channel_link.channel_username, last_message_id)
+        newest_messages = await fetch_newest_telegram_messages(channel_link.channel_username, last_message_id)
 
         if not newest_messages:
             logger.info("No new messages for channel '%s'", channel_link)

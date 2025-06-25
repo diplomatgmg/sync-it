@@ -4,13 +4,13 @@ import httpx
 from schemas import TelegramChannelMessage, TelegramChannelMessagesResponse
 
 
-__all__ = ["get_newest_telegram_messages"]
+__all__ = ["fetch_newest_telegram_messages"]
 
 
 logger = get_logger(__name__)
 
 
-async def get_newest_telegram_messages(
+async def fetch_newest_telegram_messages(
     channel_username: str, last_message_id: int | None = None
 ) -> list[TelegramChannelMessage]:
     """Возвращает список актуальных сообщений относительно переданного last_message_id"""
