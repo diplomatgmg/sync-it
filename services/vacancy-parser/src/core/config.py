@@ -1,6 +1,5 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from schemas import TelegramChannelUrl
 
 
 __all__ = ["service_config"]
@@ -17,8 +16,6 @@ class ServiceConfig(BaseSettings):
     hh_access_token: str
     hh_email: str
     hh_app_name: str
-
-    telegram_channel_links: list[TelegramChannelUrl]  # https://t.me/s/<channel_name>
 
     telegram_api_url: str
 

@@ -26,6 +26,10 @@ class TelegramChannelUrl(HttpUrl):
         super().__init__(url)
         self._validate_url()
 
+    @classmethod
+    def create(cls, username: str) -> "TelegramChannelUrl":
+        return TelegramChannelUrl(f"https://t.me/s/{username}")
+
     @property
     def channel_username(self) -> str:
         return self.path.split("/")[-1]  # type: ignore[union-attr]
