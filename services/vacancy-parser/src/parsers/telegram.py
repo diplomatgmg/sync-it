@@ -54,7 +54,7 @@ class TelegramParser(BaseParser):
         await self.save_vacancies(vacancies)
 
     async def save_vacancies(self, vacancies: list[TelegramVacancy]) -> None:
-        logger.debug("Checking %s vacancies for uniqueness", len(vacancies))
+        logger.debug("Saving %s vacancies", len(vacancies))
 
         vacancy_hashes = [v.hash for v in vacancies]
         existing_hashes = await self.service.get_existing_hashes(vacancy_hashes)
