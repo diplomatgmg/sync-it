@@ -9,6 +9,7 @@ __all__ = [
     "TelegramChannelMessage",
     "TelegramChannelMessagesResponse",
     "TelegramChannelUrl",
+    "VacancyDeleteResponse",
     "VacancyResponse",
 ]
 
@@ -68,3 +69,7 @@ class HealthResponse(BaseModel):
 
 class VacancyResponse(BaseModel):
     vacancies: list[VacancySerializer]
+
+
+class VacancyDeleteResponse(BaseModel):
+    deleted: bool

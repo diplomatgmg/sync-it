@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 __all__ = ["BaseVacancy"]
 
 
-def utcnow() -> datetime:
+def _utcnow() -> datetime:
     return datetime.now(tz=UTC)
 
 
@@ -24,7 +24,8 @@ class BaseVacancy(Base):
     source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource, schema="vacancy_parser"), index=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -33,6 +34,10 @@ class BaseVacancy(Base):
             raise ValueError(f"Use {self.__class__.__name__}.create() instead {self.__class__.__name__}()")
 
         self.source = self.get_source()
+
+    @property
+    def is_deleted(self) -> bool:
+        return self.deleted_at is not None
 
     @classmethod
     def create(cls, *args: Any, **kwargs: Any) -> Self:

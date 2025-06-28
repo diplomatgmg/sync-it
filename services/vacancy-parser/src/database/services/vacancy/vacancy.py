@@ -1,14 +1,19 @@
 from collections.abc import Iterable
+from datetime import UTC, datetime
 
+from common.logger import get_logger
 from database.models.vacancy import BaseVacancy
 from database.models.vacancy.enums import VacancySource
 from services.vacancy import find_duplicate_vacancy_by_fingerprint
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import required_attrs
 
 
 __all__ = ["VacancyService"]
+
+
+logger = get_logger(__name__)
 
 
 class VacancyService:
@@ -27,7 +32,9 @@ class VacancyService:
         subclasses = BaseVacancy.__subclasses__()
 
         for subclass in subclasses:
-            stmt = select(subclass).order_by(subclass.created_at.desc()).limit(limit)
+            stmt = (
+                select(subclass).where(subclass.deleted_at.is_(None)).order_by(subclass.created_at.desc()).limit(limit)
+            )
             result = await self.session.execute(stmt)
             vacancies.extend(result.scalars().all())
 
@@ -44,6 +51,29 @@ class VacancyService:
 
         await self.session.commit()
         return added_count
+
+    async def mark_as_deleted(self, vacancy_hash: str) -> bool:
+        """
+        Удаляет вакансию из первой подходящей таблицы по хешу.
+
+        True - вакансия помечена как удаленная
+        False - вакансия не найдена
+        """
+        for subclass in BaseVacancy.__subclasses__():
+            stmt = (
+                update(subclass)
+                .where(subclass.hash == vacancy_hash)
+                .where(subclass.deleted_at.is_(None))
+                .values(deleted_at=datetime.now(tz=UTC))
+            )
+            result = await self.session.execute(stmt)
+            if bool(result.rowcount):
+                await self.session.commit()
+                logger.debug("Marked as deleted vacancy with hash %s", vacancy_hash)
+                return True
+
+        logger.debug("Not found vacancy with hash %s", vacancy_hash)
+        return False
 
     @required_attrs("model")
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
