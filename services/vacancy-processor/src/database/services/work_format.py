@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
-from database.enums import WorkFormatEnum
 from database.models import WorkFormat
+from database.models.enums import WorkFormatEnum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

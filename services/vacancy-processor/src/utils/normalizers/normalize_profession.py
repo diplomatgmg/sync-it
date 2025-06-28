@@ -1,5 +1,5 @@
 from common.logger import get_logger
-from database.enums import ProfessionEnum
+from database.models.enums import ProfessionEnum
 
 
 __all__ = ["normalize_profession"]

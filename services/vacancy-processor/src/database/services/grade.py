@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
-from database.enums import GradeEnum
 from database.models import Grade
+from database.models.enums import GradeEnum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

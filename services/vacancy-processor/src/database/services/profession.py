@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
-from database.enums import ProfessionEnum
 from database.models import Profession
+from database.models.enums import ProfessionEnum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

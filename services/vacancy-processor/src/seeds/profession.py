@@ -1,6 +1,6 @@
 from common.database.engine import get_async_session
 from common.logger import get_logger
-from database.enums import ProfessionEnum
+from database.models.enums import ProfessionEnum
 from database.services import ProfessionService
 
 
