@@ -28,6 +28,11 @@ class VacancyExtractorService:
         self.work_formats: list[WorkFormatEnum] | None = None
         self.skills: list[str] | None = None
 
+        self.workplace_description: str | None = None
+        self.responsibilities: str | None = None
+        self.requirements: str | None = None
+        self.conditions: str | None = None
+
     def extract(self, vacancy: str) -> "Self":
         """Извлекает данные из текстового представления вакансии."""
         logger.debug("Start extracting vacancy: \n%s", vacancy)
@@ -53,7 +58,14 @@ class VacancyExtractorService:
 
     @staticmethod
     def _clean_vacancy(vacancy: str) -> str:
-        return vacancy.replace("*", "").strip()
+        return (
+            vacancy.replace("*", "")
+            .replace("⸺", "-")  # Двойное тире
+            .replace("—", "-")  # Длинное тире
+            .replace("–", "-")  # Короткое тире
+            .replace("―", "-")  # Горизонтальная черта
+            .strip()
+        )
 
     @staticmethod
     def _parse_profession(message: str) -> ProfessionEnum | None:

@@ -4,8 +4,7 @@ from common.database.engine import provide_async_session
 from common.logger import get_logger
 from database.services.vacancy import VacancyService
 from fastapi import APIRouter, Depends
-from schemas import VacancyDeleteResponse, VacancyResponse
-from serializers import VacancySerializer
+from schemas import VacancyDeleteResponse, VacancyResponse, VacancySchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -23,7 +22,7 @@ async def get_vacancies(session: Annotated[AsyncSession, Depends(provide_async_s
     service = VacancyService(session)
     vacancy_models = await service.get_vacancies()
 
-    return VacancyResponse(vacancies=[VacancySerializer.model_validate(v) for v in vacancy_models])
+    return VacancyResponse(vacancies=[VacancySchema.model_validate(v) for v in vacancy_models])
 
 
 @router.delete("/vacancies/{vacancy_hash}")

@@ -1,7 +1,6 @@
 import re
 
-from pydantic import BaseModel, HttpUrl, UrlConstraints
-from serializers import VacancySerializer
+from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints
 
 
 __all__ = [
@@ -11,6 +10,7 @@ __all__ = [
     "TelegramChannelUrl",
     "VacancyDeleteResponse",
     "VacancyResponse",
+    "VacancySchema",
 ]
 
 
@@ -67,8 +67,16 @@ class HealthResponse(BaseModel):
     status: str
 
 
+class VacancySchema(BaseModel):
+    hash: str
+    link: str
+    data: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class VacancyResponse(BaseModel):
-    vacancies: list[VacancySerializer]
+    vacancies: list[VacancySchema]
 
 
 class VacancyDeleteResponse(BaseModel):

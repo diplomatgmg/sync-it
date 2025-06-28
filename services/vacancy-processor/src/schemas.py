@@ -1,15 +1,21 @@
 from pydantic import BaseModel
-from serializers import VacancySerializer
 
 
 __all__ = [
     "CompletionResponse",
     "VacancyResponse",
+    "VacancySchema",
 ]
 
 
+class VacancySchema(BaseModel):
+    hash: str
+    link: str
+    data: str
+
+
 class VacancyResponse(BaseModel):
-    vacancies: list[VacancySerializer]
+    vacancies: list[VacancySchema]
 
 
 class CompletionResponse(BaseModel):

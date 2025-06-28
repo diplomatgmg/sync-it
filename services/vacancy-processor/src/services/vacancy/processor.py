@@ -1,6 +1,8 @@
 import asyncio
+from itertools import starmap
 
 from common.logger import get_logger
+from schemas import VacancySchema
 from services.http import fetch_gpt_completion, fetch_new_vacancies
 from services.prompter import make_prompt
 from services.vacancy import VacancyExtractorService
@@ -22,15 +24,23 @@ class VacancyProcessorService:
         logger.info("Got %s new vacancies", len(vacancies))
 
         prompts = [make_prompt(vacancy.data) for vacancy in vacancies]
-        tasks = [self.process_prompt(prompt, vacancy.link) for prompt, vacancy in zip(prompts, vacancies, strict=True)]
+        tasks = list(starmap(self.process_prompt, zip(prompts, vacancies, strict=True)))
 
         await asyncio.gather(*tasks)
 
-    async def process_prompt(self, prompt: str, vacancy_link: str) -> None:
+    async def process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
         try:
             completion = await fetch_gpt_completion(prompt)
+            if "Не вакансия" in completion:
+                # TODO: реализовать модель parsed vacancy
+                logger.debug("Not a vacancy: %s", vacancy.link)
+                return
+
             extracted_vacancy = self.extractor.extract(completion)
-            logger.info("Extracted vacancy (%s): %s", vacancy_link, extracted_vacancy)
+            logger.debug("Extracted vacancy (%s):\n%s", vacancy.link, extracted_vacancy)
         except Exception as e:
-            logger.exception("Failed to process vacancy %s", vacancy_link, exc_info=e)
+            logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
             return
+
+    async def save_vacancy(self, vacancy: VacancySchema) -> None:
+        pass
