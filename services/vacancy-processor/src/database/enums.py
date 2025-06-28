@@ -3,6 +3,7 @@ from typing import Self, TypeVar
 
 
 __all__ = [
+    "ProfessionEnum",
     "WorkFormatEnum",
 ]
 
@@ -30,3 +31,14 @@ class WorkFormatEnum(BaseEnum):
     REMOTE = "Удаленка"
     HYBRID = "Гибрид"
     OFFICE = "Офис"
+
+
+class ProfessionEnum(BaseEnum):
+    DEVOPS = "DevOps"
+    BACKEND = "Backend developer"
+    FRONTEND = "Frontend developer"
+    FULLSTACK = "Fullstack developer"
+    PYTHON_DEVELOPER = "Python developer"
+    DATA_ENGINEER = "Data Engineer"
+    DATA_SCIENCE = "Data Science"
+    TECH_LEAD = "Tech Lead"
