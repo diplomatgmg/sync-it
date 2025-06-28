@@ -1,4 +1,4 @@
-from database.models.vacancy.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
+from database.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
 
 
 __all__ = ["make_prompt"]

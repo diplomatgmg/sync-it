@@ -3,6 +3,7 @@ from typing import Self, TypeVar
 
 
 __all__ = [
+    "GradeEnum",
     "ProfessionEnum",
     "WorkFormatEnum",
 ]
@@ -42,3 +43,15 @@ class ProfessionEnum(BaseEnum):
     DATA_ENGINEER = "Data Engineer"
     DATA_SCIENCE = "Data Science"
     TECH_LEAD = "Tech Lead"
+
+
+class GradeEnum(BaseEnum):
+    UNKNOWN = "Неизвестно"
+    INTERN = "Стажер"
+    JUNIOR = "Junior"
+    JUNIOR_MIDDLE = "Junior/Middle"
+    MIDDLE = "Middle"
+    MIDDLE_SENIOR = "Middle/Senior"
+    SENIOR = "Senior"
+    SENIOR_LEAD = "Senior/Lead"
+    LEAD = "Lead"

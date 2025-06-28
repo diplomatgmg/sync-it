@@ -2,7 +2,7 @@ import re
 from typing import Any
 
 from common.logger import get_logger
-from database.models.vacancy.enums import GradeEnum
+from database.enums import GradeEnum
 from utils.normalizers.normalize_profession import normalize_profession
 
 
