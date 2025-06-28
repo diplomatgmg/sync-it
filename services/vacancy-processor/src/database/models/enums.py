@@ -35,6 +35,7 @@ class WorkFormatEnum(BaseEnum):
 
 
 class ProfessionEnum(BaseEnum):
+    UNKNOWN = "Неизвестно"
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
@@ -49,9 +50,6 @@ class GradeEnum(BaseEnum):
     UNKNOWN = "Неизвестно"
     INTERN = "Стажер"
     JUNIOR = "Junior"
-    JUNIOR_MIDDLE = "Junior/Middle"
     MIDDLE = "Middle"
-    MIDDLE_SENIOR = "Middle/Senior"
     SENIOR = "Senior"
-    SENIOR_LEAD = "Senior/Lead"
     LEAD = "Lead"
