@@ -2,13 +2,13 @@ from common.logger import get_logger
 from database.models.enums import ProfessionEnum
 
 
-__all__ = ["normalize_profession"]
+__all__ = ["map_to_profession_enum"]
 
 
 logger = get_logger(__name__)
 
 
-def normalize_profession(profession: str) -> ProfessionEnum | None:
+def map_to_profession_enum(profession: str) -> ProfessionEnum | None:
     profession = profession.lower().strip()
 
     if profession in ignore_professions:
@@ -18,7 +18,6 @@ def normalize_profession(profession: str) -> ProfessionEnum | None:
         if profession in aliases:
             return profession_enum
 
-    logger.warning("Unknown profession '%s'", profession)
     return None
 
 

@@ -1,13 +1,13 @@
 from common.logger import get_logger
 
 
-__all__ = ["normalize_skill"]
+__all__ = ["map_to_skill_name"]
 
 
 logger = get_logger(__name__)
 
 
-def normalize_skill(skill: str) -> str | None:
+def map_to_skill_name(skill: str) -> str | None:
     skill = skill.lower().strip()
 
     for skills in skills_map.values():
@@ -15,7 +15,6 @@ def normalize_skill(skill: str) -> str | None:
             if skill in aliases:
                 return normalized
 
-    logger.warning("Unknown skill '%s'", skill)
     return None
 
 
