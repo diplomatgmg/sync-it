@@ -6,7 +6,10 @@ from common.database.logging import setup_alchemy_logging
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
-__all__ = ["get_async_session"]
+__all__ = [
+    "get_async_session",
+    "provide_async_session",
+]
 
 
 setup_alchemy_logging()
@@ -32,3 +35,9 @@ async def get_async_session() -> AsyncGenerator[AsyncSession]:
             raise
         finally:
             await session.close()
+
+
+async def provide_async_session() -> AsyncSession:
+    """Обёртка над get_async_session, где не поддерживается контекстный менеджер."""
+    async with get_async_session() as session:
+        return session

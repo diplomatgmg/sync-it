@@ -1,7 +1,6 @@
-from collections.abc import AsyncGenerator
 from typing import Annotated
 
-from common.database.engine import get_async_session
+from common.database.engine import provide_async_session
 from common.logger import get_logger
 from database.services.vacancy import VacancyService
 from fastapi import APIRouter, Depends
@@ -18,13 +17,8 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
-async def _get_session() -> AsyncGenerator[AsyncSession]:
-    async with get_async_session() as session:
-        yield session
-
-
 @router.get("/vacancies")
-async def get_vacancies(session: Annotated[AsyncSession, Depends(_get_session)]) -> VacancyResponse:
+async def get_vacancies(session: Annotated[AsyncSession, Depends(provide_async_session)]) -> VacancyResponse:
     """Возвращает последние актуальные вакансии."""
     service = VacancyService(session)
     vacancy_models = await service.get_vacancies()
@@ -35,7 +29,7 @@ async def get_vacancies(session: Annotated[AsyncSession, Depends(_get_session)])
 @router.delete("/vacancies/{vacancy_hash}")
 async def delete_vacancy(
     vacancy_hash: str,
-    session: Annotated[AsyncSession, Depends(_get_session)],
+    session: Annotated[AsyncSession, Depends(provide_async_session)],
 ) -> VacancyDeleteResponse:
     service = VacancyService(session)
     is_deleted = await service.mark_as_deleted(vacancy_hash)
