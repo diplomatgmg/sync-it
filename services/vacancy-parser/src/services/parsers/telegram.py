@@ -3,19 +3,19 @@ from collections.abc import Iterable
 from common.logger import get_logger
 from database.models.vacancy import TelegramVacancy
 from database.services.vacancy import TelegramVacancyService
-from parsers.base import BaseParser
 from schemas import TelegramChannelUrl
 from services.http import fetch_newest_telegram_messages
+from services.parsers.base import BaseParser
 from utils import generate_fingerprint
 
 
-__all__ = ["TelegramParser"]
+__all__ = ["TelegramParserService"]
 
 
 logger = get_logger(__name__)
 
 
-class TelegramParser(BaseParser):
+class TelegramParserService(BaseParser):
     def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
         super().__init__(service)
         self.channel_links = channel_links
