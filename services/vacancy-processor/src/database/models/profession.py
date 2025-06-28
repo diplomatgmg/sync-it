@@ -3,6 +3,9 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 
+__all__ = ["Profession"]
+
+
 class Profession(Base):
     __tablename__ = "profession"
 

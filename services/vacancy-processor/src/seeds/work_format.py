@@ -4,6 +4,9 @@ from database.enums import WorkFormatEnum
 from database.services import WorkFormatService
 
 
+__all__ = ["seed_work_formats"]
+
+
 logger = get_logger(__name__)
 
 

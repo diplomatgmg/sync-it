@@ -5,6 +5,7 @@ from database.models import WorkFormat
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 __all__ = ["WorkFormatService"]
 
 

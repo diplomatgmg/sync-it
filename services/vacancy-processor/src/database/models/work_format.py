@@ -1,7 +1,9 @@
-from database.enums import WorkFormatEnum
 from database.models import Base
-from sqlalchemy import Enum as SQLEnum, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
+
+
+__all__ = ["WorkFormat"]
 
 
 class WorkFormat(Base):

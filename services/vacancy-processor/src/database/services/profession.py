@@ -6,6 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+__all__ = ["ProfessionService"]
+
+
 class ProfessionService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
