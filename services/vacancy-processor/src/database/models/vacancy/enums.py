@@ -1,3 +1,6 @@
+# FIXME: move to database.enums
+
+
 from enum import StrEnum
 from typing import Self, TypeVar
 

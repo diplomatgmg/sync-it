@@ -1,6 +1,7 @@
 import asyncio
 
 from common.logger import get_logger
+from seeds import seed_models
 from services.http import fetch_gpt_completion, fetch_new_vacancies
 from services.prompter import make_prompt
 from utils.normalizers.vormalize_prompted_vacancy import normalize_prompted_vacancy
@@ -11,6 +12,8 @@ logger = get_logger(__name__)
 
 
 async def main() -> None:
+    await seed_models()
+
     vacancies = await fetch_new_vacancies()
 
     logger.info("Got %s vacancies", len(vacancies))

@@ -21,6 +21,7 @@ class BaseVacancy(Base):
 
     hash: Mapped[str] = mapped_column(String(32), primary_key=True)
     fingerprint: Mapped[str] = mapped_column(Text)
+    # FIXME При добавлении нового enum будет ошибка. использовать обычный String. см. vacancy-service WorkFormat model
     source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource, schema="vacancy_parser"), index=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
