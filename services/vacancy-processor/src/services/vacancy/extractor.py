@@ -16,10 +16,10 @@ class VacancyExtractorService:
     """
     Класс извлечения ключевых данных из текста вакансии:
     - профессию
-    - грейды
+    - грейд
     - формат работы
     - навыки
-    # TODO: - описание вакансии
+    - описание (обязанности, требования и пр.)
     """
 
     def __init__(self) -> None:
@@ -35,14 +35,18 @@ class VacancyExtractorService:
 
     def extract(self, vacancy: str) -> "Self":
         """Извлекает данные из текстового представления вакансии."""
-        logger.debug("Start extracting vacancy: \n%s", vacancy)
-
         cleaned_vacancy = self._clean_vacancy(vacancy)
+        logger.debug("Start extracting vacancy: \n%s", cleaned_vacancy)
 
         self.profession = self._parse_profession(cleaned_vacancy)
         self.grades = self._parse_grades(cleaned_vacancy)
         self.work_formats = self._parse_work_formats(cleaned_vacancy)
         self.skills = self._parse_skills(cleaned_vacancy)
+
+        self.workplace_description = self._parse_multiline_field(cleaned_vacancy, "О месте работы")
+        self.responsibilities = self._parse_multiline_field(cleaned_vacancy, "Обязанности")
+        self.requirements = self._parse_multiline_field(cleaned_vacancy, "Требования")
+        self.conditions = self._parse_multiline_field(cleaned_vacancy, "Условия")
 
         return self
 
@@ -73,6 +77,7 @@ class VacancyExtractorService:
         pattern = r"Профессия:\s(.*)"
         match = re.search(pattern, message)
         if not match:
+            logger.warning("Profession pattern not found in message: %s", message)
             return None
 
         profession_str = match.group(1)
@@ -85,6 +90,7 @@ class VacancyExtractorService:
         pattern = r"Позиция:\s(.*)"
         match = re.search(pattern, message)
         if not match:
+            logger.warning("Grade pattern not found in message: %s", message)
             return None
 
         grades: list[GradeEnum] = []
@@ -111,6 +117,7 @@ class VacancyExtractorService:
         pattern = r"Тип занятости:\s(.*)"
         match = re.search(pattern, message)
         if not match:
+            logger.warning("Work format pattern not found in message: %s", message)
             return None
 
         work_formats: list[WorkFormatEnum] = []
@@ -137,6 +144,7 @@ class VacancyExtractorService:
         pattern = r"Навыки:\s(.*)"
         match = re.search(pattern, message)
         if not match:
+            logger.warning("Skills pattern not found in message: %s", message)
             return None
 
         # FIXME CategoryEnum + SkillEnum?
@@ -157,3 +165,21 @@ class VacancyExtractorService:
             skills.append(skill)
 
         return skills or None
+
+    @staticmethod
+    def _parse_multiline_field(message: str, field_name: str) -> str | None:
+        """
+        Извлекает многострочное текстовое поле из вакансии.
+
+        Ищет блок с заголовком field_name, например 'Обязанности', и
+        захватывает текст до следующего заголовка или конца текста.
+        """
+
+        pattern = rf"{re.escape(field_name)}:\s*\n(.*?)(?=\n\S.*?:|$)"
+        match = re.search(pattern, message, re.DOTALL | re.IGNORECASE)
+        if not match:
+            logger.warning('Not found multiline field: "%s" for message:\n"%s"', field_name, message)
+            return None
+
+        content = match.group(1).strip()
+        return content or None
