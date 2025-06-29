@@ -23,6 +23,8 @@ class VacancyExtractorService:
     """
 
     def __init__(self) -> None:
+        self._paragraphs: list[str] | None = None
+
         self.profession: ProfessionEnum | None = None
         self.grades: list[GradeEnum] | None = None
         self.work_formats: list[WorkFormatEnum] | None = None
@@ -166,19 +168,20 @@ class VacancyExtractorService:
 
         return skills or None
 
-    @staticmethod
-    def _parse_multiline_field(message: str, field_name: str) -> str | None:
+    def _parse_multiline_field(self, message: str, field_name: str) -> str | None:
         """
         Извлекает многострочное текстовое поле из вакансии.
 
         Ищет блок с заголовком field_name, например 'Обязанности', и
         захватывает текст до следующего заголовка или конца текста.
         """
+        if not self._paragraphs:
+            self._paragraphs = message.split("\n\n")
 
-        pattern = rf"{re.escape(field_name)}:\s*\n(.*?)(?=\n\S.*?:|$)"
-        match = re.search(pattern, message, re.DOTALL | re.IGNORECASE)
+        pattern = rf"{field_name}:[\s\n]*(.*?)(?=\n\n\w+:|$)"  # на эльфийском
+        match = re.search(pattern, message, re.DOTALL)
         if not match:
-            logger.warning('Not found multiline field: "%s" for message:\n"%s"', field_name, message)
+            logger.warning('Not found multiline field: "%s" for message:\n%s', field_name, message)
             return None
 
         content = match.group(1).strip()
