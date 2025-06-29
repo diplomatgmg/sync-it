@@ -3,6 +3,8 @@ from typing import Self, TypeVar
 
 
 __all__ = [
+    "BaseEnum",
+    "CurrencyEnum",
     "GradeEnum",
     "ProfessionEnum",
     "WorkFormatEnum",
@@ -14,11 +16,6 @@ T = TypeVar("T", bound="BaseEnum")
 
 class BaseEnum(StrEnum):
     @classmethod
-    def values(cls, *, lower: bool = False) -> list[str]:
-        """Возвращает список значений Enum."""
-        return [v.value.lower() if lower else v.value for v in cls]
-
-    @classmethod
     def get_safe(cls, label: str) -> Self | None:
         """Возвращает элемент Enum по строковому значению, с игнорированием регистра."""
         for member in cls:
@@ -28,14 +25,12 @@ class BaseEnum(StrEnum):
 
 
 class WorkFormatEnum(BaseEnum):
-    UNKNOWN = "Неизвестно"
     REMOTE = "Удаленка"
     HYBRID = "Гибрид"
     OFFICE = "Офис"
 
 
 class ProfessionEnum(BaseEnum):
-    UNKNOWN = "Неизвестно"
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
@@ -47,9 +42,14 @@ class ProfessionEnum(BaseEnum):
 
 
 class GradeEnum(BaseEnum):
-    UNKNOWN = "Неизвестно"
     INTERN = "Стажер"
     JUNIOR = "Junior"
     MIDDLE = "Middle"
     SENIOR = "Senior"
     LEAD = "Lead"
+
+
+class CurrencyEnum(BaseEnum):
+    RUB = "RUB"
+    USD = "USD"
+    EUR = "EUR"
