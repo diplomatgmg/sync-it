@@ -3,6 +3,7 @@ from database.models.currency import Currency
 from database.models.grade import Grade
 from database.models.profession import Profession
 from database.models.skill import Skill, SkillCategory
+from database.models.vacancy import Vacancy
 from database.models.work_format import WorkFormat
 
 
@@ -13,5 +14,6 @@ __all__ = [
     "Profession",
     "Skill",
     "SkillCategory",
+    "Vacancy",
     "WorkFormat",
 ]

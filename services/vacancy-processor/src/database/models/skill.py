@@ -1,5 +1,8 @@
+from typing import TYPE_CHECKING
+
 from database.models import Base
 from database.models.enums import SkillCategoryEnum, SkillEnum
+from database.models.tables import vacancy_skill_table
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -8,6 +11,10 @@ __all__ = [
     "Skill",
     "SkillCategory",
 ]
+
+
+if TYPE_CHECKING:
+    from database.models import Vacancy
 
 
 class SkillCategory(Base):
@@ -29,3 +36,7 @@ class Skill(Base):
 
     category_id: Mapped[int | None] = mapped_column(ForeignKey("skill_category.id", ondelete="CASCADE"))
     category: Mapped["SkillCategory"] = relationship(back_populates="skills")
+
+    vacancies: Mapped[list["Vacancy"]] = relationship(
+        secondary=vacancy_skill_table, back_populates="skills", passive_deletes=True
+    )
