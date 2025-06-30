@@ -2,8 +2,9 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 
 from common.logger import get_logger
+from database.models import Source
+from database.models.enums import SourceEnum
 from database.models.vacancy import BaseVacancy
-from database.models.vacancy.enums import VacancySource
 from services.vacancy import find_duplicate_vacancy_by_fingerprint
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,11 +20,25 @@ logger = get_logger(__name__)
 class VacancyService:
     """Базовый сервис для работы с моделями вакансий."""
 
-    source: VacancySource
+    source: SourceEnum
     model: type[BaseVacancy]
+
+    __source_id: int | None = None
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    async def get_source_id(self) -> int:
+        if self.__source_id is not None:
+            return self.__source_id
+
+        stmt = select(Source.id).where(Source.name == self.source)
+        result = await self.session.execute(stmt)
+        source_id = result.scalar_one()
+
+        self.__source_id = source_id
+
+        return source_id
 
     async def get_vacancies(self, limit: int = 100) -> list[BaseVacancy]:
         """Получить последние актуальные вакансии по всем сервисам."""

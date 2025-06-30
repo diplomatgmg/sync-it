@@ -19,6 +19,8 @@ class TelegramParserService(BaseParser):
     def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
         super().__init__(service)
         self.channel_links = channel_links
+        # Запоминаем fingerprints, которые получили на основе новых спарсенных вакансий, чтобы избежать конфликта с БД
+        self._new_fingerprints: set[str] = set()
 
     async def parse(self) -> None:
         logger.info("Starting Telegram parser")
@@ -60,7 +62,16 @@ class TelegramParserService(BaseParser):
                 )
                 continue
 
+            if fingerprint in self._new_fingerprints:
+                logger.info("Vacancy with fingerprint '%s' already exists", fingerprint)
+                continue
+
+            self._new_fingerprints.add(fingerprint)
+
+            source_id = await self.service.get_source_id()
+
             vacancy = TelegramVacancy.create(
+                source_id=source_id,
                 fingerprint=fingerprint,
                 link=f"{channel_link}/{message.message_id}",
                 channel_username=channel_link.channel_username,

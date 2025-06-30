@@ -1,7 +1,7 @@
 from typing import Any
 
 from core.config import service_config
-from database.models.enums import BaseEnum
+from database.models.enums import BaseStrEnum
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
@@ -15,7 +15,8 @@ metadata_obj = MetaData(schema=service_config.db_schema)
 
 class Base(DeclarativeBase, AsyncAttrs):
     metadata = metadata_obj
-    _enums: tuple[tuple[str, type[BaseEnum]], ...] = ()  # Для проверки, что поле модели соответствует значению в enum
+    # Для проверки, что поле модели соответствует значению в enum
+    _enums: tuple[tuple[str, type[BaseStrEnum]], ...] = ()
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__()

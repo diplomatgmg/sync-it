@@ -2,10 +2,8 @@ from datetime import UTC, datetime
 from typing import Any, Self
 
 from database.models import Base
-from database.models.vacancy.enums import VacancySource
-from sqlalchemy import DateTime
-from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import String, Text
+from database.models.enums import SourceEnum
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -23,7 +21,8 @@ class BaseVacancy(Base):
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     fingerprint: Mapped[str] = mapped_column(Text, unique=True)
 
-    source: Mapped[VacancySource] = mapped_column(SQLEnum(VacancySource, schema="vacancy_parser"), index=True)
+    source_id: Mapped[int] = mapped_column(ForeignKey("source.id", ondelete="RESTRICT"), index=True)
+
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
 
@@ -47,5 +46,5 @@ class BaseVacancy(Base):
         """Создает экземпляр вакансии генерируя хеш"""
         raise NotImplementedError(f"Implement {cls.__name__}.create()")
 
-    def get_source(self) -> VacancySource:
+    def get_source(self) -> SourceEnum:
         raise NotImplementedError(f"Implement {self.__class__.__name__}.get_source()")

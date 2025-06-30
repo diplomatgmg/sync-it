@@ -5,7 +5,9 @@ from common.logger.config import log_config
 from core.config import service_config
 from fastapi import FastAPI
 from schemas import HealthResponse
+from seeds import seed_models
 import uvicorn
+import uvloop
 
 
 logger = get_logger(__name__)
@@ -19,7 +21,9 @@ async def healthcheck() -> HealthResponse:
     return HealthResponse(status="Healthy")
 
 
-if __name__ == "__main__":
+async def main() -> None:
+    await seed_models()
+
     uvicorn.run(
         "main:app",
         host=service_config.host,
@@ -27,3 +31,7 @@ if __name__ == "__main__":
         log_level=log_config.level.lower(),
         reload=env_config.debug,
     )
+
+
+if __name__ == "__main__":
+    uvloop.run(main())

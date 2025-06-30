@@ -35,7 +35,7 @@ unsafe-fixes = true
 line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
-lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "FIX002", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF001", "RUF002", "RUF003"]
+lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "FIX002", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF001", "RUF002", "RUF003", "PLR0913"]
 extend-exclude = ["**/database/migrations/versions"]
 
 [tool.mypy]

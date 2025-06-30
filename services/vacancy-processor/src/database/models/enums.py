@@ -3,7 +3,7 @@ from typing import Self, TypeVar
 
 
 __all__ = [
-    "BaseEnum",
+    "BaseStrEnum",
     "CurrencyEnum",
     "GradeEnum",
     "ProfessionEnum",
@@ -13,10 +13,10 @@ __all__ = [
 ]
 
 
-T = TypeVar("T", bound="BaseEnum")
+T = TypeVar("T", bound="BaseStrEnum")
 
 
-class BaseEnum(StrEnum):
+class BaseStrEnum(StrEnum):
     @classmethod
     def get_safe(cls, label: str) -> Self | None:
         """Возвращает элемент Enum по строковому значению, с игнорированием регистра."""
@@ -26,13 +26,13 @@ class BaseEnum(StrEnum):
         return None
 
 
-class WorkFormatEnum(BaseEnum):
+class WorkFormatEnum(BaseStrEnum):
     REMOTE = "Удаленка"
     HYBRID = "Гибрид"
     OFFICE = "Офис"
 
 
-class ProfessionEnum(BaseEnum):
+class ProfessionEnum(BaseStrEnum):
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
@@ -43,7 +43,7 @@ class ProfessionEnum(BaseEnum):
     TECH_LEAD = "Tech Lead"
 
 
-class GradeEnum(BaseEnum):
+class GradeEnum(BaseStrEnum):
     INTERN = "Стажер"
     JUNIOR = "Junior"
     MIDDLE = "Middle"
@@ -51,20 +51,20 @@ class GradeEnum(BaseEnum):
     LEAD = "Lead"
 
 
-class CurrencyEnum(BaseEnum):
+class CurrencyEnum(BaseStrEnum):
     RUB = "RUB"
     USD = "USD"
     EUR = "EUR"
 
 
-class SkillCategoryEnum(BaseEnum):
+class SkillCategoryEnum(BaseStrEnum):
     LANGUAGES = "Languages"
     BACKEND = "Backend"
     FRONTEND = "Frontend"
     DEVOPS = "DevOps"
 
 
-class SkillEnum(BaseEnum):
+class SkillEnum(BaseStrEnum):
     # Languages
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
