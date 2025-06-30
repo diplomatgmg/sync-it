@@ -58,14 +58,9 @@ class VacancyService:
 
     async def bulk_add_vacancies(self, vacancies: list[type[BaseVacancy]]) -> int:
         """Массовое добавление вакансий."""
-        added_count = 0
-
-        for vacancy in vacancies:
-            self.session.add(vacancy)
-            added_count += 1
-
+        self.session.add_all(vacancies)
         await self.session.commit()
-        return added_count
+        return len(vacancies)
 
     async def mark_as_deleted(self, vacancy_hash: str) -> bool:
         """
