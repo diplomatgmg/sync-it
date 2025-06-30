@@ -7,6 +7,8 @@ __all__ = [
     "CurrencyEnum",
     "GradeEnum",
     "ProfessionEnum",
+    "SkillCategoryEnum",
+    "SkillEnum",
     "WorkFormatEnum",
 ]
 
@@ -53,3 +55,35 @@ class CurrencyEnum(BaseEnum):
     RUB = "RUB"
     USD = "USD"
     EUR = "EUR"
+
+
+class SkillCategoryEnum(BaseEnum):
+    LANGUAGES = "Languages"
+    BACKEND = "Backend"
+    FRONTEND = "Frontend"
+    DEVOPS = "DevOps"
+
+
+class SkillEnum(BaseEnum):
+    # Languages
+    PYTHON = "Python"
+    JAVASCRIPT = "JavaScript"
+    TYPESCRIPT = "TypeScript"
+    HTML = "HTML"
+    CSS = "CSS"
+    SQL = "SQL"
+
+    # Backend
+    DJANGO = "Django"
+    FLASK = "Flask"
+    FASTAPI = "FastAPI"
+
+    # Frontend
+    REACT = "React"
+    VUE = "Vue"
+    ANGULAR = "Angular"
+    SVELTE = "Svelte"
+
+    # DevOps
+    DOCKER = "Docker"
+    KUBERNETES = "Kubernetes"

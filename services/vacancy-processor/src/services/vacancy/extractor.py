@@ -2,8 +2,8 @@ import re
 from typing import Self
 
 from common.logger import get_logger
-from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
-from utils.mappers import map_to_profession_enum, map_to_skill_name
+from database.models.enums import GradeEnum, ProfessionEnum, SkillCategoryEnum, SkillEnum, WorkFormatEnum
+from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill
 
 
 __all__ = ["VacancyExtractorService"]
@@ -28,7 +28,7 @@ class VacancyExtractorService:
         self.profession: ProfessionEnum | None = None
         self.grades: list[GradeEnum] | None = None
         self.work_formats: list[WorkFormatEnum] | None = None
-        self.skills: list[str] | None = None
+        self.skills: list[tuple[SkillCategoryEnum, SkillEnum]] | None = None
 
         self.workplace_description: str | None = None
         self.responsibilities: str | None = None
@@ -141,7 +141,7 @@ class VacancyExtractorService:
         return work_formats or None
 
     @staticmethod
-    def _parse_skills(message: str) -> list[str] | None:
+    def _parse_skills(message: str) -> list[tuple[SkillCategoryEnum, SkillEnum]] | None:
         """Извлекает навыки из сообщения."""
         pattern = r"Навыки:\s(.*)"
         match = re.search(pattern, message)
@@ -149,8 +149,7 @@ class VacancyExtractorService:
             logger.warning("Skills pattern not found in message: %s", message)
             return None
 
-        # FIXME CategoryEnum + SkillEnum?
-        skills: list[str] = []
+        skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
 
         skills_str = match.group(1)
         # Python, Git
@@ -159,12 +158,12 @@ class VacancyExtractorService:
         for part in skills_parts:
             clean_part = part.strip()
 
-            skill = map_to_skill_name(clean_part)
-            if not skill:
+            category, skill = map_to_skill_category_and_skill(clean_part)
+            if not skill or not category:
                 logger.warning("Unknown skill part: %s (full: %s)", clean_part, skills_str)
                 continue
 
-            skills.append(skill)
+            skills.append((category, skill))
 
         return skills or None
 

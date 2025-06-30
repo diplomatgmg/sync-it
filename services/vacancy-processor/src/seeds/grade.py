@@ -1,7 +1,7 @@
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models.enums import GradeEnum
-from database.services.grade import GradeService
+from database.services import GradeService
 
 
 __all__ = ["seed_grades"]

@@ -18,7 +18,11 @@ class Base(DeclarativeBase, AsyncAttrs):
     _enums: tuple[tuple[str, type[BaseEnum]], ...] = ()  # Для проверки, что поле модели соответствует значению в enum
 
     def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
+        super().__init__()
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
         self._validate_enum_labels()
 
     def _validate_enum_labels(self) -> None:
@@ -30,4 +34,4 @@ class Base(DeclarativeBase, AsyncAttrs):
 
             enum_value = enum_type.get_safe(value)
             if enum_value is None:
-                raise TypeError(f'Invalid value "{value}" for field "{field_name}"')
+                raise TypeError(f'Invalid value "{value}" for enum "{enum_type.__name__}"')

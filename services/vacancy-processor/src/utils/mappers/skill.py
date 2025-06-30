@@ -1,45 +1,49 @@
 from common.logger import get_logger
+from database.models.enums import SkillCategoryEnum, SkillEnum
 
 
-__all__ = ["map_to_skill_name"]
+__all__ = [
+    "map_to_skill_category_and_skill",
+    "skills_map",
+]
 
 
 logger = get_logger(__name__)
 
 
-def map_to_skill_name(skill: str) -> str | None:
-    skill = skill.lower().strip()
+def map_to_skill_category_and_skill(skill: str) -> tuple[SkillCategoryEnum, SkillEnum] | tuple[None, None]:
+    skill_lower = skill.lower().strip()
 
-    for skills in skills_map.values():
-        for normalized, aliases in skills.items():
-            if skill in aliases:
-                return normalized
+    for skill_category_enum, skills in skills_map.items():
+        for skill_enum, aliases in skills.items():
+            if skill_lower in aliases:
+                return skill_category_enum, skill_enum
 
-    return None
+    return None, None
 
 
-skills_map: dict[str, dict[str, tuple[str, ...]]] = {
-    "languages": {
-        "Python": ("python", "python developer"),
-        "JavaScript": ("javascript",),
-        "TypeScript": ("typescript",),
-        "HTML": ("html",),
-        "CSS": ("css",),
-        "SQL": ("sql",),
+skills_map: dict[SkillCategoryEnum, dict[SkillEnum, tuple[str, ...]]] = {
+    SkillCategoryEnum.LANGUAGES: {
+        SkillEnum.PYTHON: ("python", "python developer"),
+        SkillEnum.JAVASCRIPT: ("javascript",),
+        SkillEnum.TYPESCRIPT: ("typescript",),
+        SkillEnum.HTML: ("html",),
+        SkillEnum.CSS: ("css",),
+        SkillEnum.SQL: ("sql",),
     },
-    "backend": {
-        "Django": ("django",),
-        "Flask": ("flask",),
-        "FastAPI": ("fastapi",),
+    SkillCategoryEnum.BACKEND: {
+        SkillEnum.DJANGO: ("django",),
+        SkillEnum.FLASK: ("flask",),
+        SkillEnum.FASTAPI: ("fastapi",),
     },
-    "frontend": {
-        "React": ("react",),
-        "Vue": ("vue",),
-        "Angular": ("angular",),
-        "Svelte": ("svelte",),
+    SkillCategoryEnum.FRONTEND: {
+        SkillEnum.REACT: ("react",),
+        SkillEnum.VUE: ("vue",),
+        SkillEnum.ANGULAR: ("angular",),
+        SkillEnum.SVELTE: ("svelte",),
     },
-    "devops": {
-        "Docker": ("docker",),
-        "Kubernetes": ("kubernetes",),
+    SkillCategoryEnum.DEVOPS: {
+        SkillEnum.DOCKER: ("docker",),
+        SkillEnum.KUBERNETES: ("kubernetes",),
     },
 }
