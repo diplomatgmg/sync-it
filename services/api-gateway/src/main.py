@@ -25,7 +25,7 @@ async def gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Re
     url = f"http://{service}:{env_config.service_internal_port}/{path}"
     methods_with_body = {"POST", "PUT", "PATCH"}
 
-    async with AsyncClient() as client:
+    async with AsyncClient(timeout=60) as client:
         json = await request.json() if request.method in methods_with_body else None
 
         response = await client.request(
@@ -34,7 +34,6 @@ async def gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Re
             headers=request.headers,
             params=request.query_params,
             json=json,
-            timeout=30,
         )
 
     return Response(
