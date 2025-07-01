@@ -65,6 +65,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      telegram-api:
+        condition: service_healthy
       api-gateway:
         condition: service_healthy
 
@@ -97,6 +99,10 @@ services:
       file: vacancy-processor/docker-compose.yml
     depends_on:
       postgres:
+        condition: service_healthy
+      vacancy-parser:
+        condition: service_healthy
+      gpt-api:
         condition: service_healthy
       api-gateway:
         condition: service_healthy
