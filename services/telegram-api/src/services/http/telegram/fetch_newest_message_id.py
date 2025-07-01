@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from common.logger import get_logger
-import httpx
+from httpx import AsyncClient
 
 
 __all__ = ["fetch_newest_message_id"]
@@ -13,7 +13,7 @@ async def fetch_newest_message_id(channel_username: str) -> int | None:
     """Возвращает ID самого последнего (новейшего) сообщения из публичного канала."""
     channel_url = f"https://t.me/s/{channel_username}"
 
-    async with httpx.AsyncClient() as client:
+    async with AsyncClient() as client:
         response = await client.get(channel_url)
 
         # Если это группа, канал закрыт или его не существует

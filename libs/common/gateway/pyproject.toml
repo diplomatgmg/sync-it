@@ -1,5 +1,5 @@
 [project]
-name = "environment-lib"
+name = "gateway-lib"
 dynamic = ["version"]
 dependencies = []
 

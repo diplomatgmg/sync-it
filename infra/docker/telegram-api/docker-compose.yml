@@ -6,16 +6,14 @@ services:
       dockerfile: infra/docker/telegram-api/Dockerfile
       target: ${ENV_MODE}
     env_file: ${PROJECT_ROOT}/infra/.env
-    ports:
-      - "${TELEGRAM_API_PORT}:${TELEGRAM_API_PORT}"
     volumes:
       - ${PROJECT_ROOT}/services/telegram-api:/app/services/telegram-api
       - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://telegram-api:${TELEGRAM_API_PORT}/health" ]
-      interval: 60s
-      timeout: 5s
+      test: [ "CMD", "wget", "-q", "--spider", "http://telegram-api:${ENV_SERVICE_INTERNAL_PORT}/health" ]
+      interval: 30s
+      timeout: 3s
       retries: 3
-      start_period: 10s
+      start_period: 5s

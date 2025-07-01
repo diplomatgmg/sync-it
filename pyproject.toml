@@ -22,6 +22,8 @@ members = [
     "libs/common/logger",
     "libs/common/database",
     "libs/common/redis",
+    "libs/common/gateway",
+    "services/api-gateway",
     "services/gpt-api",
     "services/telegram-api",
     "services/vacancy-parser",
@@ -41,6 +43,7 @@ extend-exclude = ["**/database/migrations/versions"]
 [tool.mypy]
 mypy_path = [
     "libs",
+    "services/api-gateway/src",
     "services/gpt-api/src",
     "services/telegram-api/src",
     "services/vacancy-parser/src",

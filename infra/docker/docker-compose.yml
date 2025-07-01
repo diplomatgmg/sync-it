@@ -37,16 +37,26 @@ services:
       retries: 3
       start_period: 5s
 
+  api-gateway:
+    extends:
+      service: api-gateway
+      file: api-gateway/docker-compose.yml
+
   gpt-api:
     extends:
       service: gpt-api
       file: gpt-api/docker-compose.yml
+    depends_on:
+      api-gateway:
+        condition: service_healthy
 
   telegram-api:
-    container_name: telegram-api
     extends:
       service: telegram-api
       file: telegram-api/docker-compose.yml
+    depends_on:
+      api-gateway:
+        condition: service_healthy
 
   vacancy-parser:
     extends:
@@ -55,7 +65,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      telegram-api:
+      api-gateway:
         condition: service_healthy
 
   vacancy-parser-worker:
@@ -88,7 +98,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      vacancy-parser:
+      api-gateway:
         condition: service_healthy
 
 networks:

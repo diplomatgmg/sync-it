@@ -12,7 +12,7 @@ x-service-common: &service-common
 
 x-healthcheck-common: &healthcheck-common
     interval: 30s
-    timeout: 5s
+    timeout: 3s
     retries: 3
     start_period: 10s
 
@@ -20,10 +20,8 @@ services:
   vacancy-parser:
     <<: *service-common
     container_name: vacancy-parser
-    ports:
-      - "${VACANCY_PARSER_PORT}:${VACANCY_PARSER_PORT}"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://vacancy-parser:${VACANCY_PARSER_PORT}/health" ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://vacancy-parser:${ENV_SERVICE_INTERNAL_PORT}/health" ]
       <<: *healthcheck-common
 
   vacancy-parser-worker:

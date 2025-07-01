@@ -4,8 +4,10 @@ requires-python = ">=3.13"
 
 [manifest]
 members = [
+    "api-gateway",
     "database-lib",
     "environment-lib",
+    "gateway-lib",
     "gpt-api",
     "logger-lib",
     "redis-lib",
@@ -116,6 +118,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/95/7d/4c1bd541d4dffa1b52bd83fb8527089e097a106fc90b467a7313b105f840/anyio-4.9.0.tar.gz", hash = "sha256:673c0c244e15788651a4ff38710fea9675823028a6f08a5eda409e0c9840a028", size = 190949, upload-time = "2025-03-17T00:02:54.77Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a1/ee/48ca1a7c89ffec8b6a0c5d02b89c305671d5ffd8d3c94acf8b8c408575bb/anyio-4.9.0-py3-none-any.whl", hash = "sha256:9f76d541cad6e36af7beb62e978876f3b41e3e04f2c1fbf0884604c0a9c4d93c", size = 100916, upload-time = "2025-03-17T00:02:52.713Z" },
+]
+
+[[package]]
+name = "api-gateway"
+source = { virtual = "services/api-gateway" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "pydantic-settings" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.115.13" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "pydantic-settings", specifier = ">=2.10.0" },
+    { name = "uvicorn", specifier = ">=0.34.3" },
 ]
 
 [[package]]
@@ -332,12 +352,6 @@ wheels = [
 [[package]]
 name = "environment-lib"
 source = { virtual = "libs/common/environment" }
-dependencies = [
-    { name = "pydantic-settings" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic-settings", specifier = ">=2.9.1" }]
 
 [[package]]
 name = "fastapi"
@@ -458,6 +472,10 @@ wheels = [
 ]
 
 [[package]]
+name = "gateway-lib"
+source = { virtual = "libs/common/gateway" }
+
+[[package]]
 name = "gpt-api"
 source = { virtual = "services/gpt-api" }
 dependencies = [
@@ -473,7 +491,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "g4f", specifier = ">=0.5.4.5" },
     { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "pydantic-settings", specifier = ">=2.10.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -619,12 +637,6 @@ wheels = [
 [[package]]
 name = "logger-lib"
 source = { virtual = "libs/common/logger" }
-dependencies = [
-    { name = "pydantic-settings" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic-settings", specifier = ">=2.9.1" }]
 
 [[package]]
 name = "mako"
@@ -1204,7 +1216,7 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "pydantic-settings", specifier = ">=2.10.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -1350,6 +1362,7 @@ dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
     { name = "httpx" },
+    { name = "pydantic-settings" },
     { name = "sqlalchemy" },
     { name = "uvloop" },
 ]
@@ -1364,6 +1377,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.16.2" },
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "pydantic-settings", specifier = ">=2.10.0" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "uvloop", specifier = ">=0.21.0" },
 ]

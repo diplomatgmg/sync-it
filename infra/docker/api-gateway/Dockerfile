@@ -2,7 +2,7 @@ FROM python:3.13.4-alpine AS base
 FROM base AS builder
 
 ARG APP_PATH=/app
-ARG SERVICE_NAME=telegram-api
+ARG SERVICE_NAME=api-gateway
 ARG SERVICE_PATH=services/$SERVICE_NAME
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -41,9 +41,9 @@ FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/environment \
-    -e /app/libs/common/gateway
+     -e /app/libs/common/logger \
+     -e /app/libs/common/environment \
+     -e /app/libs/common/gateway
 
 
 # ================================= #

@@ -2,13 +2,11 @@ import asyncio
 
 from bs4 import BeautifulSoup
 from common.logger import get_logger
-import httpx
+from httpx import AsyncClient, Limits
 from schemas import ChannelMessage
 
 
-__all__ = [
-    "fetch_detailed_message",
-]
+__all__ = ["fetch_detailed_message"]
 
 
 logger = get_logger(__name__)
@@ -17,7 +15,7 @@ logger = get_logger(__name__)
 MAX_CONCURRENT_REQUESTS = 50
 
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-client_limits = httpx.Limits(
+client_limits = Limits(
     max_connections=MAX_CONCURRENT_REQUESTS,
     max_keepalive_connections=MAX_CONCURRENT_REQUESTS,
 )
@@ -27,7 +25,7 @@ async def fetch_detailed_message(channel_username: str, message_ids: list[int]) 
     """Возвращает текст и id сообщений по переданным id."""
     logger.debug("Getting messages by ids %s", message_ids)
 
-    async with httpx.AsyncClient(limits=client_limits) as client:
+    async with AsyncClient(limits=client_limits) as client:
         tasks = [_fetch_and_parse_message(client, channel_username, message_id) for message_id in message_ids]
         results = await asyncio.gather(*tasks)
 
@@ -35,7 +33,7 @@ async def fetch_detailed_message(channel_username: str, message_ids: list[int]) 
 
 
 async def _fetch_and_parse_message(
-    client: httpx.AsyncClient, channel_username: str, message_id: int
+    client: AsyncClient, channel_username: str, message_id: int
 ) -> ChannelMessage | None:
     """Парсит сообщение по id."""
     async with semaphore:

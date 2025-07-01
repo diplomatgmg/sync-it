@@ -1,9 +1,7 @@
 [project]
 name = "logger-lib"
 dynamic = ["version"]
-dependencies = [
-    "pydantic-settings>=2.9.1",
-]
+dependencies = []
 
 [tool.setuptools.packages.find]
 where = ["."]

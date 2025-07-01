@@ -9,7 +9,7 @@ class ServiceConfig(BaseSettings):
     host: str
     port: int = Field(ge=1, le=65535)
 
-    model_config = SettingsConfigDict(env_prefix="GPT_API_")
+    model_config = SettingsConfigDict(env_prefix="API_GATEWAY_")
 
 
 service_config = ServiceConfig()

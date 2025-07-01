@@ -1,0 +1,20 @@
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ${PROJECT_ROOT}
+      dockerfile: infra/docker/api-gateway/Dockerfile
+      target: ${ENV_MODE}
+    env_file: ${PROJECT_ROOT}/infra/.env
+    volumes:
+      - ${PROJECT_ROOT}/services/api-gateway:/app/services/api-gateway
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://api-gateway:${API_GATEWAY_PORT}/health" ]
+      interval: 15s
+      timeout: 1s
+      retries: 3
+      start_period: 5s
