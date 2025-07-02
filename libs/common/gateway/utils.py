@@ -1,4 +1,4 @@
-from common.environment.config import env_config
+from common.gateway.config import gateway_config
 from common.gateway.enums import ServiceEnum
 from pydantic import HttpUrl
 
@@ -11,7 +11,7 @@ def build_service_url(service: ServiceEnum, path: str) -> HttpUrl:
 
     return HttpUrl.build(
         scheme="http",
-        host=service,
-        port=env_config.service_internal_port,
-        path=path,
+        host="api-gateway",
+        port=gateway_config.port,
+        path=f"{service}/{path}",
     )

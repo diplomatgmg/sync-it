@@ -59,17 +59,11 @@ services:
     extends:
       service: gpt-api
       file: gpt-api/docker-compose.yml
-    depends_on:
-      api-gateway:
-        condition: service_healthy
 
   telegram-api:
     extends:
       service: telegram-api
       file: telegram-api/docker-compose.yml
-    depends_on:
-      api-gateway:
-        condition: service_healthy
 
   vacancy-parser-migrator:
     profiles:
