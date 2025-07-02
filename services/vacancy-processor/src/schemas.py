@@ -3,6 +3,8 @@ from pydantic import BaseModel, ConfigDict
 
 __all__ = [
     "CompletionResponse",
+    "GradeModelSchema",
+    "GradeResponse",
     "HealthResponse",
     "SkillCategoryModelSchema",
     "SkillCategoryResponse",
@@ -57,3 +59,14 @@ class SkillCategoryModelSchema(BaseModel):
 
 class SkillCategoryResponse(BaseModel):
     categories: list[SkillCategoryModelSchema]
+
+
+class GradeModelSchema(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GradeResponse(BaseModel):
+    grades: list[GradeModelSchema]
