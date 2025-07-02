@@ -28,19 +28,12 @@ services:
   vacancy-parser-worker:
     <<: *service-common
     container_name: vacancy-parser-worker
-    command: [ "celery", "-A", "celery_app.app", "worker", "-l", "${LOG_LEVEL}" ]
+    command: [ "celery", "-A", "celery_app.app", "worker", "-n", "vacancy_parser", "-l", "${LOG_LEVEL}" ]
     healthcheck:
-      test: [ "CMD-SHELL", "celery -A celery_app.app inspect ping -d celery@$$HOSTNAME" ]
+      test: [ "CMD-SHELL", "celery -A celery_app.app inspect ping -d celery@vacancy_parser" ]
       <<: *healthcheck-common
 
   vacancy-parser-beat:
     <<: *service-common
     container_name: vacancy-parser-beat
     command: [ "celery", "-A", "celery_app.app", "beat", "-l", "${LOG_LEVEL}" ]
-
-  vacancy-parser-flower:
-    <<: *service-common
-    container_name: vacancy-parser-flower
-    ports:
-      - "${FLOWER_PORT}:${FLOWER_PORT}"
-    command: [ "celery", "-A", "celery_app.app", "flower", "-l", "${LOG_LEVEL}" ]

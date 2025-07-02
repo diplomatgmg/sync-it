@@ -3,6 +3,7 @@ name = "sync-it"
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
+    "flower>=2.0.1",
 ]
 
 [dependency-groups]

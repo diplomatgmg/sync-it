@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 __all__ = [
     "CompletionResponse",
+    "HealthResponse",
     "VacancyDeleteResponse",
     "VacancyResponse",
     "VacancySchema",
@@ -25,3 +26,7 @@ class VacancyDeleteResponse(BaseModel):
 
 class CompletionResponse(BaseModel):
     message: str
+
+
+class HealthResponse(BaseModel):
+    status: str

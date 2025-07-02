@@ -27,20 +27,24 @@ COPY ./pyproject.toml ./uv.lock ./
 COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
 COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
+COPY ./libs/common/redis/pyproject.toml ./libs/common/redis/pyproject.toml
 
 FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --dev --package $SERVICE_NAME
 RUN uv pip install --no-cache \
     -e /app/libs/common/logger \
-    -e /app/libs/common/database
+    -e /app/libs/common/database \
+    -e /app/libs/common/redis
 
 FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 RUN uv pip install --no-cache \
     -e /app/libs/common/logger \
-    -e /app/libs/common/database
+    -e /app/libs/common/database \
+    -e /app/libs/common/redis
+
 
 # ================================= #
 #           DEVELOPMENT             #
@@ -50,7 +54,8 @@ FROM deps-dev AS development
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/database ./libs/common/database
+COPY ./libs/common/redis ./libs/common/redis
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 
-CMD ["hupper", "-q", "-m", "main", "-w", "."]
+CMD ["python", "main.py"]

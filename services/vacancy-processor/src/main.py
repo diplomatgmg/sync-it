@@ -1,36 +1,33 @@
-from common.database.engine import get_async_session
+from common.environment.config import env_config
 from common.logger import get_logger
-from database.services import GradeService, ProfessionService, SkillService, WorkFormatService
-from database.services.vacancy import VacancyService
+from common.logger.config import log_config
+from fastapi import FastAPI
+from schemas import HealthResponse
 from seeds import seed_models
-from services.vacancy import VacancyExtractorService, VacancyProcessorService
+import uvicorn
 import uvloop
 
 
 logger = get_logger(__name__)
 
+app = FastAPI(title="Vacancy Processor Service")
+
+
+@app.get("/health")
+async def healthcheck() -> HealthResponse:
+    return HealthResponse(status="Healthy")
+
 
 async def main() -> None:
     await seed_models()
 
-    async with get_async_session() as session:
-        vacancy_extractor = VacancyExtractorService()
-
-        vacancy_service = VacancyService(session)
-        profession_service = ProfessionService(session)
-        grade_service = GradeService(session)
-        work_format_service = WorkFormatService(session)
-        skill_service = SkillService(session)
-
-        processor_service = VacancyProcessorService(
-            vacancy_extractor,
-            vacancy_service,
-            profession_service,
-            grade_service,
-            work_format_service,
-            skill_service,
-        )
-        await processor_service.start()
+    uvicorn.run(
+        "main:app",
+        host=env_config.service_internal_host,
+        port=env_config.service_internal_port,
+        log_level=log_config.level.lower(),
+        reload=env_config.debug,
+    )
 
 
 if __name__ == "__main__":

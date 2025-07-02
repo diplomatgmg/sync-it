@@ -11,7 +11,7 @@ import uvloop
 
 logger = get_logger(__name__)
 
-app = FastAPI(title="Telegram Parser API Service")
+app = FastAPI(title="Vacancy Parser Service")
 app.include_router(v1_router, prefix="/api/v1")
 
 
