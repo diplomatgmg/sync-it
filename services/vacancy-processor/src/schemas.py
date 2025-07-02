@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict
 __all__ = [
     "CompletionResponse",
     "HealthResponse",
+    "SkillCategoryModelSchema",
+    "SkillCategoryResponse",
     "SkillModelSchema",
     "SkillResponse",
     "VacancyDeleteResponse",
@@ -44,3 +46,14 @@ class SkillModelSchema(BaseModel):
 
 class SkillResponse(BaseModel):
     skills: list[SkillModelSchema]
+
+
+class SkillCategoryModelSchema(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SkillCategoryResponse(BaseModel):
+    categories: list[SkillCategoryModelSchema]
