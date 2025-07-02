@@ -63,13 +63,13 @@ migrate: # apply migrations for service or all if not specified
 		for service in $(SERVICES); do \
 			if [ -f services/$$service/alembic.ini ]; then \
 				echo "Applying migrations for $$service..."; \
-				$(COMPOSE_COMMAND) exec --workdir /app/services/$$service $$service alembic upgrade head; \
+				$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$$service --rm $$service-migrator alembic upgrade head; \
 			fi; \
 		done; \
 		echo "Migrations applied for all services with alembic"; \
 	else \
 		echo "Applying migrations for service $(s)..."; \
-		$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic upgrade head; \
+		$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic upgrade head; \
 		echo "Migrations applied for service $(s)"; \
 	fi
 

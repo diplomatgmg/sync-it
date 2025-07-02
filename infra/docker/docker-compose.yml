@@ -16,8 +16,8 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 5s
-      start_interval: 5s
+      start_period: 3s
+      start_interval: 1s
 
   redis:
     image: redis:8.0.2-alpine
@@ -35,7 +35,8 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 5s
+      start_period: 3s
+      start_interval: 1s
 
   api-gateway:
     extends:
@@ -56,6 +57,16 @@ services:
       file: telegram-api/docker-compose.yml
     depends_on:
       api-gateway:
+        condition: service_healthy
+
+  vacancy-parser-migrator:
+    profiles:
+      - migrator
+    extends:
+      service: vacancy-parser
+      file: vacancy-parser/docker-compose.yml
+    depends_on:
+      postgres:
         condition: service_healthy
 
   vacancy-parser:
@@ -93,6 +104,16 @@ services:
       service: vacancy-parser-flower
       file: vacancy-parser/docker-compose.yml
 
+  vacancy-processor-migrator:
+    profiles:
+      - migrator
+    extends:
+      service: vacancy-processor
+      file: vacancy-processor/docker-compose.yml
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   vacancy-processor:
     extends:
       service: vacancy-processor
@@ -110,7 +131,6 @@ services:
 networks:
   app-network:
     driver: bridge
-
 
 volumes:
   postgres-data:
