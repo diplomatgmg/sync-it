@@ -13,6 +13,8 @@ __all__ = [
     "SkillModelSchema",
     "SkillResponse",
     "VacancyDeleteResponse",
+    "VacancyListResponse",
+    "VacancyModelSchema",
     "VacancyResponse",
     "VacancySchema",
     "WorkFormatModelSchema",
@@ -96,3 +98,25 @@ class WorkFormatModelSchema(BaseModel):
 
 class WorkFormatResponse(BaseModel):
     work_formats: list[WorkFormatModelSchema]
+
+
+class VacancyModelSchema(BaseModel):
+    id: int
+    link: str
+    profession: ProfessionModelSchema | None
+    grades: list[GradeModelSchema]
+    work_formats: list[WorkFormatModelSchema]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# FIXME
+# У меня уже есть VacancyResponse. Надо придумать, как назвать ответы моделей (как ниже)
+# И ответы со стороны api
+class VacancyListResponse(BaseModel):
+    vacancies: list[VacancyModelSchema]
+
+    # FIXME мб сделать метод from_orm? Например, вынести schemas > models, orm (тут будет baseOrmSchema)
+    # @classmethod
+    # def from_orm_list(cls, vacancies: list):
+    #     return cls(vacancies=[VacancySchema.from_orm(v) for v in vacancies])  # noqa: ERA001
