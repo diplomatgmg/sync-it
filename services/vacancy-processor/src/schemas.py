@@ -6,6 +6,8 @@ __all__ = [
     "GradeModelSchema",
     "GradeResponse",
     "HealthResponse",
+    "ProfessionModelSchema",
+    "ProfessionResponse",
     "SkillCategoryModelSchema",
     "SkillCategoryResponse",
     "SkillModelSchema",
@@ -70,3 +72,14 @@ class GradeModelSchema(BaseModel):
 
 class GradeResponse(BaseModel):
     grades: list[GradeModelSchema]
+
+
+class ProfessionModelSchema(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProfessionResponse(BaseModel):
+    professions: list[ProfessionModelSchema]
