@@ -32,10 +32,10 @@ down: # compose down [s=<service>] [e="<extra> <extra2>"]
 stop: # compose stop [s=<service>] [e="<extra> <extra2>"]
 	$(call compose_action,stop)
 
-venv: # create venv
+venv: # create/sync venv
 	@uv sync --frozen --all-packages
 
-add: # add python package to service
+add: # add python package to service [p=<package>] [s=<service>] [dev=1]
 	@if [ -z "$(p)" ] || [ -z "$(s)" ]; then \
 		echo "Usage: make add p=<package> s=<service> [dev=1]"; \
 		exit 1; \
@@ -58,14 +58,14 @@ lint-fix: # run linters and formatters with fix
 	uv run ruff format . && \
 	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
-mm: # create migration for service
+mm: # create migration [s=<service>] [m="migration message"]
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
 		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
 		exit 1; \
 	fi;
 	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
 
-migrate: # apply migrations for service or all if not specified
+migrate: # apply migrations [s=<service>]
 	@if [ -z "$(s)" ]; then \
 		for service in $(SERVICES); do \
 			if [ -f services/$$service/alembic.ini ]; then \
@@ -80,7 +80,7 @@ migrate: # apply migrations for service or all if not specified
 		echo "Migrations applied for service $(s)"; \
 	fi
 
-downgrade: # downgrade migration for service
+downgrade: # downgrade migration [s=<service>] [r=<revision>]
 	@if [ -z "$(s)" ] || [ -z "$(r)" ]; then \
 		echo "Usage: make downgrade s=<service_name> r=<revision>"; \
 		exit 1; \
