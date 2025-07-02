@@ -80,4 +80,4 @@ class VacancyResponse(BaseModel):
 
 
 class VacancyDeleteResponse(BaseModel):
-    deleted: bool
+    is_deleted: bool

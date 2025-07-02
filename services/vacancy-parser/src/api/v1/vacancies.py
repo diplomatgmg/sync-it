@@ -33,4 +33,4 @@ async def delete_vacancy(
     service = VacancyService(session)
     is_deleted = await service.mark_as_deleted(vacancy_hash)
 
-    return VacancyDeleteResponse(deleted=is_deleted)
+    return VacancyDeleteResponse(is_deleted=is_deleted)

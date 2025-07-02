@@ -23,7 +23,7 @@ async def fetch_newest_telegram_messages(
     if last_message_id is not None:
         params["last_message_id"] = last_message_id
 
-    async with AsyncClient() as client:
+    async with AsyncClient(timeout=10) as client:
         response = await client.get(str(url), params=params)
         response.raise_for_status()
 

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 __all__ = [
     "CompletionResponse",
+    "VacancyDeleteResponse",
     "VacancyResponse",
     "VacancySchema",
 ]
@@ -16,6 +17,10 @@ class VacancySchema(BaseModel):
 
 class VacancyResponse(BaseModel):
     vacancies: list[VacancySchema]
+
+
+class VacancyDeleteResponse(BaseModel):
+    is_deleted: bool
 
 
 class CompletionResponse(BaseModel):

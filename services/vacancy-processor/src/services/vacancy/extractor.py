@@ -26,9 +26,9 @@ class VacancyExtractorService:
         self._paragraphs: list[str] | None = None
 
         self.profession: ProfessionEnum | None = None
-        self.grades: list[GradeEnum] | None = None
-        self.work_formats: list[WorkFormatEnum] | None = None
-        self.skills: list[tuple[SkillCategoryEnum, SkillEnum]] | None = None
+        self.grades: list[GradeEnum] = []
+        self.work_formats: list[WorkFormatEnum] = []
+        self.skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
 
         self.workplace_description: str | None = None
         self.responsibilities: str | None = None
@@ -50,6 +50,7 @@ class VacancyExtractorService:
         self.requirements = self._parse_multiline_field(cleaned_vacancy, "Требования")
         self.conditions = self._parse_multiline_field(cleaned_vacancy, "Условия")
 
+        logger.debug("Extracted vacancy: %s", self)
         return self
 
     def __repr__(self) -> str:
@@ -82,22 +83,22 @@ class VacancyExtractorService:
             logger.warning("Profession pattern not found in message: %s", message)
             return None
 
-        profession_str = match.group(1)
+        profession_str = match.group(1).strip()
 
         return map_to_profession_enum(profession_str)
 
     @staticmethod
-    def _parse_grades(message: str) -> list[GradeEnum] | None:
+    def _parse_grades(message: str) -> list[GradeEnum]:
         """Извлекает значение грейда из сообщения."""
         pattern = r"Позиция:\s(.*)"
         match = re.search(pattern, message)
         if not match:
             logger.warning("Grade pattern not found in message: %s", message)
-            return None
+            return []
 
         grades: list[GradeEnum] = []
 
-        grade_str = match.group(1)
+        grade_str = match.group(1).strip()
         # Junior/Middle/Senior
         grade_parts = re.split(r"/", grade_str)  # noqa: RUF055 убрать noqa после добавления паттерна
 
@@ -114,17 +115,17 @@ class VacancyExtractorService:
         return grades
 
     @staticmethod
-    def _parse_work_formats(message: str) -> list[WorkFormatEnum] | None:
+    def _parse_work_formats(message: str) -> list[WorkFormatEnum]:
         """Извлекает значение формата работы из сообщения."""
         pattern = r"Тип занятости:\s(.*)"
         match = re.search(pattern, message)
         if not match:
             logger.warning("Work format pattern not found in message: %s", message)
-            return None
+            return []
 
         work_formats: list[WorkFormatEnum] = []
 
-        work_format_str = match.group(1)
+        work_format_str = match.group(1).strip()
         # Удаленка/Гибрид | Удаленка, Гибрид
         work_format_parts = re.split(r"[/,]", work_format_str)
 
@@ -138,20 +139,20 @@ class VacancyExtractorService:
 
             work_formats.append(work_format)
 
-        return work_formats or None
+        return work_formats
 
     @staticmethod
-    def _parse_skills(message: str) -> list[tuple[SkillCategoryEnum, SkillEnum]] | None:
+    def _parse_skills(message: str) -> list[tuple[SkillCategoryEnum, SkillEnum]]:
         """Извлекает навыки из сообщения."""
         pattern = r"Навыки:\s(.*)"
         match = re.search(pattern, message)
         if not match:
             logger.warning("Skills pattern not found in message: %s", message)
-            return None
+            return []
 
         skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
 
-        skills_str = match.group(1)
+        skills_str = match.group(1).strip()
         # Python, Git
         skills_parts = re.split(r",", skills_str)  # noqa: RUF055 убрать noqa после добавления паттерна
 
@@ -165,7 +166,7 @@ class VacancyExtractorService:
 
             skills.append((category, skill))
 
-        return skills or None
+        return skills
 
     def _parse_multiline_field(self, message: str, field_name: str) -> str | None:
         """

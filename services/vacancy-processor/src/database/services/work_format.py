@@ -13,6 +13,12 @@ class WorkFormatService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def get_work_format_by_name(self, name: WorkFormatEnum) -> WorkFormat:
+        stmt = select(WorkFormat).where(WorkFormat.name == name)
+        result = await self.session.execute(stmt)
+
+        return result.scalar_one()
+
     async def get_work_formats(self) -> Sequence[WorkFormat]:
         stmt = select(WorkFormat)
         result = await self.session.execute(stmt)

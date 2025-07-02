@@ -37,7 +37,7 @@ unsafe-fixes = true
 line-length = 120
 lint.preview = true
 lint.select = ["ALL"]
-lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "FIX002", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF001", "RUF002", "RUF003", "PLR0913"]
+lint.ignore = ["I", "D", "DOC", "TD", "FIX001", "FIX002", "ANN401", "CPY001", "COM812", "EM", "TRY003", "RUF001", "RUF002", "RUF003", "PLR0913", "PLR0917"]
 extend-exclude = ["**/database/migrations/versions"]
 
 [tool.mypy]
@@ -49,7 +49,7 @@ mypy_path = [
     "services/vacancy-parser/src",
     "services/vacancy-processor/src",
 ]
-plugins = "pydantic.mypy"
+plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin" # fixme maybe sqlalchemy doesn't work
 incremental = true
 warn_return_any = true
 warn_unused_configs = true

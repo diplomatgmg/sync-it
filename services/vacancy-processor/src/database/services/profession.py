@@ -13,6 +13,12 @@ class ProfessionService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def get_profession_by_name(self, name: ProfessionEnum) -> Profession:
+        stmt = select(Profession).where(Profession.name == name)
+        result = await self.session.execute(stmt)
+
+        return result.scalar_one()
+
     async def get_professions(self) -> Sequence[Profession]:
         stmt = select(Profession)
         result = await self.session.execute(stmt)

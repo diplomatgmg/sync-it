@@ -13,6 +13,12 @@ class GradeService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def get_grade_by_name(self, name: GradeEnum) -> Grade:
+        stmt = select(Grade).where(Grade.name == name)
+        result = await self.session.execute(stmt)
+
+        return result.scalar_one()
+
     async def get_grades(self) -> Sequence[Grade]:
         stmt = select(Grade)
         result = await self.session.execute(stmt)

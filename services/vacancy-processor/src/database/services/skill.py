@@ -42,6 +42,12 @@ class SkillService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def get_skill_by_name(self, name: SkillEnum) -> Skill:
+        stmt = select(Skill).where(Skill.name == name)
+        result = await self.session.execute(stmt)
+
+        return result.scalar_one()
+
     async def get_skills(self) -> Sequence[Skill]:
         stmt = select(Skill)
         result = await self.session.execute(stmt)
