@@ -15,6 +15,8 @@ __all__ = [
     "VacancyDeleteResponse",
     "VacancyResponse",
     "VacancySchema",
+    "WorkFormatModelSchema",
+    "WorkFormatResponse",
 ]
 
 
@@ -83,3 +85,14 @@ class ProfessionModelSchema(BaseModel):
 
 class ProfessionResponse(BaseModel):
     professions: list[ProfessionModelSchema]
+
+
+class WorkFormatModelSchema(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WorkFormatResponse(BaseModel):
+    work_formats: list[WorkFormatModelSchema]
