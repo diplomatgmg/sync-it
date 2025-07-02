@@ -9,8 +9,8 @@ __all__ = [
     "TelegramChannelMessagesResponse",
     "TelegramChannelUrl",
     "VacancyDeleteResponse",
+    "VacancyModelSchema",
     "VacancyResponse",
-    "VacancySchema",
 ]
 
 
@@ -67,7 +67,7 @@ class HealthResponse(BaseModel):
     status: str
 
 
-class VacancySchema(BaseModel):
+class VacancyModelSchema(BaseModel):
     hash: str
     link: str
     data: str
@@ -76,7 +76,7 @@ class VacancySchema(BaseModel):
 
 
 class VacancyResponse(BaseModel):
-    vacancies: list[VacancySchema]
+    vacancies: list[VacancyModelSchema]
 
 
 class VacancyDeleteResponse(BaseModel):

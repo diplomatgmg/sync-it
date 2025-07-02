@@ -8,6 +8,7 @@ services:
     env_file: ${PROJECT_ROOT}/infra/.env
     volumes:
       - ${PROJECT_ROOT}/services/api-gateway:/app/services/api-gateway
+      - ${PROJECT_ROOT}/libs:/app/libs
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     networks:
