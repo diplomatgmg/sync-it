@@ -2,7 +2,6 @@ import asyncio
 
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
-from common.logger import get_logger
 from httpx import AsyncClient
 from schemas import CompletionResponse
 
@@ -10,15 +9,11 @@ from schemas import CompletionResponse
 __all__ = ["fetch_gpt_completion"]
 
 
-logger = get_logger(__name__)
-
 semaphore = asyncio.Semaphore(15)
 
 
 async def fetch_gpt_completion(prompt: str) -> str:
     """Возвращает обработанную промпт через GPT"""
-    logger.debug("Fetching GPT completion")
-
     url = build_service_url(ServiceEnum.GPT_API, "/api/v1/completion")
 
     async with semaphore, AsyncClient(timeout=60) as client:
