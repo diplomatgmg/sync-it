@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from common.database.engine import provide_async_session
-from common.logger import get_logger
 from database.services import SkillCategoryService, SkillService
 from fastapi import APIRouter, Depends
 from schemas import SkillCategoryModelSchema, SkillCategoryResponse, SkillModelSchema, SkillResponse
@@ -10,8 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 __all__ = ["router"]
 
-
-logger = get_logger(__name__)
 
 router = APIRouter()
 
