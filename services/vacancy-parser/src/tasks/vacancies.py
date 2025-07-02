@@ -5,15 +5,15 @@ from database.services.vacancy import TelegramVacancyService
 from services.parsers import TelegramParserService
 
 
-__all__ = ["load_telegram_vacancies"]
+__all__ = ["parse_vacancies"]
 
 
-@app.task(name="load_vacancies")  # type: ignore[misc]
-def load_vacancies() -> None:
-    loop.run_until_complete(load_telegram_vacancies())
+@app.task(name="parse_vacancies")  # type: ignore[misc]
+def parse_vacancies() -> None:
+    loop.run_until_complete(parse_telegram_vacancies())
 
 
-async def load_telegram_vacancies() -> None:
+async def parse_telegram_vacancies() -> None:
     async with get_async_session() as session:
         service = TelegramVacancyService(session)
         parser = TelegramParserService(service, channel_links)

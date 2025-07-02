@@ -1,4 +1,4 @@
-from tasks.vacancies import load_telegram_vacancies
+from tasks.vacancies import parse_vacancies
 
 
-__all__ = ["load_telegram_vacancies"]
+__all__ = ["parse_vacancies"]
