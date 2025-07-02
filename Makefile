@@ -1,7 +1,14 @@
 COMPOSE_DIR := infra/docker
 COMPOSE_COMMAND := docker compose -f $(COMPOSE_DIR)/docker-compose.yml --env-file infra/.env
+OVERRIDE_FILE := $(COMPOSE_DIR)/docker-compose.override.yml
+
 SERVICES := gpt-api telegram-api vacancy-parser vacancy-processor
 MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
+
+# Проверяем существование override-файла и добавляем его к COMPOSE_COMMAND
+ifeq ($(wildcard $(OVERRIDE_FILE)),$(OVERRIDE_FILE))
+    COMPOSE_COMMAND := $(COMPOSE_COMMAND) -f $(OVERRIDE_FILE)
+endif
 
 define compose_action
 	@if [ -z "$(s)" ]; then \

@@ -1,0 +1,18 @@
+name: ${ENV_PROJECT_NAME}
+
+services:
+  gpt-api:
+    ports:
+      - "${GPT_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+
+  telegram-api:
+    ports:
+      - "${TELEGRAM_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+
+  vacancy-parser:
+    ports:
+      - "${VACANCY_PARSER_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+
+  vacancy-processor:
+    ports:
+      - "${VACANCY_PROCESSOR_PORT}:${ENV_SERVICE_INTERNAL_PORT}"

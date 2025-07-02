@@ -3,11 +3,12 @@ from common.gateway.config import gateway_config
 from common.gateway.enums import ServiceEnum
 from common.logger import get_logger
 from common.logger.config import log_config
-from fastapi import FastAPI, HTTPException, Request, Response, Header
+from fastapi import FastAPI, Header, HTTPException, Request, Response
 from httpx import AsyncClient
 from pydantic import HttpUrl
 from schemas import HealthResponse
 import uvicorn
+
 
 logger = get_logger(__name__)
 
@@ -19,7 +20,7 @@ async def gateway_proxy(
     service: ServiceEnum,
     path: str,
     request: Request,
-    x_api_key: str = Header(None, alias="x-api-key")
+    x_api_key: str = Header(None, alias="x-api-key"),
 ) -> Response:
     logger.debug("Proxy request to service: %s, path: %s", service, path)
 
