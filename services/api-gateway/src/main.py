@@ -1,22 +1,17 @@
-from typing import Annotated
-
 from common.environment.config import env_config
 from common.gateway.config import gateway_config
 from common.gateway.enums import ServiceEnum
 from common.logger import get_logger
 from common.logger.config import log_config
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
-from fastapi.security import APIKeyHeader
+from fastapi import FastAPI, HTTPException, Request, Response, Header
 from httpx import AsyncClient
 from pydantic import HttpUrl
 from schemas import HealthResponse
 import uvicorn
 
-
 logger = get_logger(__name__)
 
 app = FastAPI(title="API Gateway Service")
-header_scheme = APIKeyHeader(name="x-api-key", auto_error=False)
 
 
 @app.api_route("/{service}/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
@@ -24,12 +19,12 @@ async def gateway_proxy(
     service: ServiceEnum,
     path: str,
     request: Request,
-    api_key: Annotated[str, Depends(header_scheme)],
+    x_api_key: str = Header(None, alias="x-api-key")
 ) -> Response:
     logger.debug("Proxy request to service: %s, path: %s", service, path)
 
     host = f"api-gateway:{gateway_config.port}"
-    if request.headers["host"] != host and api_key != gateway_config.api_key and not env_config.debug:
+    if request.headers["host"] != host and x_api_key != gateway_config.api_key and not env_config.debug:
         raise HTTPException(status_code=403, detail="Invalid API key")
 
     url = HttpUrl.build(
