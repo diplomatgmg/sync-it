@@ -7,6 +7,8 @@ __all__ = ["service_config"]
 class ServiceConfig(BaseSettings):
     db_schema: str = "telegram_bot"
 
+    token: str
+
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_BOT_")
 
 

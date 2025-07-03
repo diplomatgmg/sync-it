@@ -11,4 +11,3 @@ services:
       - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network
-
