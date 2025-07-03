@@ -65,6 +65,11 @@ services:
       service: telegram-api
       file: telegram-api/docker-compose.yml
 
+  telegram-bot:
+    extends:
+      service: telegram-bot
+      file: telegram-bot/docker-compose.yml
+
   vacancy-parser-migrator:
     profiles:
       - migrator

@@ -27,6 +27,7 @@ members = [
     "services/api-gateway",
     "services/gpt-api",
     "services/telegram-api",
+    "services/telegram-bot",
     "services/vacancy-parser",
     "services/vacancy-processor",
 ]
@@ -47,10 +48,11 @@ mypy_path = [
     "services/api-gateway/src",
     "services/gpt-api/src",
     "services/telegram-api/src",
+    "services/telegram-bot/src",
     "services/vacancy-parser/src",
     "services/vacancy-processor/src",
 ]
-plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin" # fixme maybe sqlalchemy doesn't work
+plugins = "pydantic.mypy, sqlalchemy.ext.mypy.plugin"
 incremental = true
 warn_return_any = true
 warn_unused_configs = true
