@@ -23,7 +23,7 @@ async def channel_messages(
 
     if last_message_id is None:
         # Парсим offset_last_message последних сообщений для актуализации вакансий
-        offset_last_message = 50
+        offset_last_message = 100
         last_message_id = newest_message_id - offset_last_message
         logger.info("Last message id is unknown, using %s", last_message_id)
 

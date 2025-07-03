@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from database.models import Base
 from database.models.tables import vacancy_grade_table, vacancy_skill_table, vacancy_work_format_table
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -20,6 +20,11 @@ class Vacancy(Base):
 
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
+
+    workplace_description: Mapped[str] = mapped_column(Text())
+    responsibilities: Mapped[str] = mapped_column(Text())
+    requirements: Mapped[str] = mapped_column(Text())
+    conditions: Mapped[str] = mapped_column(Text())
 
     profession_id: Mapped[int] = mapped_column(ForeignKey("profession.id", ondelete="CASCADE"), nullable=True)
     profession: Mapped["Profession"] = relationship(back_populates="vacancies")

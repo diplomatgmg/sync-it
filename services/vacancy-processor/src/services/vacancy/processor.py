@@ -51,7 +51,12 @@ class VacancyProcessorService:
     async def process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
         try:
             completion = await fetch_gpt_completion(prompt)
-            if "Не вакансия" in completion:
+
+            bad_completions = (
+                "Не вакансия",
+                "It seems that this video doesn't have a transcript, please try another video",
+            )
+            if any(bad_completion in completion for bad_completion in bad_completions):
                 logger.debug("Not a vacancy: %s", vacancy.link)
                 await send_delete_request_vacancy(vacancy)
                 return
@@ -76,6 +81,10 @@ class VacancyProcessorService:
             hash=vacancy.hash,
             link=vacancy.link,
             profession_id=profession_id,
+            workplace_description=extracted_vacancy.workplace_description,
+            responsibilities=extracted_vacancy.responsibilities,
+            requirements=extracted_vacancy.requirements,
+            conditions=extracted_vacancy.conditions,
         )
 
         vacancy_model.grades = await self._resolve_grades(extracted_vacancy)
