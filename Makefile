@@ -35,16 +35,12 @@ stop: # compose stop [s=<service>] [e="<extra> <extra2>"]
 venv: # create/sync venv
 	@uv sync --frozen --all-packages
 
-add: # add python package to service [p=<package>] [s=<service>] [dev=1]
+add: # add python package to service p=<package> s=<service> [e="<extra> <extra2>"]
 	@if [ -z "$(p)" ] || [ -z "$(s)" ]; then \
-		echo "Usage: make add p=<package> s=<service> [dev=1]"; \
+		echo "Usage: make add p=<package> s=<service> [e="<extra> <extra2>"]"; \
 		exit 1; \
 	fi; \
-	if [ "$(dev)" = "1" ]; then \
-		uv add $(p) --package $(s) --dev; \
-	else \
-		uv add $(p) --package $(s); \
-	fi
+	uv add $(p) --package $(s) $(e); \
 
 lint: # run linters and formatters
 	@uv run ruff check . && \
@@ -58,7 +54,7 @@ lint-fix: # run linters and formatters with fix
 	uv run ruff format . && \
 	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
-mm: # create migration [s=<service>] [m="migration message"]
+mm: # create migration s=<service> m="migration message"
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
 		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
 		exit 1; \
@@ -80,7 +76,7 @@ migrate: # apply migrations [s=<service>]
 		echo "Migrations applied for service $(s)"; \
 	fi
 
-downgrade: # downgrade migration [s=<service>] [r=<revision>]
+downgrade: # downgrade migration s=<service> r=<revision>
 	@if [ -z "$(s)" ] || [ -z "$(r)" ]; then \
 		echo "Usage: make downgrade s=<service_name> r=<revision>"; \
 		exit 1; \
