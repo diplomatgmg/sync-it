@@ -22,7 +22,6 @@ def map_to_profession_enum(profession: str) -> ProfessionEnum | None:
 
 
 professions_map = {
-    ProfessionEnum.PYTHON_DEVELOPER: ("python developer",),
     ProfessionEnum.BACKEND: ("backend developer",),
     ProfessionEnum.FRONTEND: ("frontend developer",),
     ProfessionEnum.FULLSTACK: ("fullstack developer",),

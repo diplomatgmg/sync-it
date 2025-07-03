@@ -37,7 +37,6 @@ class ProfessionEnum(BaseStrEnum):
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
     FULLSTACK = "Fullstack developer"
-    PYTHON_DEVELOPER = "Python developer"
     DATA_ENGINEER = "Data Engineer"
     DATA_SCIENCE = "Data Science"
     TECH_LEAD = "Tech Lead"

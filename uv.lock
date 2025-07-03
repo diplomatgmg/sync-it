@@ -1117,12 +1117,18 @@ name = "telegram-bot"
 source = { virtual = "services/telegram-bot" }
 dependencies = [
     { name = "aiogram" },
+    { name = "alembic" },
+    { name = "asyncpg" },
+    { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.20.0.post0" },
+    { name = "alembic", specifier = ">=1.16.2" },
+    { name = "asyncpg", specifier = ">=0.30.0" },
+    { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
 ]
 

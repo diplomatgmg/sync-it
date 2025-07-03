@@ -46,6 +46,8 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/1
     ports:
       - "${FLOWER_PORT}:${FLOWER_PORT}"
+    volumes:
+      - flower-data:/data
     command: [ "celery", "flower", "--port=${FLOWER_PORT}", "-l", "${LOG_LEVEL}" ]
     networks:
       - app-network
@@ -64,6 +66,16 @@ services:
     extends:
       service: telegram-api
       file: telegram-api/docker-compose.yml
+
+  telegram-bot-migrator:
+    profiles:
+      - migrator
+    extends:
+      service: telegram-bot
+      file: telegram-bot/docker-compose.yml
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   telegram-bot:
     extends:
@@ -159,3 +171,4 @@ networks:
 volumes:
   postgres-data:
   redis-data:
+  flower-data:

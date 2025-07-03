@@ -2,7 +2,7 @@ COMPOSE_DIR := infra/docker
 COMPOSE_COMMAND := docker compose -f $(COMPOSE_DIR)/docker-compose.yml --env-file infra/.env
 OVERRIDE_FILE := $(COMPOSE_DIR)/docker-compose.override.yml
 
-SERVICES := gpt-api telegram-api vacancy-parser vacancy-processor
+SERVICES := gpt-api telegram-api telegram-bot vacancy-parser vacancy-processor
 MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
 
 # Проверяем существование override-файла и добавляем его к COMPOSE_COMMAND
@@ -63,7 +63,7 @@ mm: # create migration [s=<service>] [m="migration message"]
 		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
 		exit 1; \
 	fi;
-	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic revision --autogenerate -m "$(m)"
+	$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic revision --autogenerate -m "$(m)"
 
 migrate: # apply migrations [s=<service>]
 	@if [ -z "$(s)" ]; then \
@@ -85,4 +85,4 @@ downgrade: # downgrade migration [s=<service>] [r=<revision>]
 		echo "Usage: make downgrade s=<service_name> r=<revision>"; \
 		exit 1; \
 	fi; \
-	$(COMPOSE_COMMAND) exec --workdir /app/services/$(s) $(s) alembic downgrade $(r)
+	$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic downgrade $(r)
