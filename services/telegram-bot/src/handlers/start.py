@@ -1,6 +1,7 @@
 from aiogram import Router
-from aiogram.filters import CommandStart
+from aiogram.filters import Command
 from aiogram.types import Message
+from commands import BotCommandEnum
 
 
 __all__ = ()
@@ -9,6 +10,6 @@ __all__ = ()
 router = Router(name="start")
 
 
-@router.message(CommandStart())
+@router.message(Command(BotCommandEnum.START))
 async def handle_start(message: Message) -> None:
-    await message.answer("You started the bot")
+    await message.answer("Bot started")
