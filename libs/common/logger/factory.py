@@ -7,7 +7,16 @@ from common.logger.config import log_config
 __all__ = ["get_logger"]
 
 
-def get_logger(name: str | None = None) -> logging.Logger:
+_is_logging_configured = False
+
+
+LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+LOG_DATE_FORMAT = "%d.%m.%Y %H:%M:%S"
+
+
+def get_logger(name: str) -> logging.Logger:
+    _configure_base_logger()
+
     logger = logging.getLogger(name)
 
     if logger.hasHandlers():
@@ -16,8 +25,8 @@ def get_logger(name: str | None = None) -> logging.Logger:
     logger.setLevel(log_config.level.value)
 
     console_formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        datefmt="%d.%m.%Y %H:%M:%S",
+        fmt=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
     )
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(console_formatter)
@@ -26,3 +35,19 @@ def get_logger(name: str | None = None) -> logging.Logger:
     logger.addHandler(console_handler)
 
     return logger
+
+
+def _configure_base_logger() -> None:
+    """
+    Изменяет конфигурацию базового логгера для всех модулей, использующих logging
+    """
+    global _is_logging_configured  # noqa: PLW0602
+
+    if _is_logging_configured:
+        return
+
+    logging.basicConfig(
+        level=log_config.level.value,
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
+    )
