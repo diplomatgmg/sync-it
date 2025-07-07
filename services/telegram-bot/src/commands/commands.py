@@ -1,5 +1,5 @@
 from aiogram.types import BotCommand
-from utils.enums import CommandEnum
+from commands.enums import CommandEnum
 
 
 __all__ = [

@@ -5,10 +5,10 @@ from commands import BotCommandEnum
 from database.models import User
 
 
-__all__ = ()
+__all__ = ["router"]
 
 
-router = Router(name="whoami")
+router = Router(name=BotCommandEnum.WHOAMI)
 
 
 @router.message(Command(BotCommandEnum.WHOAMI))
