@@ -32,7 +32,7 @@ down: # compose down [s=<service>] [e="<extra> <extra2>"]
 stop: # compose stop [s=<service>] [e="<extra> <extra2>"]
 	$(call compose_action,stop)
 
-venv: # create/sync venv
+venv: # create/update venv
 	@uv sync --frozen --all-packages
 
 add: # add python package to service p=<package> s=<service> [e="<extra> <extra2>"]
