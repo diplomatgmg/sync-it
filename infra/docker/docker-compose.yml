@@ -81,6 +81,9 @@ services:
     extends:
       service: telegram-bot
       file: telegram-bot/docker-compose.yml
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   vacancy-parser-migrator:
     profiles:
