@@ -10,6 +10,7 @@ __all__ = [
 
 class BotCommandEnum(CommandEnum):
     START = "start", "Запустить бота"
+    WHOAMI = "whoami", "Информация о пользователе"
 
 
 def get_bot_commands() -> list[BotCommand]:

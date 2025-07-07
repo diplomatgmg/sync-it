@@ -1,8 +1,8 @@
 """added user
 
-Revision ID: df2c41f5d4e3
-Revises: 
-Create Date: 2025-07-03 15:26:05.596719
+Revision ID: 3a4df4499795
+Revises: 6c845ea1bbca
+Create Date: 2025-07-07 14:58:31.761573
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'df2c41f5d4e3'
-down_revision: Union[str, Sequence[str], None] = None
+revision: str = '3a4df4499795'
+down_revision: Union[str, Sequence[str], None] = '6c845ea1bbca'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -24,6 +24,7 @@ def upgrade() -> None:
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('telegram_id', sa.BigInteger(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('telegram_id'),
     schema='telegram_bot'
