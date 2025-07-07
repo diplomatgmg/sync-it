@@ -1,37 +1,38 @@
 [project]
-name = "sync-it"
+name = "syncit-core"
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
-    "flower>=2.0.1",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
 ]
 
 [dependency-groups]
 dev = [
     "isort>=6.0.1",
     "mypy>=1.16.1",
-    "pydantic>=2.11.7", # for mypy plugin
     "ruff>=0.12.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["libs", "services"]
 
+[tool.uv.sources]
+syncit-core = { workspace = true }
+database-lib = { workspace = true }
+environment-lib = { workspace = true }
+logger-lib = { workspace = true }
+redis-lib = { workspace = true }
+gateway-lib = { workspace = true }
+
 [tool.uv.workspace]
 members = [
-    "libs/common/environment",
-    "libs/common/logger",
-    "libs/common/database",
-    "libs/common/redis",
-    "libs/common/gateway",
-    "services/api-gateway",
-    "services/gpt-api",
-    "services/telegram-api",
-    "services/telegram-bot",
-    "services/vacancy-parser",
-    "services/vacancy-processor",
+    "libs/common/*",
+    "services/*",
 ]
-
+exclude = [
+    "**/__pycache__"
+]
 
 [tool.ruff]
 fix = true

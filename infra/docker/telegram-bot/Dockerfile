@@ -24,23 +24,14 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
-COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
-COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
-COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
 
 FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database
 
 FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database
 
 
 # ================================= #

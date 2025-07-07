@@ -4,6 +4,15 @@ dynamic = ["version"]
 dependencies = [
     "fastapi>=0.115.13",
     "httpx>=0.28.1",
-    "pydantic-settings>=2.10.0",
     "uvicorn[standard]>=0.34.3",
+    "logger-lib",
+    "syncit-core",
+    "environment-lib",
+    "gateway-lib",
 ]
+
+[tool.uv.sources]
+logger-lib = { workspace = true }
+syncit-core = { workspace = true }
+environment-lib = { workspace = true }
+gateway-lib = { workspace = true }

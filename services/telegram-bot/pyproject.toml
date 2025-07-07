@@ -3,10 +3,9 @@ name = "telegram-bot"
 dynamic = ["version"]
 dependencies = [
     "aiogram>=3.20.0.post0",
-    "alembic>=1.16.2",
-    "asyncpg>=0.30.0",
-    "pydantic>=2.11.7",
-    "pydantic-settings>=2.10.1",
+    "database-lib",
+    "logger-lib",
+    "syncit-core",
     "uvloop>=0.21.0",
 ]
 
@@ -14,3 +13,8 @@ dependencies = [
 dev = [
     "hupper>=1.12.1",
 ]
+
+[tool.uv.sources]
+syncit-core = { workspace = true }
+logger-lib = { workspace = true }
+database-lib = { workspace = true }

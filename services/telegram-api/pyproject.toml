@@ -3,8 +3,17 @@ name = "telegram-api"
 dynamic = ["version"]
 dependencies = [
     "beautifulsoup4>=4.13.4",
+    "environment-lib",
     "fastapi>=0.115.12",
+    "gateway-lib",
     "httpx>=0.28.1",
-    "pydantic-settings>=2.10.0",
+    "logger-lib",
+    "syncit-core",
     "uvicorn[standard]>=0.34.3",
 ]
+
+[tool.uv.sources]
+syncit-core = { workspace = true }
+logger-lib = { workspace = true }
+environment-lib = { workspace = true }
+gateway-lib = { workspace = true }

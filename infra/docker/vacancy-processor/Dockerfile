@@ -32,18 +32,10 @@ COPY ./libs/common/redis/pyproject.toml ./libs/common/redis/pyproject.toml
 FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database \
-    -e /app/libs/common/redis
 
 FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database \
-    -e /app/libs/common/redis
 
 
 # ================================= #

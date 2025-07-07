@@ -2,11 +2,20 @@
 name = "vacancy-parser"
 dynamic = ["version"]
 dependencies = [
-    "alembic>=1.16.2",
-    "asyncpg>=0.30.0",
     "celery>=5.5.3",
+    "database-lib",
     "fastapi>=0.115.13",
+    "gateway-lib",
     "httpx>=0.28.1",
-    "pydantic-settings>=2.9.1",
+    "logger-lib",
+    "redis-lib",
+    "syncit-core",
     "uvicorn[standard]>=0.34.3",
 ]
+
+[tool.uv.sources]
+syncit-core = { workspace = true }
+logger-lib = { workspace = true }
+database-lib = { workspace = true }
+redis-lib = { workspace = true }
+gateway-lib = { workspace = true }

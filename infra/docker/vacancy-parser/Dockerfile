@@ -33,20 +33,10 @@ COPY ./libs/common/gateway/pyproject.toml ./libs/common/gateway/pyproject.toml
 FROM deps-base AS deps-dev
 
 RUN uv sync --frozen --dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database \
-    -e /app/libs/common/redis \
-    -e /app/libs/common/gateway
 
 FROM deps-base AS deps-prod
 
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
-RUN uv pip install --no-cache \
-    -e /app/libs/common/logger \
-    -e /app/libs/common/database \
-    -e /app/libs/common/redis \
-    -e /app/libs/common/gateway
 
 
 # ================================= #
@@ -54,7 +44,6 @@ RUN uv pip install --no-cache \
 # ================================= #
 FROM deps-dev AS development
 
-COPY ${SERVICE_PATH}/alembic.ini ${SERVICE_PATH}/alembic.ini
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/database ./libs/common/database
