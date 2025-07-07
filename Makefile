@@ -37,7 +37,7 @@ venv: # create/sync venv
 
 add: # add python package to service p=<package> s=<service> [e="<extra> <extra2>"]
 	@if [ -z "$(p)" ] || [ -z "$(s)" ]; then \
-		echo "Usage: make add p=<package> s=<service> [e='<extra> <extra2>']"; \
+		echo 'Usage: make add p=<package> s=<service> [e="<extra> <extra2>"]'; \
 		exit 1; \
 	fi; \
 	uv add $(p) --package $(s) $(e);
@@ -56,7 +56,7 @@ lint-fix: # run linters and formatters with fix
 
 mm: # create migration s=<service> m="migration message"
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
-		echo "Usage: make mm s=<service_name> m=\"migration message\""; \
+		echo 'Usage: make mm s=<service_name> m="migration message"'; \
 		exit 1; \
 	fi;
 	$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic revision --autogenerate -m "$(m)"
