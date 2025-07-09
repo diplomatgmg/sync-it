@@ -3,7 +3,6 @@ name = "api-gateway"
 dynamic = ["version"]
 dependencies = [
     "fastapi>=0.115.13",
-    "httpx>=0.28.1",
     "uvicorn[standard]>=0.34.3",
     "logger-lib",
     "syncit-core",

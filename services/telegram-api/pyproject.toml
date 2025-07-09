@@ -6,7 +6,6 @@ dependencies = [
     "environment-lib",
     "fastapi>=0.115.12",
     "gateway-lib",
-    "httpx>=0.28.1",
     "logger-lib",
     "syncit-core",
     "uvicorn[standard]>=0.34.3",

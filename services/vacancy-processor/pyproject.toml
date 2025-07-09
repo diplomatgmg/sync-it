@@ -5,7 +5,7 @@ dependencies = [
     "celery>=5.5.3",
     "database-lib",
     "fastapi>=0.115.13",
-    "httpx>=0.28.1",
+    "gateway-lib",
     "logger-lib",
     "redis-lib",
     "syncit-core",
@@ -17,3 +17,4 @@ syncit-core = { workspace = true }
 logger-lib = { workspace = true }
 database-lib = { workspace = true }
 redis-lib = { workspace = true }
+gateway-lib = { workspace = true }
