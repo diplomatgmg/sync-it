@@ -5,7 +5,7 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "environment-lib",
     "fastapi>=0.115.12",
-    "gateway-lib",
+    "httpx>=0.28.1",
     "logger-lib",
     "syncit-core",
     "uvicorn[standard]>=0.34.3",
@@ -15,4 +15,3 @@ dependencies = [
 syncit-core = { workspace = true }
 logger-lib = { workspace = true }
 environment-lib = { workspace = true }
-gateway-lib = { workspace = true }

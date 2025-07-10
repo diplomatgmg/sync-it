@@ -4,6 +4,7 @@ dynamic = ["version"]
 dependencies = [
     "aiogram>=3.20.0.post0",
     "database-lib",
+    "gateway-lib",
     "logger-lib",
     "syncit-core",
     "uvloop>=0.21.0",
@@ -18,3 +19,4 @@ dev = [
 syncit-core = { workspace = true }
 logger-lib = { workspace = true }
 database-lib = { workspace = true }
+gateway-lib = { workspace = true }

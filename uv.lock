@@ -425,7 +425,7 @@ wheels = [
 
 [[package]]
 name = "g4f"
-version = "0.5.6.3"
+version = "0.5.6.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -434,9 +434,9 @@ dependencies = [
     { name = "pycryptodome" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ac/be/e104229cec8e06857c10aaddf8c6f8830fe32188006905495990c9aebc2b/g4f-0.5.6.3.tar.gz", hash = "sha256:f5d97932a091574741ab7741423c6382cffc9208ab32136cd864855b105e81a7", size = 383879, upload-time = "2025-06-30T08:08:16.96Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/bb/e09cc9113a81078dadf793b01216bbe811712a2a9fc8087c2636beb0cd83/g4f-0.5.6.4.tar.gz", hash = "sha256:0ac33cb0681e2fc6c7c429d77ef1e5d0372b935ed989cb22a782b413847e9a46", size = 388134, upload-time = "2025-07-10T07:53:11.313Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6a/e6/d90165a89a4674061ea427524451b5d33b9da9efeac9ded1e75ad798276c/g4f-0.5.6.3-py3-none-any.whl", hash = "sha256:309031ba2a065ef4e0c7c9db9a39f2ff6e546943d8de41edf51ec8779fd00934", size = 472494, upload-time = "2025-06-30T08:08:14.461Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/62/d537afe96e58a2b1e763fbf1bf84108970869b6f5210343e7138ca398820/g4f-0.5.6.4-py3-none-any.whl", hash = "sha256:45f28a5146bb0832960dfd00cad75aca0cba11ba28a0a899e116882edcd84a90", size = 475469, upload-time = "2025-07-10T07:53:09.283Z" },
 ]
 
 [[package]]
@@ -1084,7 +1084,7 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "environment-lib" },
     { name = "fastapi" },
-    { name = "gateway-lib" },
+    { name = "httpx" },
     { name = "logger-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1095,7 +1095,7 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
     { name = "environment-lib", virtual = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "gateway-lib", virtual = "libs/common/gateway" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
@@ -1107,6 +1107,7 @@ source = { virtual = "services/telegram-bot" }
 dependencies = [
     { name = "aiogram" },
     { name = "database-lib" },
+    { name = "gateway-lib" },
     { name = "logger-lib" },
     { name = "syncit-core" },
     { name = "uvloop" },
@@ -1121,6 +1122,7 @@ dev = [
 requires-dist = [
     { name = "aiogram", specifier = ">=3.20.0.post0" },
     { name = "database-lib", virtual = "libs/common/database" },
+    { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "syncit-core", virtual = "." },
     { name = "uvloop", specifier = ">=0.21.0" },

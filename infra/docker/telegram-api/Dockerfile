@@ -42,7 +42,6 @@ FROM deps-dev AS development
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/environment ./libs/common/environment
-COPY ./libs/common/gateway ./libs/common/gateway
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 
