@@ -2,8 +2,11 @@ from pydantic import BaseModel
 
 
 __all__ = [
+    "Grade",
     "GradeResponse",
+    "Profession",
     "ProfessionResponse",
+    "WorkFormat",
     "WorkFormatResponse",
 ]
 

@@ -1,9 +1,14 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from callbacks.noop import NoopActionEnum, NoopCallback
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
+from schemas import WorkFormat
 
 
-__all__ = ["preferences_keyboard"]
+__all__ = [
+    "preferences_keyboard",
+    "work_formats_keyboard",
+]
 
 
 def preferences_keyboard() -> InlineKeyboardMarkup:
@@ -26,6 +31,20 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
                 callback_data=PreferencesCallback(action=PreferencesActionEnum.WORK_FORMAT).pack(),
             ),
         ],
+    ]
+
+    return InlineKeyboardBuilder(markup=buttons).as_markup()
+
+
+def work_formats_keyboard(work_formats: list[WorkFormat]) -> InlineKeyboardMarkup:
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text=work_format.name,
+                callback_data=NoopCallback(action=NoopActionEnum.DO_NOTHING).pack(),
+            ),
+        ]
+        for work_format in work_formats
     ]
 
     return InlineKeyboardBuilder(markup=buttons).as_markup()
