@@ -10,6 +10,7 @@ __all__ = [
 
 
 class MenuActionEnum(StrEnum):
+    MAIN = "main"
     VACANCIES = "vacancies"
     PREFERENCES = "preferences"
 

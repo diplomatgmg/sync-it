@@ -1,8 +1,10 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.noop import NoopActionEnum, NoopCallback
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
-from schemas import WorkFormat, Grade, Profession
+from schemas import Grade, Profession, WorkFormat
+
 
 __all__ = [
     "preferences_keyboard",
@@ -30,6 +32,12 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
                 callback_data=PreferencesCallback(action=PreferencesActionEnum.WORK_FORMAT).pack(),
             ),
         ],
+        [
+            InlineKeyboardButton(
+                text="🔙  Назад",
+                callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
+            ),
+        ],
     ]
 
     return InlineKeyboardBuilder(markup=buttons).as_markup()
@@ -45,7 +53,15 @@ def work_formats_keyboard(work_formats: list[WorkFormat]) -> InlineKeyboardMarku
         ]
         for work_format in work_formats
     ]
-
+    # Добавляем кнопку "<< Назад"
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="<< Назад",
+                callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
+            )
+        ]
+    )
     return InlineKeyboardBuilder(markup=buttons).as_markup()
 
 
@@ -59,7 +75,15 @@ def grades_keyboard(grades: list[Grade]) -> InlineKeyboardMarkup:
         ]
         for grade in grades
     ]
-
+    # Добавляем кнопку "<< Назад"
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="<< Назад",
+                callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
+            )
+        ]
+    )
     return InlineKeyboardBuilder(markup=buttons).as_markup()
 
 
@@ -73,5 +97,13 @@ def professions_keyboard(professions: list[Profession]) -> InlineKeyboardMarkup:
         ]
         for profession in professions
     ]
-
+    # Добавляем кнопку "<< Назад"
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                text="<< Назад",
+                callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
+            )
+        ]
+    )
     return InlineKeyboardBuilder(markup=buttons).as_markup()

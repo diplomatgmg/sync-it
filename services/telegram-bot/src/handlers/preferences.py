@@ -1,8 +1,8 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
-from clients import WorkFormatClient, GradeClient, ProfessionClient
-from keyboard.inline.preferences import work_formats_keyboard, grades_keyboard, professions_keyboard
+from clients import GradeClient, ProfessionClient, WorkFormatClient
+from keyboard.inline.preferences import grades_keyboard, professions_keyboard, work_formats_keyboard
 from utils.message import safe_edit_message
 
 

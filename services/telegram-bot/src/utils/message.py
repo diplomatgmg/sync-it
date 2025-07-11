@@ -2,6 +2,7 @@ from typing import NotRequired, TypedDict, Unpack
 
 from aiogram.client.default import Default
 from aiogram.types import CallbackQuery, InaccessibleMessage, InlineKeyboardMarkup, Message
+from common.logger import get_logger
 from exceptions import MessageNotAvailableError
 
 
@@ -10,6 +11,8 @@ __all__ = [
     "make_linked",
     "safe_edit_message",
 ]
+
+logger = get_logger(__name__)
 
 
 class EditMessageKwargs(TypedDict):
@@ -39,13 +42,33 @@ async def get_message(query: CallbackQuery) -> Message:
     raise MessageNotAvailableError
 
 
-async def safe_edit_message(query: CallbackQuery, **kwargs: Unpack[EditMessageKwargs]) -> None:
-    if isinstance(query.message, Message):
-        await query.message.edit_text(**kwargs)
+async def safe_edit_message(
+    entity: CallbackQuery | Message, *, try_answer: bool = False, **kwargs: Unpack[EditMessageKwargs]
+) -> None:
+    message: Message | None = None
+
+    if isinstance(entity, CallbackQuery):
+        if isinstance(entity.message, Message):
+            message = entity.message
+        elif isinstance(entity.message, InaccessibleMessage):
+            logger.warning("Cannot edit inaccessible message, using try_answer=True")
+            try_answer = True
+
+    if isinstance(entity, Message):
+        message = entity
+
+    if not message:
+        logger.error("Message is not available")
         return
 
-    if isinstance(query.message, InaccessibleMessage):
-        await query.message.answer(**kwargs)
-        return
-
-    await query.answer("Произошла ошибка. Попробуйте позже.")
+    try:
+        await message.edit_text(**kwargs)
+    except Exception as edit_error:
+        if try_answer:
+            try:
+                await message.answer(**kwargs)
+            except Exception as answer_error:
+                logger.exception("Failed to answer message", exc_info=answer_error)
+        else:
+            logger.exception("Failed to edit message", exc_info=edit_error)
+            await entity.answer("Произошла ошибка. Попробуйте позже.")
