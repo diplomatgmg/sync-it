@@ -21,7 +21,7 @@ class Vacancy(Base):
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
 
-    workplace_description: Mapped[str] = mapped_column(Text())
+    workplace_description: Mapped[str] = mapped_column(Text(), nullable=True)
     responsibilities: Mapped[str] = mapped_column(Text())
     requirements: Mapped[str] = mapped_column(Text())
     conditions: Mapped[str] = mapped_column(Text())
