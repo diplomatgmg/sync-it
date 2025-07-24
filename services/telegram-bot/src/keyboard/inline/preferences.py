@@ -53,11 +53,11 @@ def work_formats_keyboard(work_formats: list[WorkFormat]) -> InlineKeyboardMarku
         ]
         for work_format in work_formats
     ]
-    # Добавляем кнопку "<< Назад"
+
     buttons.append(
         [
             InlineKeyboardButton(
-                text="<< Назад",
+                text="🔙  Назад",
                 callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
             )
         ]
@@ -75,11 +75,11 @@ def grades_keyboard(grades: list[Grade]) -> InlineKeyboardMarkup:
         ]
         for grade in grades
     ]
-    # Добавляем кнопку "<< Назад"
+
     buttons.append(
         [
             InlineKeyboardButton(
-                text="<< Назад",
+                text="🔙  Назад",
                 callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
             )
         ]
@@ -97,11 +97,11 @@ def professions_keyboard(professions: list[Profession]) -> InlineKeyboardMarkup:
         ]
         for profession in professions
     ]
-    # Добавляем кнопку "<< Назад"
+
     buttons.append(
         [
             InlineKeyboardButton(
-                text="<< Назад",
+                text="🔙  Назад",
                 callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
             )
         ]
