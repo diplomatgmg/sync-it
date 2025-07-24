@@ -1,16 +1,16 @@
 from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import TelegramVacancy
-from database.services.vacancy import VacancyService
+from repositories.vacancy.vacancy import VacancyRepository
 from schemas import TelegramChannelUrl
 from sqlalchemy import func, select
-from utils import required_attrs
+from utils import generate_hash, required_attrs
 
 
-__all__ = ["TelegramVacancyService"]
+__all__ = ["TelegramVacancyRepository"]
 
 
-class TelegramVacancyService(VacancyService):
+class TelegramVacancyRepository(VacancyRepository):
     source = SourceEnum.TELEGRAM
     model = TelegramVacancy
 
@@ -26,3 +26,26 @@ class TelegramVacancyService(VacancyService):
         )
         result = await self.session.execute(smtp)
         return result.scalar_one_or_none()
+
+    async def prepare_instance(
+        self,
+        *,
+        fingerprint: str,
+        link: str,
+        channel_username: str,
+        message_id: int,
+        data: str,
+    ) -> TelegramVacancy:
+        """Создает экземпляр TelegramVacancy, сохраняет его и возвращает."""
+        hash_value = generate_hash(f"{link}:{message_id}")
+        source_id = await self.get_source_id()
+
+        return self.model(
+            hash=hash_value,
+            source_id=source_id,
+            fingerprint=fingerprint,
+            link=link,
+            channel_username=channel_username,
+            message_id=message_id,
+            data=data,
+        )

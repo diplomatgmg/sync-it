@@ -2,10 +2,10 @@ from collections.abc import Iterable
 
 from common.logger import get_logger
 from database.models.vacancy import TelegramVacancy
-from database.services.vacancy import TelegramVacancyService
 from schemas import TelegramChannelUrl
-from services.http import fetch_newest_telegram_messages
+from services.http.telegram import fetch_newest_telegram_messages
 from services.parsers.base import BaseParser
+from services.vacancy import TelegramVacancyService
 from utils import generate_fingerprint
 
 
@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 
 class TelegramParserService(BaseParser):
     def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
-        super().__init__(service)
+        self.service = service
         self.channel_links = channel_links
         # Запоминаем fingerprints, которые получили на основе новых спарсенных вакансий, чтобы избежать конфликта с БД
         self._new_fingerprints: set[str] = set()
@@ -68,10 +68,7 @@ class TelegramParserService(BaseParser):
 
             self._new_fingerprints.add(fingerprint)
 
-            source_id = await self.service.get_source_id()
-
-            vacancy = TelegramVacancy.create(
-                source_id=source_id,
+            vacancy = await self.service.prepare_instance(
                 fingerprint=fingerprint,
                 link=f"{channel_link}/{message.message_id}",
                 channel_username=channel_link.channel_username,
@@ -93,5 +90,5 @@ class TelegramParserService(BaseParser):
             logger.info("No new vacancies to save")
             return
 
-        saved_count = await self.service.bulk_add_vacancies(new_vacancies)
+        saved_count = await self.service.bulk_create(new_vacancies)
         logger.info("Saved %s new vacancies", saved_count)

@@ -1,24 +1,28 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 
 from common.logger import get_logger
 from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import BaseVacancy
-from services.vacancy import find_duplicate_vacancy_by_fingerprint
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import required_attrs
 
 
-__all__ = ["VacancyService"]
+__all__ = ["VacancyRepository"]
 
 
 logger = get_logger(__name__)
 
 
-class VacancyService:
-    """Базовый сервис для работы с моделями вакансий."""
+# TODO: вынести в конфиг?
+SIMILARITY_THRESHOLD = 0.70
+
+
+# TODO: добавить декоратор класса. Если для метода не определен @required_attrs - выбрасывать исключение
+class VacancyRepository:
+    """Репозиторий для работы с моделями вакансий."""
 
     source: SourceEnum
     model: type[BaseVacancy]
@@ -40,7 +44,7 @@ class VacancyService:
 
         return source_id
 
-    async def get_vacancies(self, limit: int = 100) -> list[BaseVacancy]:
+    async def get_recent_vacancies(self, limit: int = 100) -> Sequence[BaseVacancy]:
         """Получить последние актуальные вакансии по всем сервисам."""
         vacancies: list[BaseVacancy] = []
 
@@ -56,9 +60,11 @@ class VacancyService:
         vacancies.sort(key=lambda x: x.created_at, reverse=True)
         return vacancies[:limit]
 
-    async def bulk_add_vacancies(self, vacancies: list[type[BaseVacancy]]) -> int:
+    async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:
         """Массовое добавление вакансий."""
         self.session.add_all(vacancies)
+        # FIXME чтобы соответствовать паттерну Unit of Work,
+        #  коммит должен происходить на уровне выше (get_async_session)
         await self.session.commit()
         return len(vacancies)
 
@@ -95,7 +101,14 @@ class VacancyService:
     @required_attrs("model")
     async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
         """Найти дубликат вакансии по содержимому."""
-        return await find_duplicate_vacancy_by_fingerprint(self.session, self.model, fingerprint)
+        stmt = (
+            select(self.model)
+            .where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
+            .order_by(func.similarity(self.model.fingerprint, fingerprint).desc())
+            .limit(1)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
         """Получить % схожести между двумя fingerprint."""

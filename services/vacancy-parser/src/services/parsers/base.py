@@ -11,9 +11,6 @@ logger = get_logger(__name__)
 
 
 class BaseParser(ABC):
-    def __init__(self, service: Any) -> None:
-        self.service = service
-
     @abstractmethod
     async def parse(self) -> None:
         """Основной метод парсинга каналов"""
