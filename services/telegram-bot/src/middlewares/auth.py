@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING, Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
-from database.models import User
-from database.services import UserService
+from repositories import UserRepository
+
+from services import UserService
 
 
 if TYPE_CHECKING:
@@ -31,18 +32,10 @@ class AuthMiddleware(BaseMiddleware):
         if user is None:
             return await handler(event, data)
 
-        user_service = UserService(session)
-        user_model = await user_service.get_user(user.id)
+        user_repo = UserRepository(session)
+        user_service = UserService(user_repo)
 
-        if user_model is None:
-            user_model = User(
-                telegram_id=user.id,
-                username=user.username,
-                first_name=user.first_name,
-                last_name=user.last_name,
-            )
-            await user_service.add_user(user_model)
-
+        user_model = await user_service.get_or_create(user)
         data["user"] = user_model
 
         return await handler(event, data)
