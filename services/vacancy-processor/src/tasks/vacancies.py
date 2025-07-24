@@ -1,8 +1,6 @@
 from celery_app import app, loop
-from common.database.engine import get_async_session
-from database.services import GradeService, ProfessionService, SkillService, WorkFormatService
-from database.services.vacancy import VacancyService
-from services.vacancy import VacancyExtractorService, VacancyProcessorService
+
+from services import VacancyExtractorService, VacancyProcessorService
 
 
 __all__ = ["process_vacancies"]
@@ -14,21 +12,6 @@ def process_vacancies() -> None:
 
 
 async def async_process_vacancies() -> None:
-    async with get_async_session() as session:
-        vacancy_extractor = VacancyExtractorService()
-
-        vacancy_service = VacancyService(session)
-        profession_service = ProfessionService(session)
-        grade_service = GradeService(session)
-        work_format_service = WorkFormatService(session)
-        skill_service = SkillService(session)
-
-        processor_service = VacancyProcessorService(
-            vacancy_extractor,
-            vacancy_service,
-            profession_service,
-            grade_service,
-            work_format_service,
-            skill_service,
-        )
-        await processor_service.start()
+    vacancy_extractor = VacancyExtractorService()
+    processor_service = VacancyProcessorService(vacancy_extractor)
+    await processor_service.start()

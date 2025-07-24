@@ -1,14 +1,22 @@
 import asyncio
 from itertools import starmap
 
+from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from database.services import GradeService, ProfessionService, SkillService, WorkFormatService
-from database.services.vacancy import VacancyService
+from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
 from schemas import VacancySchema
 from services.http import fetch_gpt_completion, fetch_new_vacancies, send_delete_request_vacancy
-from services.prompter import make_prompt
-from services.vacancy import VacancyExtractorService
+from utils.prompter import make_prompt
+
+from services import (
+    GradeService,
+    ProfessionService,
+    SkillService,
+    VacancyExtractorService,
+    VacancyService,
+    WorkFormatService,
+)
 
 
 __all__ = ["VacancyProcessorService"]
@@ -18,23 +26,8 @@ logger = get_logger(__name__)
 
 
 class VacancyProcessorService:
-    def __init__(
-        self,
-        vacancy_extractor: VacancyExtractorService,
-        vacancy_service: VacancyService,
-        profession_service: ProfessionService,
-        grade_service: GradeService,
-        work_format_service: WorkFormatService,
-        skill_service: SkillService,
-    ) -> None:
+    def __init__(self, vacancy_extractor: VacancyExtractorService) -> None:
         self.vacancy_extractor = vacancy_extractor
-        # DB depends services
-        self.vacancy_service = vacancy_service
-        self.profession_service = profession_service
-        self.grade_service = grade_service
-        self.work_format_service = work_format_service
-        self.skill_service = skill_service
-
         # lock для сохранения вакансий в БД
         self._db_lock = asyncio.Lock()
 
@@ -63,19 +56,56 @@ class VacancyProcessorService:
 
             extracted_vacancy = self.vacancy_extractor.extract(completion)
 
-            async with self._db_lock:
-                await self.save_vacancy(vacancy, extracted_vacancy)
+            async with self._db_lock, get_async_session() as session:
+                vacancy_repo = VacancyRepository(session)
+                grade_repo = GradeRepository(session)
+                profession_repo = ProfessionRepository(session)
+                work_format_repo = WorkFormatRepository(session)
+                skill_repo = SkillRepository(session)
 
-            # В случае ошибка вакансия сохраняется в БД, но не пометится как удаленная и появится дубль
+                vacancy_service = VacancyService(vacancy_repo)
+                grade_service = GradeService(grade_repo)
+                profession_service = ProfessionService(profession_repo)
+                work_format_service = WorkFormatService(work_format_repo)
+                skill_service = SkillService(skill_repo)
+
+                # Выполняем всю логику сохранения в рамках одной транзакции
+                await self._save_vacancy_in_transaction(
+                    vacancy,
+                    extracted_vacancy,
+                    vacancy_service,
+                    profession_service,
+                    grade_service,
+                    work_format_service,
+                    skill_service,
+                )
+                # Коммитим изменения только после успешного выполнения
+                await session.commit()
+
+            # Удаляем вакансию из очереди только после успешного сохранения в БД
             await send_delete_request_vacancy(vacancy)
         except Exception as e:
             logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
+            # Rollback произойдет автоматически при выходе из `get_async_session`
             return
 
-    async def save_vacancy(self, vacancy: VacancySchema, extracted_vacancy: VacancyExtractorService) -> None:
-        logger.debug("Saving vacancy: %s", vacancy.link)
+    async def _save_vacancy_in_transaction(
+        self,
+        vacancy: VacancySchema,
+        extracted_vacancy: VacancyExtractorService,
+        vacancy_service: VacancyService,
+        profession_service: ProfessionService,
+        grade_service: GradeService,
+        work_format_service: WorkFormatService,
+        skill_service: SkillService,
+    ) -> None:
+        """Собирает и сохраняет модель вакансии в рамках переданной сессии."""
+        logger.debug("Saving vacancy to session: %s", vacancy.link)
 
-        profession_id = await self._resolve_profession_id(extracted_vacancy)
+        profession_id = await self._resolve_profession_id(extracted_vacancy, profession_service)
+        grades = await self._resolve_grades(extracted_vacancy, grade_service)
+        work_formats = await self._resolve_work_formats(extracted_vacancy, work_format_service)
+        skills = await self._resolve_skills(extracted_vacancy, skill_service)
 
         vacancy_model = Vacancy(
             hash=vacancy.hash,
@@ -87,46 +117,52 @@ class VacancyProcessorService:
             conditions=extracted_vacancy.conditions,
         )
 
-        vacancy_model.grades = await self._resolve_grades(extracted_vacancy)
-        vacancy_model.work_formats = await self._resolve_work_formats(extracted_vacancy)
-        vacancy_model.skills = await self._resolve_skills(extracted_vacancy)
+        vacancy_model.grades = grades
+        vacancy_model.work_formats = work_formats
+        vacancy_model.skills = skills
 
-        await self.vacancy_service.add_vacancy(vacancy_model)
+        # `add_vacancy` не должен содержать коммита
+        await vacancy_service.add_vacancy(vacancy_model)
 
-    async def _resolve_profession_id(self, extracted_vacancy: VacancyExtractorService) -> int | None:
+    @staticmethod
+    async def _resolve_profession_id(
+        extracted_vacancy: VacancyExtractorService, profession_service: ProfessionService
+    ) -> int | None:
         profession_name = extracted_vacancy.profession
         if profession_name is None:
             return None
 
-        profession = await self.profession_service.get_profession_by_name(profession_name)
-        return profession.id
+        profession = await profession_service.get_profession_by_name(profession_name)
+        return profession.id if profession else None
 
-    async def _resolve_grades(self, extracted_vacancy: VacancyExtractorService) -> list[Grade]:
+    @staticmethod
+    async def _resolve_grades(extracted_vacancy: VacancyExtractorService, grade_service: GradeService) -> list[Grade]:
         grade_names = extracted_vacancy.grades
         grades = []
-
         for name in grade_names:
-            grade = await self.grade_service.get_grade_by_name(name)
-            grades.append(grade)
-
+            grade = await grade_service.get_grade_by_name(name)
+            if grade:
+                grades.append(grade)
         return grades
 
-    async def _resolve_work_formats(self, extracted_vacancy: VacancyExtractorService) -> list[WorkFormat]:
+    @staticmethod
+    async def _resolve_work_formats(
+        extracted_vacancy: VacancyExtractorService, work_format_service: WorkFormatService
+    ) -> list[WorkFormat]:
         work_format_names = extracted_vacancy.work_formats
         work_formats = []
-
         for name in work_format_names:
-            work_format = await self.work_format_service.get_work_format_by_name(name)
-            work_formats.append(work_format)
-
+            work_format = await work_format_service.get_work_format_by_name(name)
+            if work_format:
+                work_formats.append(work_format)
         return work_formats
 
-    async def _resolve_skills(self, extracted_vacancy: VacancyExtractorService) -> list[Skill]:
+    @staticmethod
+    async def _resolve_skills(extracted_vacancy: VacancyExtractorService, skill_service: SkillService) -> list[Skill]:
         skill_names = [skill for _, skill in extracted_vacancy.skills]
         skills = []
-
         for name in skill_names:
-            skill = await self.skill_service.get_skill_by_name(name)
-            skills.append(skill)
-
+            skill = await skill_service.get_skill_by_name(name)
+            if skill:
+                skills.append(skill)
         return skills

@@ -25,4 +25,6 @@ async def seed_sources() -> None:
             if enum_source not in existing_source_names:
                 await source_service.add_source(enum_source)
 
+        await session.commit()
+
     logger.info("Sources seeded")

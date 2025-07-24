@@ -7,26 +7,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 
-__all__ = ["VacancyService"]
+__all__ = ["VacancyRepository"]
 
 
-class VacancyService:
+class VacancyRepository:
+    """Репозиторий для управления вакансиями."""
+
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def add_vacancy(self, vacancy: Vacancy) -> Vacancy:
+    def add(self, vacancy: Vacancy) -> None:
+        """Добавляет экземпляр вакансии в сессию."""
         self.session.add(vacancy)
-        await self.session.commit()
-        await self.session.refresh(vacancy)
 
-        return vacancy
-
-    async def get_vacancies(
+    async def get_filtered(
         self,
         professions: Sequence[ProfessionEnum] | None = None,
         grades: Sequence[GradeEnum] | None = None,
         work_formats: Sequence[WorkFormatEnum] | None = None,
     ) -> Sequence[Vacancy]:
+        """Получает отфильтрованный список вакансий."""
         professions = professions or []
         grades = grades or []
         work_formats = work_formats or []

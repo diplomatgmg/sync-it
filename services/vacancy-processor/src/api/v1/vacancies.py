@@ -3,10 +3,12 @@ from typing import Annotated
 from common.database.engine import provide_async_session
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
-from database.services.vacancy import VacancyService
 from fastapi import APIRouter, Depends, Query
+from repositories import VacancyRepository
 from schemas import VacancyListResponse, VacancyModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from services import VacancyService
 
 
 __all__ = ["router"]
@@ -24,7 +26,8 @@ async def get_vacancies(
     work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
 ) -> VacancyListResponse:
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
-    service = VacancyService(session)
+    repo = VacancyRepository(session)
+    service = VacancyService(repo)
     vacancy_models = await service.get_vacancies(
         professions,
         grades,

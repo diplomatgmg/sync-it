@@ -1,9 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from common.database.engine import get_async_session
 from common.logger import get_logger
-from database.services import SkillCategoryService, SkillService
+from repositories import SkillCategoryRepository, SkillRepository
 from utils.mappers.skill import skills_map
+
+from services import SkillCategoryService, SkillService
 
 
 if TYPE_CHECKING:
@@ -20,8 +22,11 @@ async def seed_skills() -> None:
     logger.debug("Start seeding skill categories")
 
     async with get_async_session() as session:
-        skill_category_service = SkillCategoryService(session)
-        skill_service = SkillService(session)
+        skill_category_repo = SkillCategoryRepository(session)
+        skill_repo = SkillRepository(session)
+
+        skill_category_service = SkillCategoryService(skill_category_repo)
+        skill_service = SkillService(skill_repo)
 
         existing_skill_category = await skill_category_service.get_categories()
         existing_skill_category_names = [category.name for category in existing_skill_category]
@@ -36,10 +41,13 @@ async def seed_skills() -> None:
                 skill_category = await skill_category_service.add_category(category_enum)
 
             if skill_category is None:
-                skill_category = await skill_category_service.get_category_by_name(category_enum)
+                # Категорию получаем из enum, поэтому всегда будет
+                skill_category = cast("SkillCategory", await skill_category_service.get_category_by_name(category_enum))
 
             for skill_enum in skills:
                 if skill_enum not in existing_skill_names:
                     await skill_service.add_skill(skill_enum, skill_category.id)
+
+        await session.commit()
 
     logger.info("Skills seeded")
