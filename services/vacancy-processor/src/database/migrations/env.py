@@ -3,6 +3,8 @@ from typing import Literal
 
 from alembic import context
 from common.database.config import db_config
+
+# FIXME from core import service_config
 from core.config import service_config
 from database.models import Base
 from sqlalchemy import pool, text

@@ -1,4 +1,4 @@
-from core.config import service_config
+from core import service_config
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
