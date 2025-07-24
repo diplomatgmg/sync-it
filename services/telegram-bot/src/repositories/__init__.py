@@ -1,4 +1,8 @@
 from repositories.user import UserRepository
+from repositories.user_preference import UserPreferenceRepository
 
 
-__all__ = ["UserRepository"]
+__all__ = [
+    "UserPreferenceRepository",
+    "UserRepository",
+]

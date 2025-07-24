@@ -24,4 +24,6 @@ class UserPreference(Base):
     item_id: Mapped[int] = mapped_column(nullable=False)
     item_name: Mapped[str] = mapped_column(String(32), nullable=False)
 
-    user: Mapped["User"] = relationship(back_populates="preferences")
+    user: Mapped["User"] = relationship(back_populates="preferences", lazy="selectin")
+
+    # TODO: По-хорошему добавить unique constraints
