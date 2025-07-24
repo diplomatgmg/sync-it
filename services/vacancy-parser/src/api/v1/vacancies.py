@@ -36,4 +36,7 @@ async def delete_vacancy(
     service = VacancyService(repo)
     is_deleted = await service.mark_as_deleted(vacancy_hash)
 
+    if is_deleted:
+        await session.commit()
+
     return VacancyDeleteResponse(is_deleted=is_deleted)

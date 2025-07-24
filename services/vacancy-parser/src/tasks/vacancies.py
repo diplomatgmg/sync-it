@@ -1,8 +1,8 @@
 from celery_app import app, loop
 from common.database.engine import get_async_session
 from constants.telegram import channel_links
+from parsers import TelegramParser
 from repositories.vacancy import TelegramVacancyRepository
-from services.parsers import TelegramParserService
 from services.vacancy import TelegramVacancyService
 
 
@@ -18,5 +18,6 @@ async def parse_telegram_vacancies() -> None:
     async with get_async_session() as session:
         repo = TelegramVacancyRepository(session)
         service = TelegramVacancyService(repo)
-        parser = TelegramParserService(service, channel_links)
+        parser = TelegramParser(service, channel_links)
         await parser.parse()
+        await session.commit()

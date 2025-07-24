@@ -63,9 +63,6 @@ class VacancyRepository:
     async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:
         """Массовое добавление вакансий."""
         self.session.add_all(vacancies)
-        # FIXME чтобы соответствовать паттерну Unit of Work,
-        #  коммит должен происходить на уровне выше (get_async_session)
-        await self.session.commit()
         return len(vacancies)
 
     async def mark_as_deleted(self, vacancy_hash: str) -> bool:
@@ -84,7 +81,6 @@ class VacancyRepository:
             )
             result = await self.session.execute(stmt)
             if bool(result.rowcount):
-                await self.session.commit()
                 logger.debug("Marked as deleted vacancy with hash %s", vacancy_hash)
                 return True
 
