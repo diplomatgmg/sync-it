@@ -1,8 +1,13 @@
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from database.models import Base
 from sqlalchemy import BigInteger, DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+
+if TYPE_CHECKING:
+    from database.models import UserPreference
 
 
 def _utcnow() -> datetime:
@@ -20,6 +25,11 @@ class User(Base):
     last_name: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    preferences: Mapped[list["UserPreference"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
     @property
     def full_name(self) -> str:
