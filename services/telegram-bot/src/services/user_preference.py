@@ -1,5 +1,6 @@
 from common.shared.services import BaseService
 from database.models import User, UserPreference
+from database.models.enums import PreferenceCategoryCodeEnum
 from repositories.user_preference import UserPreferenceRepository
 
 
@@ -7,7 +8,9 @@ __all__ = ["UserPreferenceService"]
 
 
 class UserPreferenceService(BaseService[UserPreferenceRepository]):
-    async def toggle_preference(self, user: User, category_code: str, item_id: int, item_name: str) -> bool:
+    async def toggle_preference(
+        self, user: User, category_code: PreferenceCategoryCodeEnum, item_id: int, item_name: str
+    ) -> bool:
         """
         Переключает состояние предпочтения для пользователя.
 

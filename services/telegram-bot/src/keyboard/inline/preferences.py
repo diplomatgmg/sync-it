@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
-from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
+from callbacks.preference import PreferenceActionEnum, PreferenceCallback
 from database.models import User
 from database.models.enums import PreferenceCategoryCodeEnum
 from schemas import Grade, Profession, WorkFormat
@@ -20,19 +20,19 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
         [
             InlineKeyboardButton(
                 text="🛠  Профессия",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_PROFESSIONS).pack(),
+                callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_PROFESSIONS).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
                 text="🎓  Грейд",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_GRADES).pack(),
+                callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_GRADES).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
                 text="💼  Формат работы",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_WORK_FORMATS).pack(),
+                callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_WORK_FORMATS).pack(),
             ),
         ],
         [
@@ -62,8 +62,8 @@ def options_keyboard(
 
         builder.button(
             text=button_text,
-            callback_data=PreferencesCallback(
-                action=PreferencesActionEnum.SELECT_OPTION,
+            callback_data=PreferenceCallback(
+                action=PreferenceActionEnum.SELECT_OPTION,
                 category_code=category_code,
                 item_id=option.id,
             ),
