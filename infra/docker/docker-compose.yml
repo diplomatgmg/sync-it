@@ -16,7 +16,7 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 3s
+      start_period: 1s
       start_interval: 1s
 
   redis:
@@ -35,7 +35,7 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 3s
+      start_period: 1s
       start_interval: 1s
 
   flower:

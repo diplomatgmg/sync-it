@@ -15,8 +15,8 @@ services:
       - app-network
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://api-gateway:${API_GATEWAY_PORT}/health" ]
-      interval: 5s
+      interval: 10s
       timeout: 1s
       retries: 3
       start_period: 5s
-      start_interval: 1s
+      start_interval: 3s
