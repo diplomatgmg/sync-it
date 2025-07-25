@@ -86,7 +86,7 @@ services:
         condition: service_healthy
       api-gateway:
         condition: service_healthy
-      vacancy-parser:
+      vacancy-processor:
         condition: service_healthy
 
   vacancy-parser-migrator:
