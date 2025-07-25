@@ -6,13 +6,13 @@ from database.models.enums import GradeEnum, ProfessionEnum, SkillCategoryEnum, 
 from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill
 
 
-__all__ = ["VacancyExtractorService"]
+__all__ = ["VacancyExtractor"]
 
 
 logger = get_logger(__name__)
 
 
-class VacancyExtractorService:
+class VacancyExtractor:
     """
     Класс извлечения ключевых данных из текста вакансии:
     - профессию

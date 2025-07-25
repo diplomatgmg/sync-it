@@ -7,26 +7,26 @@ from database.models import Grade, Skill, Vacancy, WorkFormat
 from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
 from schemas import VacancySchema
 from services.http import fetch_gpt_completion, fetch_new_vacancies, send_delete_request_vacancy
+from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
 
 from services import (
     GradeService,
     ProfessionService,
     SkillService,
-    VacancyExtractorService,
     VacancyService,
     WorkFormatService,
 )
 
 
-__all__ = ["VacancyProcessorService"]
+__all__ = ["VacancyProcessor"]
 
 
 logger = get_logger(__name__)
 
 
-class VacancyProcessorService:
-    def __init__(self, vacancy_extractor: VacancyExtractorService) -> None:
+class VacancyProcessor:
+    def __init__(self, vacancy_extractor: VacancyExtractor) -> None:
         self.vacancy_extractor = vacancy_extractor
         # lock для сохранения вакансий в БД
         self._db_lock = asyncio.Lock()
@@ -92,7 +92,7 @@ class VacancyProcessorService:
     async def _save_vacancy_in_transaction(
         self,
         vacancy: VacancySchema,
-        extracted_vacancy: VacancyExtractorService,
+        extracted_vacancy: VacancyExtractor,
         vacancy_service: VacancyService,
         profession_service: ProfessionService,
         grade_service: GradeService,
@@ -126,7 +126,7 @@ class VacancyProcessorService:
 
     @staticmethod
     async def _resolve_profession_id(
-        extracted_vacancy: VacancyExtractorService, profession_service: ProfessionService
+        extracted_vacancy: VacancyExtractor, profession_service: ProfessionService
     ) -> int | None:
         profession_name = extracted_vacancy.profession
         if profession_name is None:
@@ -136,7 +136,7 @@ class VacancyProcessorService:
         return profession.id if profession else None
 
     @staticmethod
-    async def _resolve_grades(extracted_vacancy: VacancyExtractorService, grade_service: GradeService) -> list[Grade]:
+    async def _resolve_grades(extracted_vacancy: VacancyExtractor, grade_service: GradeService) -> list[Grade]:
         grade_names = extracted_vacancy.grades
         grades = []
         for name in grade_names:
@@ -147,7 +147,7 @@ class VacancyProcessorService:
 
     @staticmethod
     async def _resolve_work_formats(
-        extracted_vacancy: VacancyExtractorService, work_format_service: WorkFormatService
+        extracted_vacancy: VacancyExtractor, work_format_service: WorkFormatService
     ) -> list[WorkFormat]:
         work_format_names = extracted_vacancy.work_formats
         work_formats = []
@@ -158,7 +158,7 @@ class VacancyProcessorService:
         return work_formats
 
     @staticmethod
-    async def _resolve_skills(extracted_vacancy: VacancyExtractorService, skill_service: SkillService) -> list[Skill]:
+    async def _resolve_skills(extracted_vacancy: VacancyExtractor, skill_service: SkillService) -> list[Skill]:
         skill_names = [skill for _, skill in extracted_vacancy.skills]
         skills = []
         for name in skill_names:

@@ -1,6 +1,6 @@
 from celery_app import app, loop
-
-from services import VacancyExtractorService, VacancyProcessorService
+from utils.extractor import VacancyExtractor
+from utils.processor import VacancyProcessor
 
 
 __all__ = ["process_vacancies"]
@@ -12,6 +12,6 @@ def process_vacancies() -> None:
 
 
 async def async_process_vacancies() -> None:
-    vacancy_extractor = VacancyExtractorService()
-    processor_service = VacancyProcessorService(vacancy_extractor)
+    vacancy_extractor = VacancyExtractor()
+    processor_service = VacancyProcessor(vacancy_extractor)
     await processor_service.start()
