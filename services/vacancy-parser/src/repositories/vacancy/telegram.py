@@ -24,7 +24,7 @@ class TelegramVacancyRepository(VacancyRepository):
             .join(Source, self.model.source_id == Source.id)
             .where((self.model.source_id == source_id) & (self.model.channel_username == link.channel_username))
         )
-        result = await self.session.execute(smtp)
+        result = await self._session.execute(smtp)
         return result.scalar_one_or_none()
 
     async def prepare_instance(

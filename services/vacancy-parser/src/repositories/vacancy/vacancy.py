@@ -2,11 +2,11 @@ from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 
 from common.logger import get_logger
+from common.shared.repositories import BaseRepository
 from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import BaseVacancy
 from sqlalchemy import func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 from utils import required_attrs
 
 
@@ -21,7 +21,7 @@ SIMILARITY_THRESHOLD = 0.70
 
 
 # TODO: добавить декоратор класса. Если для метода не определен @required_attrs - выбрасывать исключение
-class VacancyRepository:
+class VacancyRepository(BaseRepository):
     """Репозиторий для работы с моделями вакансий."""
 
     source: SourceEnum
@@ -29,15 +29,12 @@ class VacancyRepository:
 
     __source_id: int | None = None
 
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
     async def get_source_id(self) -> int:
         if self.__source_id is not None:
             return self.__source_id
 
         stmt = select(Source.id).where(Source.name == self.source)
-        result = await self.session.execute(stmt)
+        result = await self._session.execute(stmt)
         source_id = result.scalar_one()
 
         self.__source_id = source_id
@@ -54,7 +51,7 @@ class VacancyRepository:
             stmt = (
                 select(subclass).where(subclass.deleted_at.is_(None)).order_by(subclass.created_at.desc()).limit(limit)
             )
-            result = await self.session.execute(stmt)
+            result = await self._session.execute(stmt)
             vacancies.extend(result.scalars().all())
 
         vacancies.sort(key=lambda x: x.created_at, reverse=True)
@@ -62,7 +59,7 @@ class VacancyRepository:
 
     async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:
         """Массовое добавление вакансий."""
-        self.session.add_all(vacancies)
+        self._session.add_all(vacancies)
         return len(vacancies)
 
     async def mark_as_deleted(self, vacancy_hash: str) -> bool:
@@ -79,7 +76,7 @@ class VacancyRepository:
                 .where(subclass.deleted_at.is_(None))
                 .values(deleted_at=datetime.now(tz=UTC))
             )
-            result = await self.session.execute(stmt)
+            result = await self._session.execute(stmt)
             if bool(result.rowcount):
                 logger.debug("Marked as deleted vacancy with hash %s", vacancy_hash)
                 return True
@@ -91,7 +88,7 @@ class VacancyRepository:
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         """Получить set уже существующих хешей в БД."""
         stmt = select(self.model.hash).where(self.model.hash.in_(hashes))
-        result = await self.session.execute(stmt)
+        result = await self._session.execute(stmt)
         return {row[0] for row in result.fetchall()}
 
     @required_attrs("model")
@@ -103,11 +100,11 @@ class VacancyRepository:
             .order_by(func.similarity(self.model.fingerprint, fingerprint).desc())
             .limit(1)
         )
-        result = await self.session.execute(stmt)
+        result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
         """Получить % схожести между двумя fingerprint."""
-        result = await self.session.execute(select(func.similarity(fingerprint1, fingerprint2)))
+        result = await self._session.execute(select(func.similarity(fingerprint1, fingerprint2)))
         score = result.scalar() or 0.0
         return round(score * 100, 2)

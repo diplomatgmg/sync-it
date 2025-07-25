@@ -8,6 +8,7 @@ dependencies = [
     "gateway-lib",
     "logger-lib",
     "redis-lib",
+    "shared-lib",
     "syncit-core",
     "uvicorn[standard]>=0.34.3",
 ]
@@ -18,3 +19,4 @@ logger-lib = { workspace = true }
 database-lib = { workspace = true }
 redis-lib = { workspace = true }
 gateway-lib = { workspace = true }
+shared-lib = { workspace = true }
