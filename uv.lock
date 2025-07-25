@@ -1120,6 +1120,7 @@ dependencies = [
     { name = "database-lib" },
     { name = "gateway-lib" },
     { name = "logger-lib" },
+    { name = "shared-lib" },
     { name = "syncit-core" },
     { name = "uvloop" },
 ]
@@ -1135,6 +1136,7 @@ requires-dist = [
     { name = "database-lib", virtual = "libs/common/database" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },
     { name = "uvloop", specifier = ">=0.21.0" },
 ]
