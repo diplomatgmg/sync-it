@@ -3,13 +3,14 @@ from typing import cast
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
-from clients import BaseClient, GradeClient, ProfessionClient, WorkFormatClient
+from clients import GradeClient, ProfessionClient, WorkFormatClient
 from common.logger import get_logger
 from database.models import User
 from database.models.enums import PreferenceCategoryCodeEnum
 from keyboard.inline.preferences import options_keyboard
 from repositories import UserPreferenceRepository, UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils.clients import ClientType, get_client
 from utils.message import safe_edit_message
 
 from services import UserPreferenceService, UserService
@@ -24,51 +25,57 @@ logger = get_logger(__name__)
 router = Router(name=PreferenceCallback.__prefix__)
 
 
-@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_WORK_FORMATS))
-async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> None:
-    async with WorkFormatClient() as wf_client:
-        work_formats = await wf_client.get_work_formats()
+async def handle_show_options(
+    query: CallbackQuery,
+    session: AsyncSession,
+    category_code: PreferenceCategoryCodeEnum,
+    client_class: ClientType,
+    message_text: str,
+) -> None:
+    async with client_class() as client:
+        options = await client.get_all()
 
-    user_repo = UserRepository(session)
-    user_service = UserService(user_repo)
-    user = await user_service.get(query.from_user.id, with_preferences=True)
+    repo = UserRepository(session)
+    service = UserService(repo)
+    user = await service.get(query.from_user.id, with_preferences=True)
 
     await safe_edit_message(
         query,
-        text="Выберите формат работы",
-        reply_markup=options_keyboard(PreferenceCategoryCodeEnum.WORK_FORMAT, work_formats, user),
+        text=message_text,
+        reply_markup=options_keyboard(category_code, options, user),
+    )
+
+
+@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_WORK_FORMATS))
+async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> None:
+    await handle_show_options(
+        query,
+        session,
+        PreferenceCategoryCodeEnum.WORK_FORMAT,
+        WorkFormatClient,
+        "Выберите формат работы",
     )
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_GRADES))
 async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
-    async with GradeClient() as grade_client:
-        grades = await grade_client.get_grades()
-
-    user_repo = UserRepository(session)
-    user_service = UserService(user_repo)
-    user = await user_service.get(query.from_user.id, with_preferences=True)
-
-    await safe_edit_message(
+    await handle_show_options(
         query,
-        text="Выберите грейд",
-        reply_markup=options_keyboard(PreferenceCategoryCodeEnum.GRADE, grades, user),
+        session,
+        PreferenceCategoryCodeEnum.GRADE,
+        GradeClient,
+        "Выберите грейд",
     )
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_PROFESSIONS))
 async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None:
-    async with ProfessionClient() as prof_client:
-        professions = await prof_client.get_professions()
-
-    user_repo = UserRepository(session)
-    user_service = UserService(user_repo)
-    user = await user_service.get(query.from_user.id, with_preferences=True)
-
-    await safe_edit_message(
+    await handle_show_options(
         query,
-        text="Выберите профессию",
-        reply_markup=options_keyboard(PreferenceCategoryCodeEnum.PROFESSION, professions, user),
+        session,
+        PreferenceCategoryCodeEnum.PROFESSION,
+        ProfessionClient,
+        "Выберите профессию",
     )
 
 
@@ -87,24 +94,11 @@ async def handle_select_option(
     category_code = cast("PreferenceCategoryCodeEnum", callback_data.category_code)
     item_id = cast("int", callback_data.item_id)
 
-    clients: dict[PreferenceCategoryCodeEnum, type[BaseClient]] = {
-        PreferenceCategoryCodeEnum.GRADE: GradeClient,
-        PreferenceCategoryCodeEnum.PROFESSION: ProfessionClient,
-        PreferenceCategoryCodeEnum.WORK_FORMAT: WorkFormatClient,
-    }
-    getters: dict[PreferenceCategoryCodeEnum, str] = {
-        PreferenceCategoryCodeEnum.GRADE: "get_grades",
-        PreferenceCategoryCodeEnum.PROFESSION: "get_professions",
-        PreferenceCategoryCodeEnum.WORK_FORMAT: "get_work_formats",
-    }
-    client_class = clients[category_code]
-    getter_name = getters[category_code]
+    client_class = get_client(category_code)
 
-    # 2. Находим имя опции, чтобы сохранить его в БД
     item_name = ""
     async with client_class() as api_client:
-        getter = getattr(api_client, getter_name)
-        options = await getter()
+        options = await api_client.get_all()
         for option in options:
             if option.id == item_id:
                 item_name = option.name
@@ -114,15 +108,13 @@ async def handle_select_option(
         await callback.answer("Ошибка: опция не найдена.", show_alert=True)
         return
 
-    # 3. Переключаем состояние в БД
     repo = UserPreferenceRepository(session)
     service = UserPreferenceService(repo)
     await service.toggle_preference(user, category_code, item_id, item_name)
 
-    # 4. Обновляем клавиатуру, чтобы показать изменения
-    await session.refresh(user)  # ОБЯЗАТЕЛЬНО обновляем user, чтобы получить свежие preferences
+    await session.commit()
+    await session.refresh(user)
 
-    # Перерисовываем то же самое меню с обновленными данными
     await safe_edit_message(
         callback,
         text=f"Выберите {category_code}:",

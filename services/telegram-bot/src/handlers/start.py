@@ -6,7 +6,11 @@ from callbacks.main import MenuActionEnum, MenuCallback
 from commands import BotCommandEnum
 from database.models import User
 from keyboard.inline.main import main_keyboard
+from repositories import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
 from utils.message import make_linked, safe_edit_message
+
+from services import UserService
 
 
 __all__ = ["router"]
@@ -34,5 +38,9 @@ async def handle_start(message: Message, user: User) -> None:
 
 
 @router.callback_query(MenuCallback.filter(F.action == MenuActionEnum.MAIN))
-async def handle_main_callback(callback: CallbackQuery, user: User) -> None:
+async def handle_main_callback(callback: CallbackQuery, session: AsyncSession) -> None:
+    repo = UserRepository(session)
+    service = UserService(repo)
+    user = await service.get(callback.from_user.id)
+
     await send_welcome_message(callback, user)

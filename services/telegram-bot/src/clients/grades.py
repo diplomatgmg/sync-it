@@ -10,7 +10,7 @@ __all__ = ["GradeClient"]
 class GradeClient(BaseClient):
     url = build_service_url(ServiceEnum.VACANCY_PROCESSOR, "api/v1/grades")
 
-    async def get_grades(self) -> list[Grade]:
+    async def get_all(self) -> list[Grade]:
         response = await self.client.get(self.url)
         model_response = GradeResponse.model_validate(response.json())
         return model_response.grades
