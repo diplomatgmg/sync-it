@@ -1,24 +1,21 @@
 from collections.abc import Sequence
 
+from common.shared.repositories import BaseRepository
 from database.models import Grade, Profession, Vacancy, WorkFormat
 from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 
 __all__ = ["VacancyRepository"]
 
 
-class VacancyRepository:
+class VacancyRepository(BaseRepository):
     """Репозиторий для управления вакансиями."""
-
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
 
     def add(self, vacancy: Vacancy) -> None:
         """Добавляет экземпляр вакансии в сессию."""
-        self.session.add(vacancy)
+        self._session.add(vacancy)
 
     async def get_filtered(
         self,
@@ -48,5 +45,5 @@ class VacancyRepository:
         if work_formats:
             stmt = stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
 
-        result = await self.session.execute(stmt)
+        result = await self._session.execute(stmt)
         return result.scalars().unique().all()

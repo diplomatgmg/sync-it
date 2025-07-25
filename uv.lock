@@ -1259,6 +1259,7 @@ dependencies = [
     { name = "gateway-lib" },
     { name = "logger-lib" },
     { name = "redis-lib" },
+    { name = "shared-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -1271,6 +1272,7 @@ requires-dist = [
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "redis-lib", virtual = "libs/common/redis" },
+    { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
