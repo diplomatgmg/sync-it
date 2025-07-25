@@ -1,4 +1,5 @@
 from aiogram.types import User as TelegramUser
+from common.shared.services import BaseService
 from database.models import User
 from repositories import UserRepository
 
@@ -6,13 +7,10 @@ from repositories import UserRepository
 __all__ = ["UserService"]
 
 
-class UserService:
-    def __init__(self, user_repository: UserRepository) -> None:
-        self.repo = user_repository
-
+class UserService(BaseService[UserRepository]):
     async def get_or_create(self, telegram_user: TelegramUser) -> User:
         """Получает пользователя по telegram_id. Если его нет, создает нового."""
-        db_user = await self.repo.get_by_telegram_id(telegram_user.id)
+        db_user = await self._repo.get_by_telegram_id(telegram_user.id)
         if db_user:
             return db_user
 
@@ -23,4 +21,4 @@ class UserService:
             last_name=telegram_user.last_name,
         )
 
-        return await self.repo.create(user_model)
+        return await self._repo.create(user_model)
