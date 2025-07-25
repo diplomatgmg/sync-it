@@ -1,0 +1,9 @@
+[project]
+name = "shared-lib"
+dynamic = ["version"]
+dependencies = [
+    "database-lib",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]

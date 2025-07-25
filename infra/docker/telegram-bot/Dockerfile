@@ -24,6 +24,7 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
+COPY ./libs/common/shared/pyproject.toml ./libs/common/shared/pyproject.toml
 COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
 COPY ./libs/common/gateway/pyproject.toml ./libs/common/gateway/pyproject.toml
@@ -43,6 +44,7 @@ RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 FROM deps-dev AS development
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
+COPY ./libs/common/shared ./libs/common/shared
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/gateway ./libs/common/gateway
