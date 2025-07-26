@@ -3,6 +3,7 @@ name = "telegram-bot"
 dynamic = ["version"]
 dependencies = [
     "aiogram>=3.20.0.post0",
+    "cachetools>=6.1.0",
     "database-lib",
     "gateway-lib",
     "logger-lib",
@@ -14,6 +15,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "hupper>=1.12.1",
+    "types-cachetools>=6.1.0.20250717",
 ]
 
 [tool.uv.sources]

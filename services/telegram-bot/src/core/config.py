@@ -8,6 +8,7 @@ class ServiceConfig(BaseSettings):
     db_schema: str = "telegram_bot"
 
     token: str
+    rate_limit: float  # for throttling control in seconds
 
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_BOT_")
 
