@@ -37,7 +37,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession]:
             await session.close()
 
 
-async def provide_async_session() -> AsyncSession:
+async def provide_async_session() -> AsyncGenerator[AsyncSession]:
     """Обёртка над get_async_session, где не поддерживается контекстный менеджер."""
     async with get_async_session() as session:
-        return session
+        yield session
