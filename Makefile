@@ -37,7 +37,7 @@ venv: # create/update venv
 
 add: # add python package to service p=<package> s=<service> [e="<extra> <extra2>"]
 	@if [ -z "$(p)" ] || [ -z "$(s)" ]; then \
-		echo 'Usage: make add p=<package> s=<service> [e="<extra> <extra2>"]'; \
+		echo 'Usage: make add s=<service> p=<package> [e="<extra> <extra2>"]'; \
 		exit 1; \
 	fi; \
 	uv add $(p) --package $(s) $(e);
