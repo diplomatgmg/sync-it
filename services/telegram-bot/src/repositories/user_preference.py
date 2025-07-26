@@ -7,7 +7,7 @@ __all__ = ["UserPreferenceRepository"]
 
 
 class UserPreferenceRepository(BaseRepository):
-    async def get_by_user_and_item(self, user_id: int, category_code: str, item_id: int) -> UserPreference:
+    async def get_by_user_and_item(self, user_id: int, category_code: str, item_id: int) -> UserPreference | None:
         """Находит предпочтение по пользователю, категории и ID опции."""
         stmt = select(UserPreference).where(
             and_(
@@ -17,7 +17,7 @@ class UserPreferenceRepository(BaseRepository):
             )
         )
         result = await self._session.execute(stmt)
-        return result.scalar_one()
+        return result.scalar_one_or_none()
 
     async def add(self, user_preference: UserPreference) -> None:
         """Добавляет новое предпочтение."""

@@ -5,13 +5,12 @@ from aiogram.types import CallbackQuery
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
 from clients import GradeClient, ProfessionClient, WorkFormatClient
 from common.logger import get_logger
-from database.models import User
 from database.models.enums import PreferenceCategoryCodeEnum
 from keyboard.inline.preferences import options_keyboard
 from repositories import UserPreferenceRepository, UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils.clients import ClientType, get_client
-from utils.message import safe_edit_message
+from utils.message import get_message, safe_edit_message
 
 from services import UserPreferenceService, UserService
 
@@ -53,7 +52,7 @@ async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> Non
         session,
         PreferenceCategoryCodeEnum.WORK_FORMAT,
         WorkFormatClient,
-        "Выберите формат работы",
+        "Выберите формат работы:",
     )
 
 
@@ -64,7 +63,7 @@ async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
         session,
         PreferenceCategoryCodeEnum.GRADE,
         GradeClient,
-        "Выберите грейд",
+        "Выберите грейд:",
     )
 
 
@@ -75,19 +74,14 @@ async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None
         session,
         PreferenceCategoryCodeEnum.PROFESSION,
         ProfessionClient,
-        "Выберите профессию",
+        "Выберите направление:",
     )
 
 
-@router.callback_query(
-    PreferenceCallback.filter(
-        (F.action == PreferenceActionEnum.SELECT_OPTION) & (F.category_code.is_not_none()) & (F.item_id.is_not_none())
-    )
-)
+@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SELECT_OPTION))
 async def handle_select_option(
     callback: CallbackQuery,
     callback_data: PreferenceCallback,
-    user: User,
     session: AsyncSession,
 ) -> None:
     """Обрабатывает выбор/снятие выбора опции предпочтения."""
@@ -108,15 +102,22 @@ async def handle_select_option(
         await callback.answer("Ошибка: опция не найдена.", show_alert=True)
         return
 
-    repo = UserPreferenceRepository(session)
-    service = UserPreferenceService(repo)
-    await service.toggle_preference(user, category_code, item_id, item_name)
+    user_repo = UserRepository(session)
+    user_service = UserService(user_repo)
+    user = await user_service.get(callback.from_user.id, with_preferences=True)
+
+    preference_repo = UserPreferenceRepository(session)
+    preference_service = UserPreferenceService(preference_repo)
+    await preference_service.toggle_preference(user, category_code, item_id, item_name)
 
     await session.commit()
-    await session.refresh(user)
+    await session.refresh(user, attribute_names=["preferences"])
+
+    message = await get_message(callback)
 
     await safe_edit_message(
         callback,
-        text=f"Выберите {category_code}:",
+        text=message.text or "Выберите опцию:",
         reply_markup=options_keyboard(category_code, options, user),
+        try_answer=True,
     )

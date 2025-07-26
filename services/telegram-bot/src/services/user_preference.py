@@ -1,3 +1,4 @@
+from common.logger import get_logger
 from common.shared.services import BaseService
 from database.models import User, UserPreference
 from database.models.enums import PreferenceCategoryCodeEnum
@@ -5,6 +6,9 @@ from repositories.user_preference import UserPreferenceRepository
 
 
 __all__ = ["UserPreferenceService"]
+
+
+logger = get_logger(__name__)
 
 
 class UserPreferenceService(BaseService[UserPreferenceRepository]):
@@ -19,6 +23,10 @@ class UserPreferenceService(BaseService[UserPreferenceRepository]):
 
         Возвращает True, если предпочтение было добавлено, False — если удалено.
         """
+        logger.debug(
+            "Toggle preference for user id %s, category code: %s, item id: %s", user.id, category_code, item_id
+        )
+
         existing_preference = await self._repo.get_by_user_and_item(
             user_id=user.id,
             category_code=category_code,

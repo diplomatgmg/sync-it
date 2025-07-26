@@ -19,19 +19,19 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
-                text="🛠  Профессия",
+                text="🛠 Направление",
                 callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_PROFESSIONS).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
-                text="🎓  Грейд",
+                text="🎓 Грейд",
                 callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_GRADES).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
-                text="💼  Формат работы",
+                text="💼 Формат работы",
                 callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_WORK_FORMATS).pack(),
             ),
         ],
