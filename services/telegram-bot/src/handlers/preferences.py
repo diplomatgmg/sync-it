@@ -3,7 +3,7 @@ from typing import cast
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
-from clients import GradeClient, ProfessionClient, WorkFormatClient
+from clients import grade_client, profession_client, work_format_client
 from common.logger import get_logger
 from database.models.enums import PreferenceCategoryCodeEnum
 from keyboard.inline.preferences import options_keyboard
@@ -28,11 +28,10 @@ async def handle_show_options(
     query: CallbackQuery,
     session: AsyncSession,
     category_code: PreferenceCategoryCodeEnum,
-    client_class: ClientType,
+    client: ClientType,
     message_text: str,
 ) -> None:
-    async with client_class() as client:
-        options = await client.get_all()
+    options = await client.get_all()
 
     repo = UserRepository(session)
     service = UserService(repo)
@@ -51,7 +50,7 @@ async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> Non
         query,
         session,
         PreferenceCategoryCodeEnum.WORK_FORMAT,
-        WorkFormatClient,
+        work_format_client,
         "Выберите формат работы:",
     )
 
@@ -62,7 +61,7 @@ async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
         query,
         session,
         PreferenceCategoryCodeEnum.GRADE,
-        GradeClient,
+        grade_client,
         "Выберите грейд:",
     )
 
@@ -73,7 +72,7 @@ async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None
         query,
         session,
         PreferenceCategoryCodeEnum.PROFESSION,
-        ProfessionClient,
+        profession_client,
         "Выберите направление:",
     )
 
@@ -88,15 +87,14 @@ async def handle_select_option(
     category_code = cast("PreferenceCategoryCodeEnum", callback_data.category_code)
     item_id = cast("int", callback_data.item_id)
 
-    client_class = get_client(category_code)
+    client = get_client(category_code)
 
     item_name = ""
-    async with client_class() as api_client:
-        options = await api_client.get_all()
-        for option in options:
-            if option.id == item_id:
-                item_name = option.name
-                break
+    options = await client.get_all()
+    for option in options:
+        if option.id == item_id:
+            item_name = option.name
+            break
 
     if not item_name:
         await callback.answer("Ошибка: опция не найдена.", show_alert=True)

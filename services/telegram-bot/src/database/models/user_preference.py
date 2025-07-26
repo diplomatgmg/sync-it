@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from database.models import Base
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -26,4 +26,4 @@ class UserPreference(Base):
 
     user: Mapped["User"] = relationship(back_populates="preferences", lazy="selectin")
 
-    # TODO: По-хорошему добавить unique constraints
+    __table_args__ = (UniqueConstraint("user_id", "category_code", "item_id", name="uq_user_category_item"),)

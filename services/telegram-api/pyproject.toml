@@ -5,7 +5,6 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "environment-lib",
     "fastapi>=0.115.12",
-    "httpx>=0.28.1",
     "logger-lib",
     "syncit-core",
     "uvicorn[standard]>=0.34.3",

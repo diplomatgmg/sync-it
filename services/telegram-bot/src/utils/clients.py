@@ -1,4 +1,5 @@
-from clients import GradeClient, ProfessionClient, WorkFormatClient
+from clients import grade_client, profession_client, work_format_client
+from clients.protocols import SupportsGetAll
 from database.models.enums import PreferenceCategoryCodeEnum
 
 
@@ -7,12 +8,12 @@ __all__ = [
     "get_client",
 ]
 
-type ClientType = type[GradeClient | WorkFormatClient | ProfessionClient]
+type ClientType = SupportsGetAll
 
 CLIENT_MAP: dict[PreferenceCategoryCodeEnum, ClientType] = {
-    PreferenceCategoryCodeEnum.GRADE: GradeClient,
-    PreferenceCategoryCodeEnum.WORK_FORMAT: WorkFormatClient,
-    PreferenceCategoryCodeEnum.PROFESSION: ProfessionClient,
+    PreferenceCategoryCodeEnum.GRADE: grade_client,
+    PreferenceCategoryCodeEnum.WORK_FORMAT: work_format_client,
+    PreferenceCategoryCodeEnum.PROFESSION: profession_client,
 }
 
 

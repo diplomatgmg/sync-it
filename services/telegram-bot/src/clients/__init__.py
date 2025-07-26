@@ -1,12 +1,10 @@
-from clients.base import BaseClient
-from clients.grades import GradeClient
-from clients.profession import ProfessionClient
-from clients.work_formats import WorkFormatClient
+from clients.grades import grade_client
+from clients.profession import profession_client
+from clients.work_formats import work_format_client
 
 
 __all__ = [
-    "BaseClient",
-    "GradeClient",
-    "ProfessionClient",
-    "WorkFormatClient",
+    "grade_client",
+    "profession_client",
+    "work_format_client",
 ]

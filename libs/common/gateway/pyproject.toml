@@ -1,9 +1,7 @@
 [project]
 name = "gateway-lib"
 dynamic = ["version"]
-dependencies = [
-    "httpx>=0.28.1",
-]
+dependencies = []
 
 [tool.setuptools.packages.find]
 where = ["."]

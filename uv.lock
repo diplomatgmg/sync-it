@@ -171,6 +171,15 @@ requires-dist = [
 ]
 
 [[package]]
+name = "async-lru"
+version = "2.0.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b2/4d/71ec4d3939dc755264f680f6c2b4906423a304c3d18e96853f0a595dfe97/async_lru-2.0.5.tar.gz", hash = "sha256:481d52ccdd27275f42c43a928b4a50c3bfb2d67af4e78b170e3e0bb39c66e5bb", size = 10380, upload-time = "2025-03-16T17:25:36.919Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/49/d10027df9fce941cb8184e78a02857af36360d33e1721df81c5ed2179a1a/async_lru-2.0.5-py3-none-any.whl", hash = "sha256:ab95404d8d2605310d345932697371a5f40def0487c03d6d0ad9138de52c9943", size = 6069, upload-time = "2025-03-16T17:25:35.422Z" },
+]
+
+[[package]]
 name = "asyncpg"
 version = "0.30.0"
 source = { registry = "https://pypi.org/simple" }
@@ -435,7 +444,7 @@ wheels = [
 
 [[package]]
 name = "g4f"
-version = "0.5.7.5"
+version = "0.5.7.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -444,20 +453,14 @@ dependencies = [
     { name = "pycryptodome" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/29/e6/43beb13ba578a544bc3e9f53d6e7b577f899e7fa5ed763d6c67c04a95239/g4f-0.5.7.5.tar.gz", hash = "sha256:1798c57632aa5ed6b657504cb121dbdf1f45246582e6fc7903662955c106c5d7", size = 403032, upload-time = "2025-07-19T14:14:52.461Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/2f/9a836bc99a55bdb4f371783c044faab390c83c22a16f9a83e47e68027759/g4f-0.5.7.6.tar.gz", hash = "sha256:19f6cd18f9d74368f13a29e24a176021d77f31a983475c1ea15314a19ea6119e", size = 403761, upload-time = "2025-07-25T14:47:22.249Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/0a/0389e4fa894d2256ed032b7348327cb30c0278b67699c98dfd6feed3efa5/g4f-0.5.7.5-py3-none-any.whl", hash = "sha256:ff593096fa52668bf6f5521fd4d0d816cd2e92773208ccec5245207585dd87b6", size = 493938, upload-time = "2025-07-19T14:14:49.393Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/6f/4bd7a665b4ec885dc7d2026545f6a89ef555503d44c4921c8c4c28de1e68/g4f-0.5.7.6-py3-none-any.whl", hash = "sha256:0b634825c312de364c15f597e5f0c84ebed028a47e1686e91df6bcc654043df6", size = 494838, upload-time = "2025-07-25T14:47:20.11Z" },
 ]
 
 [[package]]
 name = "gateway-lib"
 source = { virtual = "libs/common/gateway" }
-dependencies = [
-    { name = "httpx" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "httpx", specifier = ">=0.28.1" }]
 
 [[package]]
 name = "gpt-api"
@@ -1073,6 +1076,7 @@ wheels = [
 name = "syncit-core"
 source = { virtual = "." }
 dependencies = [
+    { name = "httpx" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
@@ -1086,6 +1090,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pydantic-settings", specifier = ">=2.10.1" },
 ]
@@ -1104,7 +1109,6 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "environment-lib" },
     { name = "fastapi" },
-    { name = "httpx" },
     { name = "logger-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1115,7 +1119,6 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
     { name = "environment-lib", virtual = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "httpx", specifier = ">=0.28.1" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
@@ -1126,6 +1129,7 @@ name = "telegram-bot"
 source = { virtual = "services/telegram-bot" }
 dependencies = [
     { name = "aiogram" },
+    { name = "async-lru" },
     { name = "cachetools" },
     { name = "database-lib" },
     { name = "gateway-lib" },
@@ -1144,6 +1148,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.20.0.post0" },
+    { name = "async-lru", specifier = ">=2.0.5" },
     { name = "cachetools", specifier = ">=6.1.0" },
     { name = "database-lib", virtual = "libs/common/database" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },

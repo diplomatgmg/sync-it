@@ -3,6 +3,7 @@ name = "telegram-bot"
 dynamic = ["version"]
 dependencies = [
     "aiogram>=3.20.0.post0",
+    "async-lru>=2.0.5",
     "cachetools>=6.1.0",
     "database-lib",
     "gateway-lib",

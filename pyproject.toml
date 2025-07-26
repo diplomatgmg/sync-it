@@ -3,6 +3,7 @@ name = "syncit-core"
 dynamic = ["version"]
 requires-python = ">=3.13"
 dependencies = [
+    "httpx>=0.28.1",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
 ]
