@@ -3,22 +3,22 @@ from pydantic import BaseModel, ConfigDict
 
 __all__ = [
     "CompletionResponse",
+    "GradeModelResponse",
     "GradeModelSchema",
-    "GradeResponse",
     "HealthResponse",
+    "ProfessionModelResponse",
     "ProfessionModelSchema",
-    "ProfessionResponse",
+    "SkillCategoryModelResponse",
     "SkillCategoryModelSchema",
-    "SkillCategoryResponse",
+    "SkillModelResponse",
     "SkillModelSchema",
-    "SkillResponse",
     "VacancyDeleteResponse",
-    "VacancyListResponse",
+    "VacancyModelResponse",
     "VacancyModelSchema",
     "VacancyResponse",
     "VacancySchema",
+    "WorkFormatModelResponse",
     "WorkFormatModelSchema",
-    "WorkFormatResponse",
 ]
 
 
@@ -52,7 +52,7 @@ class SkillModelSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SkillResponse(BaseModel):
+class SkillModelResponse(BaseModel):
     skills: list[SkillModelSchema]
 
 
@@ -63,7 +63,7 @@ class SkillCategoryModelSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SkillCategoryResponse(BaseModel):
+class SkillCategoryModelResponse(BaseModel):
     categories: list[SkillCategoryModelSchema]
 
 
@@ -74,7 +74,7 @@ class GradeModelSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class GradeResponse(BaseModel):
+class GradeModelResponse(BaseModel):
     grades: list[GradeModelSchema]
 
 
@@ -85,7 +85,7 @@ class ProfessionModelSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProfessionResponse(BaseModel):
+class ProfessionModelResponse(BaseModel):
     professions: list[ProfessionModelSchema]
 
 
@@ -96,7 +96,7 @@ class WorkFormatModelSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class WorkFormatResponse(BaseModel):
+class WorkFormatModelResponse(BaseModel):
     work_formats: list[WorkFormatModelSchema]
 
 
@@ -106,17 +106,13 @@ class VacancyModelSchema(BaseModel):
     profession: ProfessionModelSchema | None
     grades: list[GradeModelSchema]
     work_formats: list[WorkFormatModelSchema]
+    workplace_description: str | None
+    responsibilities: str | None
+    requirements: str | None
+    conditions: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
 
-# FIXME
-# У меня уже есть VacancyResponse. Надо придумать, как назвать ответы моделей (как ниже)
-# И ответы со стороны api
-class VacancyListResponse(BaseModel):
+class VacancyModelResponse(BaseModel):
     vacancies: list[VacancyModelSchema]
-
-    # FIXME мб сделать метод from_orm? Например, вынести schemas > models, orm (тут будет baseOrmSchema)
-    # @classmethod
-    # def from_orm_list(cls, vacancies: list):
-    #     return cls(vacancies=[VacancySchema.from_orm(v) for v in vacancies])  # noqa: ERA001

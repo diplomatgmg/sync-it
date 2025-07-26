@@ -14,6 +14,9 @@ __all__ = [
 logger = get_logger(__name__)
 
 
+# FIXME: вынести в клиенты
+
+
 async def fetch_new_vacancies() -> list[VacancySchema]:
     """Возвращает список актуальных вакансий для обработки"""
     url = build_service_url(ServiceEnum.VACANCY_PARSER, "/api/v1/vacancies")

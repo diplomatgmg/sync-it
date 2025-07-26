@@ -5,7 +5,7 @@ from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
 from fastapi import APIRouter, Depends, Query
 from repositories import VacancyRepository
-from schemas import VacancyListResponse, VacancyModelSchema
+from schemas import VacancyModelResponse, VacancyModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import VacancyService
@@ -24,7 +24,7 @@ async def get_vacancies(
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
     grades: Annotated[list[GradeEnum] | None, Query()] = None,
     work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
-) -> VacancyListResponse:
+) -> VacancyModelResponse:
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
     repo = VacancyRepository(session)
     service = VacancyService(repo)
@@ -34,4 +34,4 @@ async def get_vacancies(
         work_formats,
     )
 
-    return VacancyListResponse(vacancies=[VacancyModelSchema.model_validate(v) for v in vacancy_models])
+    return VacancyModelResponse(vacancies=[VacancyModelSchema.model_validate(v) for v in vacancy_models])
