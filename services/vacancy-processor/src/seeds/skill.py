@@ -39,6 +39,7 @@ async def seed_skills() -> None:
 
             if category_enum not in existing_skill_category_names:
                 skill_category = await skill_category_service.add_category(category_enum)
+                await session.flush()
 
             if skill_category is None:
                 # Категорию получаем из enum, поэтому всегда будет
