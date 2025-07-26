@@ -49,12 +49,15 @@ class VacancyRepository(BaseRepository):
 
         for subclass in subclasses:
             stmt = (
-                select(subclass).where(subclass.deleted_at.is_(None)).order_by(subclass.created_at.desc()).limit(limit)
+                select(subclass)
+                .where(subclass.deleted_at.is_(None))
+                .order_by(subclass.published_at.desc())
+                .limit(limit)
             )
             result = await self._session.execute(stmt)
             vacancies.extend(result.scalars().all())
 
-        vacancies.sort(key=lambda x: x.created_at, reverse=True)
+        vacancies.sort(key=lambda x: x.published_at, reverse=True)
         return vacancies[:limit]
 
     async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:

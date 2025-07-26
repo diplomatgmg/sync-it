@@ -107,7 +107,9 @@ class VacancyProcessor:
         work_formats = await self._resolve_work_formats(extracted_vacancy, work_format_service)
         skills = await self._resolve_skills(extracted_vacancy, skill_service)
 
+        # FIXME Use vacancy repo
         vacancy_model = Vacancy(
+            published_at=vacancy.published_at,
             hash=vacancy.hash,
             link=vacancy.link,
             profession_id=profession_id,

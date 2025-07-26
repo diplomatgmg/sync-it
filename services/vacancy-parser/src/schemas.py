@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 
 from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints
@@ -55,7 +56,8 @@ class TelegramChannelUrl(HttpUrl):
 
 
 class TelegramChannelMessage(BaseModel):
-    message_id: int
+    id: int
+    datetime: datetime
     text: str
 
 
@@ -71,6 +73,7 @@ class VacancyModelSchema(BaseModel):
     hash: str
     link: str
     data: str
+    published_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

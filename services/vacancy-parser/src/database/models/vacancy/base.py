@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any, Self
 
 from database.models import Base
@@ -8,10 +8,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 __all__ = ["BaseVacancy"]
-
-
-def _utcnow() -> datetime:
-    return datetime.now(tz=UTC)
 
 
 class BaseVacancy(Base):
@@ -26,7 +22,7 @@ class BaseVacancy(Base):
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(String(8192))
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     def __init__(self, **kwargs: Any) -> None:

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import TelegramVacancy
@@ -34,6 +36,7 @@ class TelegramVacancyRepository(VacancyRepository):
         link: str,
         channel_username: str,
         message_id: int,
+        published_at: datetime,
         data: str,
     ) -> TelegramVacancy:
         """Создает экземпляр TelegramVacancy, сохраняет его и возвращает."""
@@ -47,5 +50,6 @@ class TelegramVacancyRepository(VacancyRepository):
             link=link,
             channel_username=channel_username,
             message_id=message_id,
+            published_at=published_at,
             data=data,
         )

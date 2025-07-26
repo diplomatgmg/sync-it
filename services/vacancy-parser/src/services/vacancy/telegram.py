@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 
 from database.models.vacancy import TelegramVacancy
 from repositories.vacancy import TelegramVacancyRepository
@@ -18,14 +19,21 @@ class TelegramVacancyService(BaseVacancyService[TelegramVacancyRepository]):
     async def find_duplicate_by_fingerprint(self, fingerprint: str) -> TelegramVacancy | None: ...
 
     async def prepare_instance(
-        self, fingerprint: str, link: str, channel_username: str, message_id: int, data: str
+        self,
+        fingerprint: str,
+        link: str,
+        channel_username: str,
+        message_id: int,
+        message_datetime: datetime,
+        message_text: str,
     ) -> TelegramVacancy:
         return await self._repo.prepare_instance(
             fingerprint=fingerprint,
             link=link,
             channel_username=channel_username,
             message_id=message_id,
-            data=data,
+            published_at=message_datetime,
+            data=message_text,
         )
 
     async def bulk_create(self, vacancies: Sequence[TelegramVacancy]) -> int:

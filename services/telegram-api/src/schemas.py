@@ -13,7 +13,8 @@ class HealthResponse(BaseModel):
 
 
 class ChannelMessage(BaseModel):
-    message_id: int
+    id: int
+    datetime: str
     text: str
 
 

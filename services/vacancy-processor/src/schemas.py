@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -26,6 +28,7 @@ class VacancySchema(BaseModel):
     hash: str
     link: str
     data: str
+    published_at: datetime
 
 
 class VacancyResponse(BaseModel):
@@ -103,6 +106,7 @@ class WorkFormatModelResponse(BaseModel):
 class VacancyModelSchema(BaseModel):
     id: int
     link: str
+    published_at: datetime
     profession: ProfessionModelSchema | None
     grades: list[GradeModelSchema]
     work_formats: list[WorkFormatModelSchema]

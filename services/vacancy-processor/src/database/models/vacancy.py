@@ -1,8 +1,9 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from database.models import Base
 from database.models.tables import vacancy_grade_table, vacancy_skill_table, vacancy_work_format_table
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
@@ -17,6 +18,7 @@ class Vacancy(Base):
     __tablename__ = "vacancy"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)

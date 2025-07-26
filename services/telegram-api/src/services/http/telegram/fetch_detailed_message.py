@@ -32,7 +32,7 @@ async def fetch_detailed_message(channel_username: str, message_ids: list[int]) 
     return [msg for msg in results if msg is not None]
 
 
-async def _fetch_and_parse_message(
+async def _fetch_and_parse_message(  # noqa: PLR0911 Too many return statements
     client: AsyncClient, channel_username: str, message_id: int
 ) -> ChannelMessage | None:
     """Парсит сообщение по id."""
@@ -44,11 +44,11 @@ async def _fetch_and_parse_message(
 
             soup = BeautifulSoup(response.text, "html.parser")
             data_post_value = f"{channel_username}/{message_id}"
-            message_block = soup.select_one(f'div.tgme_widget_message[data-post="{data_post_value}"]')
 
+            message_block = soup.select_one(f'div.tgme_widget_message[data-post="{data_post_value}"]')
             if message_block is None:
                 # Если сообщение удалено
-                logger.debug("Message with id %s was deleted", message_id)
+                logger.info("Message with id %s was deleted", message_id)
                 return None
 
             data_post = message_block.attrs.get("data-post")
@@ -64,20 +64,28 @@ async def _fetch_and_parse_message(
             is_not_supported_message = message_block.select_one("div.message_media_not_supported")
             # Сообщение не поддерживается: Please open Telegram to view this post
             if is_not_supported_message is not None:
-                logger.debug("Message with id %s is not supported", message_id)
+                logger.info("Message with id %s is not supported", message_id)
                 return None
 
             message_text_block = message_block.select_one("div.tgme_widget_message_text")
             # Если в сообщении нет текста (Только картинки, видео, документы и т.д.)
             if message_text_block is None:
-                logger.debug("Message text block not found for message with id %s", message_id)
+                logger.info("Message text block not found for message with id %s", message_id)
                 return None
+
+            message_time_block = message_block.select_one("time.time")
+            if message_time_block is None:
+                logger.warning("Message time not found for message with id %s", message_id)
+                return None
+
+            message_datetime_str = str(message_time_block.attrs["datetime"])
 
             for br in message_text_block.find_all("br"):
                 br.replace_with("\n")  # type: ignore[arg-type]
 
             return ChannelMessage(
-                message_id=message_id,
+                id=message_id,
+                datetime=message_datetime_str,
                 text=message_text_block.get_text().strip(),
             )
         except Exception as e:

@@ -57,7 +57,7 @@ class TelegramParser(BaseParser):
                     "Existing vacancy link: %s, ",
                     await self.service.get_similarity_score(fingerprint, duplicate.fingerprint),
                     channel_link,
-                    message.message_id,
+                    message.id,
                     duplicate.link,
                 )
                 continue
@@ -70,10 +70,11 @@ class TelegramParser(BaseParser):
 
             vacancy = await self.service.prepare_instance(
                 fingerprint=fingerprint,
-                link=f"{channel_link}/{message.message_id}",
+                link=f"{channel_link}/{message.id}",
                 channel_username=channel_link.channel_username,
-                message_id=message.message_id,
-                data=message.text,
+                message_id=message.id,
+                message_datetime=message.datetime,
+                message_text=message.text,
             )
             vacancies.append(vacancy)
 
