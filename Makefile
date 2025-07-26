@@ -43,16 +43,16 @@ add: # add python package to service p=<package> s=<service> [e="<extra> <extra2
 	uv add $(p) --package $(s) $(e);
 
 lint: # run linters and formatters
-	@uv run ruff check . && \
-	uv run isort . --check-only && \
-	uv run ruff format --check . && \
-	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
+	@uv run ruff check .
+	@uv run isort . --check-only
+	@uv run ruff format --check .
+	@$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
 lint-fix: # run linters and formatters with fix
-	@uv run ruff check . && \
-	uv run isort . && \
-	uv run ruff format . && \
-	$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
+	@uv run ruff check .
+	@uv run isort .
+	@uv run ruff format .
+	@$(foreach dir,$(MYPY_DIRS),uv run mypy $(dir) && echo $(dir);)
 
 mm: # create migration s=<service> m="migration message"
 	@if [ -z "$(s)" ] || [ -z "$(m)" ]; then \
