@@ -12,6 +12,6 @@ def process_vacancies() -> None:
 
 
 async def async_process_vacancies() -> None:
-    vacancy_extractor = VacancyExtractor()
-    processor_service = VacancyProcessor(vacancy_extractor)
-    await processor_service.start()
+    extractor = VacancyExtractor()
+    processor = VacancyProcessor(extractor)
+    await processor.start()
