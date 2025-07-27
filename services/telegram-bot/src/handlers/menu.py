@@ -4,6 +4,7 @@ from callbacks.main import MenuActionEnum, MenuCallback
 from clients.vacancy import vacancy_client
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.preferences import preferences_keyboard
+from utils.formatters import format_publication_time
 from utils.message import safe_edit_message
 
 
@@ -31,7 +32,9 @@ async def handle_vacancies(callback: CallbackQuery) -> None:
         return
 
     # FIXME заглушка
-    vacancies_text = "\n".join([f"👉 {vacancy.link}" for vacancy in vacancies])[:1024]
+    vacancies_text = "\n".join(
+        [f"👉 {vacancy.link} (Опубликована {format_publication_time(vacancy.published_at)})" for vacancy in vacancies]
+    )[:1024]
 
     await safe_edit_message(
         callback,
