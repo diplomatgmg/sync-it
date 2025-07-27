@@ -5,7 +5,7 @@ from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
 from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
-from schemas import VacancySchema
+from schemas import ParsedVacancySchema
 from services.http import fetch_gpt_completion, fetch_new_vacancies, send_delete_request_vacancy
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
@@ -41,7 +41,7 @@ class VacancyProcessor:
 
         await asyncio.gather(*tasks)
 
-    async def process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
+    async def process_prompt(self, prompt: str, vacancy: ParsedVacancySchema) -> None:
         try:
             completion = await fetch_gpt_completion(prompt)
 
@@ -91,7 +91,7 @@ class VacancyProcessor:
 
     async def _save_vacancy_in_transaction(
         self,
-        vacancy: VacancySchema,
+        vacancy: ParsedVacancySchema,
         extracted_vacancy: VacancyExtractor,
         vacancy_service: VacancyService,
         profession_service: ProfessionService,

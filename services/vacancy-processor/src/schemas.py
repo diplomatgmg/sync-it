@@ -8,34 +8,34 @@ __all__ = [
     "GradeModelResponse",
     "GradeModelSchema",
     "HealthResponse",
+    "ParsedVacancyDeleteResponse",
+    "ParsedVacancyResponse",
+    "ParsedVacancySchema",
+    "ProcessedVacancyModelSchema",
     "ProfessionModelResponse",
     "ProfessionModelSchema",
     "SkillCategoryModelResponse",
     "SkillCategoryModelSchema",
     "SkillModelResponse",
     "SkillModelSchema",
-    "VacancyDeleteResponse",
     "VacancyModelResponse",
-    "VacancyModelSchema",
-    "VacancyResponse",
-    "VacancySchema",
     "WorkFormatModelResponse",
     "WorkFormatModelSchema",
 ]
 
 
-class VacancySchema(BaseModel):
+class ParsedVacancySchema(BaseModel):
     hash: str
     link: str
     data: str
     published_at: datetime
 
 
-class VacancyResponse(BaseModel):
-    vacancies: list[VacancySchema]
+class ParsedVacancyResponse(BaseModel):
+    vacancies: list[ParsedVacancySchema]
 
 
-class VacancyDeleteResponse(BaseModel):
+class ParsedVacancyDeleteResponse(BaseModel):
     is_deleted: bool
 
 
@@ -103,7 +103,7 @@ class WorkFormatModelResponse(BaseModel):
     work_formats: list[WorkFormatModelSchema]
 
 
-class VacancyModelSchema(BaseModel):
+class ProcessedVacancyModelSchema(BaseModel):
     id: int
     link: str
     published_at: datetime
@@ -119,4 +119,4 @@ class VacancyModelSchema(BaseModel):
 
 
 class VacancyModelResponse(BaseModel):
-    vacancies: list[VacancyModelSchema]
+    vacancies: list[ProcessedVacancyModelSchema]

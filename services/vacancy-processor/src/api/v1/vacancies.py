@@ -5,7 +5,7 @@ from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
 from fastapi import APIRouter, Depends, Query
 from repositories import VacancyRepository
-from schemas import VacancyModelResponse, VacancyModelSchema
+from schemas import ProcessedVacancyModelSchema, VacancyModelResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import VacancyService
@@ -34,4 +34,4 @@ async def get_vacancies(
         work_formats,
     )
 
-    return VacancyModelResponse(vacancies=[VacancyModelSchema.model_validate(v) for v in vacancy_models])
+    return VacancyModelResponse(vacancies=[ProcessedVacancyModelSchema.model_validate(v) for v in vacancy_models])
