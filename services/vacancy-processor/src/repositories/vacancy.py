@@ -35,7 +35,7 @@ class VacancyRepository(BaseRepository):
                 joinedload(Vacancy.grades),
                 joinedload(Vacancy.work_formats),
             )
-            .order_by(Vacancy.id)
+            .order_by(Vacancy.published_at.desc())
         )
 
         if professions:
