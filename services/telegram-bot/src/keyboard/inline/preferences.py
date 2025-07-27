@@ -19,7 +19,7 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
-                text="🛠 Направление",
+                text="🎯 Направление",
                 callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_PROFESSIONS).pack(),
             ),
         ],
@@ -31,13 +31,13 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton(
-                text="💼 Формат работы",
+                text="💻 Формат работы",
                 callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_WORK_FORMATS).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
-                text="⬅️ Назад",
+                text="🏠 В меню",
                 callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
             ),
         ],
@@ -58,7 +58,7 @@ def options_keyboard(
 
     for option in options:
         is_selected = option.id in selected_item_ids
-        button_text = f"🔶 {option.name}" if is_selected else option.name
+        button_text = f"✅ {option.name}" if is_selected else option.name
 
         builder.button(
             text=button_text,

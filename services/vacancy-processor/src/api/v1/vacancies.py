@@ -28,7 +28,7 @@ async def get_vacancies(
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
     repo = VacancyRepository(session)
     service = VacancyService(repo)
-    vacancy_models = await service.get_vacancies(
+    vacancy_models = await service.get_vacancies(  # FIXME Нет пагинации. Вернутся все вакансии из БД
         professions,
         grades,
         work_formats,

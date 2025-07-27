@@ -3,7 +3,24 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
 
 
-__all__ = ["main_keyboard"]
+__all__ = [
+    "main_keyboard",
+    "main_menu_keyboard",
+]
+
+
+def main_menu_keyboard() -> InlineKeyboardMarkup:
+    """Создает клавиатуру для возврата в главное меню."""
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="🏠 В меню",
+                callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
+            ),
+        ],
+    ]
+
+    return InlineKeyboardBuilder(markup=buttons).as_markup()
 
 
 def main_keyboard() -> InlineKeyboardMarkup:
@@ -11,13 +28,13 @@ def main_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
-                text="📋 Вакансии",
+                text="📋Вакансии",
                 callback_data=MenuCallback(action=MenuActionEnum.VACANCIES).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
-                text="⚙️  Предпочтения",
+                text="⚙️Предпочтения",
                 callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
             ),
         ],
