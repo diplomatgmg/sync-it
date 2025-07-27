@@ -22,6 +22,14 @@ async def handle_preferences(callback: CallbackQuery) -> None:
 async def handle_vacancies(callback: CallbackQuery) -> None:
     vacancies = await vacancy_client.get_filtered()
 
+    if not vacancies:
+        await safe_edit_message(
+            callback,
+            text="К сожалению, доступных вакансий нет.\nИзмените предпочтения или загляните сюда позже 😉",
+            reply_markup=main_menu_keyboard(),
+        )
+        return
+
     # FIXME заглушка
     vacancies_text = "\n".join([f"👉 {vacancy.link}" for vacancy in vacancies])[:1024]
 
