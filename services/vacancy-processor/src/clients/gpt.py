@@ -8,7 +8,7 @@ from schemas import CompletionResponse
 __all__ = ["gpt_client"]
 
 
-class GPTClient(BaseClient):
+class _GPTClient(BaseClient):
     url = build_service_url(ServiceEnum.GPT_API, "/api/v1/completion")
 
     @limit_concurrency(15)
@@ -21,4 +21,4 @@ class GPTClient(BaseClient):
         return data.message
 
 
-gpt_client = GPTClient()
+gpt_client = _GPTClient()

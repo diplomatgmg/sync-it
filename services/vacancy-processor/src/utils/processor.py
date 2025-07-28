@@ -1,13 +1,12 @@
 import asyncio
 from itertools import starmap
 
-from clients import gpt_client
+from clients import gpt_client, vacancy_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
 from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
 from schemas import ParsedVacancySchema
-from services.http import fetch_new_vacancies, send_delete_request_vacancy
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
 
@@ -34,7 +33,7 @@ class VacancyProcessor:
 
     async def start(self) -> None:
         logger.debug("Start processing vacancies")
-        vacancies = await fetch_new_vacancies()
+        vacancies = await vacancy_client.fetch()
         logger.info("Got %s new vacancies", len(vacancies))
 
         prompts = [make_prompt(vacancy.data) for vacancy in vacancies]
@@ -52,7 +51,7 @@ class VacancyProcessor:
             )
             if any(bad_completion in completion for bad_completion in bad_completions):
                 logger.debug("Not a vacancy: %s", vacancy.link)
-                await send_delete_request_vacancy(vacancy)
+                await vacancy_client.delete(vacancy)
                 return
 
             extracted_vacancy = self.vacancy_extractor.extract(completion)
@@ -84,7 +83,7 @@ class VacancyProcessor:
                 await session.commit()
 
             # Удаляем вакансию из очереди только после успешного сохранения в БД
-            await send_delete_request_vacancy(vacancy)
+            await vacancy_client.delete(vacancy)
         except Exception as e:
             logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
             # Rollback произойдет автоматически при выходе из `get_async_session`
