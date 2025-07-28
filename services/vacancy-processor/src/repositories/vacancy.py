@@ -22,6 +22,7 @@ class VacancyRepository(BaseRepository):
         professions: Sequence[ProfessionEnum] | None = None,
         grades: Sequence[GradeEnum] | None = None,
         work_formats: Sequence[WorkFormatEnum] | None = None,
+        limit: int | None = 100,
     ) -> Sequence[Vacancy]:
         """Получает отфильтрованный список вакансий."""
         professions = professions or []
@@ -36,6 +37,7 @@ class VacancyRepository(BaseRepository):
                 joinedload(Vacancy.work_formats),
             )
             .order_by(Vacancy.published_at.desc())
+            .limit(limit)
         )
 
         if professions:

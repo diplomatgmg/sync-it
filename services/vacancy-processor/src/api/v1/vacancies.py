@@ -24,14 +24,16 @@ async def get_vacancies(
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
     grades: Annotated[list[GradeEnum] | None, Query()] = None,
     work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
+    limit: int | None = None,
 ) -> VacancyModelResponse:
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
     repo = VacancyRepository(session)
     service = VacancyService(repo)
-    vacancy_models = await service.get_vacancies(  # FIXME Нет пагинации. Вернутся все вакансии из БД
+    vacancy_models = await service.get_vacancies(
         professions,
         grades,
         work_formats,
+        limit=limit,
     )
 
     return VacancyModelResponse(vacancies=[ProcessedVacancyModelSchema.model_validate(v) for v in vacancy_models])

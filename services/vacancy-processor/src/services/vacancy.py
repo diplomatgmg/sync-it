@@ -21,10 +21,12 @@ class VacancyService(BaseService[VacancyRepository]):
         professions: Sequence[ProfessionEnum] | None = None,
         grades: Sequence[GradeEnum] | None = None,
         work_formats: Sequence[WorkFormatEnum] | None = None,
+        limit: int | None = None,
     ) -> Sequence[Vacancy]:
         """Получает вакансии с применением фильтров."""
         return await self._repo.get_filtered(
             professions=professions,
             grades=grades,
             work_formats=work_formats,
+            limit=limit,
         )

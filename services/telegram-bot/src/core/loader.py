@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher
-from core.config import service_config
+from core import service_config
 
 
 __all__ = [
