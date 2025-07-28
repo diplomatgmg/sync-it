@@ -1,12 +1,13 @@
 import asyncio
 from itertools import starmap
 
+from clients import gpt_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
 from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
 from schemas import ParsedVacancySchema
-from services.http import fetch_gpt_completion, fetch_new_vacancies, send_delete_request_vacancy
+from services.http import fetch_new_vacancies, send_delete_request_vacancy
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
 
@@ -43,7 +44,7 @@ class VacancyProcessor:
 
     async def process_prompt(self, prompt: str, vacancy: ParsedVacancySchema) -> None:
         try:
-            completion = await fetch_gpt_completion(prompt)
+            completion = await gpt_client.get_completion(prompt)
 
             bad_completions = (
                 "Не вакансия",
