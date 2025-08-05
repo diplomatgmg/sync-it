@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.get("/professions")
-async def get_grades(session: Annotated[AsyncSession, Depends(provide_async_session)]) -> ProfessionModelResponse:
+async def get_professions(session: Annotated[AsyncSession, Depends(provide_async_session)]) -> ProfessionModelResponse:
     """Возвращает актуальных профессий."""
     repo = ProfessionRepository(session)
     service = ProfessionService(repo)
