@@ -94,7 +94,11 @@ class VacancyRepository(BaseRepository):
     async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
         """Найти дубликат вакансии по содержимому."""
 
-        stmt = select(self.model).where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
+        stmt = (
+            select(self.model)
+            .where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
+            .limit(1)
+        )
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
