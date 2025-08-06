@@ -3,7 +3,7 @@ from typing import Any, Self
 
 from database.models import Base
 from database.models.enums import SourceEnum
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import TEXT, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -20,7 +20,7 @@ class BaseVacancy(Base):
     source_id: Mapped[int] = mapped_column(ForeignKey("source.id", ondelete="RESTRICT"), index=True)
 
     link: Mapped[str] = mapped_column(String(256), unique=True)
-    data: Mapped[str] = mapped_column(String(8192))
+    data: Mapped[str] = mapped_column(TEXT)
 
     published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, index=True)

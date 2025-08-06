@@ -23,4 +23,4 @@ class BaseStrEnum(StrEnum):
 
 class SourceEnum(BaseStrEnum):
     TELEGRAM = "telegram"
-    HH = "hh"
+    HEAD_HUNTER = "head_hunter"

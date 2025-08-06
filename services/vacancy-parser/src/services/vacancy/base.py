@@ -1,11 +1,15 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import Any, TypeVar
 
 from common.shared.services import BaseService
+from database.models.vacancy import BaseVacancy
 from repositories.vacancy import VacancyRepository
 
 
-__all__ = ["BaseVacancyService"]
+__all__ = [
+    "BaseVacancyService",
+    "RepoType",
+]
 
 
 RepoType = TypeVar("RepoType", bound=VacancyRepository)
@@ -20,3 +24,6 @@ class BaseVacancyService(BaseService[RepoType]):
 
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         return await self._repo.get_existing_hashes(hashes)
+
+    async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:
+        return await self._repo.bulk_create(vacancies)

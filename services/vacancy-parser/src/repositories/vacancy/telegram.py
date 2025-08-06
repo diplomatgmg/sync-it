@@ -6,7 +6,7 @@ from database.models.vacancy import TelegramVacancy
 from repositories.vacancy.vacancy import VacancyRepository
 from schemas import TelegramChannelUrl
 from sqlalchemy import func, select
-from utils import generate_hash, required_attrs
+from utils import generate_hash
 
 
 __all__ = ["TelegramVacancyRepository"]
@@ -16,7 +16,6 @@ class TelegramVacancyRepository(VacancyRepository):
     source = SourceEnum.TELEGRAM
     model = TelegramVacancy
 
-    @required_attrs("model", "source")
     async def get_last_message_id(self, link: TelegramChannelUrl) -> int | None:
         """Получить последний message_id для заданного Telegram канала."""
         source_id = await self.get_source_id()

@@ -1,7 +1,6 @@
 from typing import Any
 
-# FIXME from core import service_config
-from core.config import service_config
+from core import service_config
 from database.models.enums import BaseStrEnum
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncAttrs

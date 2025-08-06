@@ -997,11 +997,15 @@ wheels = [
 name = "shared-lib"
 source = { virtual = "libs/common/shared" }
 dependencies = [
+    { name = "async-lru" },
     { name = "database-lib" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "database-lib", virtual = "libs/common/database" }]
+requires-dist = [
+    { name = "async-lru", specifier = ">=2.0.5" },
+    { name = "database-lib", virtual = "libs/common/database" },
+]
 
 [[package]]
 name = "six"
@@ -1129,7 +1133,6 @@ name = "telegram-bot"
 source = { virtual = "services/telegram-bot" }
 dependencies = [
     { name = "aiogram" },
-    { name = "async-lru" },
     { name = "cachetools" },
     { name = "database-lib" },
     { name = "gateway-lib" },
@@ -1148,7 +1151,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiogram", specifier = ">=3.20.0.post0" },
-    { name = "async-lru", specifier = ">=2.0.5" },
     { name = "cachetools", specifier = ">=6.1.0" },
     { name = "database-lib", virtual = "libs/common/database" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },

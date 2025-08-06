@@ -16,11 +16,12 @@ logger = get_logger(__name__)
 
 
 class TelegramParser(BaseParser):
+    service: TelegramVacancyService
+
     def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
+        super().__init__()
         self.service = service
         self.channel_links = channel_links
-        # Запоминаем fingerprints, которые получили на основе новых спарсенных вакансий, чтобы избежать конфликта с БД
-        self._new_fingerprints: set[str] = set()
 
     async def parse(self) -> None:
         logger.info("Starting Telegram parser")
@@ -37,6 +38,7 @@ class TelegramParser(BaseParser):
         last_message_id = await self.service.get_last_message_id(channel_link)
         logger.info("Last message id for channel '%s' is %s", channel_link, last_message_id)
 
+        # TODO: Создать клиент для работы с Telegram API
         newest_messages = await fetch_newest_telegram_messages(channel_link.channel_username, last_message_id)
 
         if not newest_messages:
@@ -48,6 +50,11 @@ class TelegramParser(BaseParser):
         vacancies = []
         for message in newest_messages:
             fingerprint = generate_fingerprint(message.text)
+            if fingerprint in self.parsed_fingerprints:
+                logger.info("Vacancy with fingerprint '%s' already exists", fingerprint)
+                continue
+
+            self.parsed_fingerprints.add(fingerprint)
 
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
@@ -62,12 +69,6 @@ class TelegramParser(BaseParser):
                 )
                 continue
 
-            if fingerprint in self._new_fingerprints:
-                logger.info("Vacancy with fingerprint '%s' already exists", fingerprint)
-                continue
-
-            self._new_fingerprints.add(fingerprint)
-
             vacancy = await self.service.prepare_instance(
                 fingerprint=fingerprint,
                 link=f"{channel_link}/{message.id}",
@@ -78,18 +79,18 @@ class TelegramParser(BaseParser):
             )
             vacancies.append(vacancy)
 
-        await self.save_vacancies(vacancies)
+            if len(vacancies) >= self.BATCH_SIZE:
+                logger.info("Saving batch of %d vacancies...", len(vacancies))
+                new_vacancies = await self._get_new_vacancies(vacancies)
+                await self.save_vacancies(new_vacancies)
+                vacancies.clear()
 
-    async def save_vacancies(self, vacancies: list[TelegramVacancy]) -> None:
-        logger.debug("Saving %s vacancies", len(vacancies))
+        if vacancies:
+            new_vacancies = await self._get_new_vacancies(vacancies)
+            await self.save_vacancies(new_vacancies)
 
+    async def _get_new_vacancies(self, vacancies: list[TelegramVacancy]) -> list[TelegramVacancy]:
         vacancy_hashes = [v.hash for v in vacancies]
         existing_hashes = await self.service.get_existing_hashes(vacancy_hashes)
 
-        new_vacancies = [v for v in vacancies if v.hash not in existing_hashes]
-        if not new_vacancies:
-            logger.info("No new vacancies to save")
-            return
-
-        saved_count = await self.service.bulk_create(new_vacancies)
-        logger.info("Saved %s new vacancies", saved_count)
+        return [v for v in vacancies if v.hash not in existing_hashes]

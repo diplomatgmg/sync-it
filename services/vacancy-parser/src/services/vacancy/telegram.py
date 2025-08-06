@@ -1,4 +1,3 @@
-from collections.abc import Sequence
 from datetime import datetime
 
 from database.models.vacancy import TelegramVacancy
@@ -35,6 +34,3 @@ class TelegramVacancyService(BaseVacancyService[TelegramVacancyRepository]):
             published_at=message_datetime,
             data=message_text,
         )
-
-    async def bulk_create(self, vacancies: Sequence[TelegramVacancy]) -> int:
-        return await self._repo.bulk_create(vacancies)

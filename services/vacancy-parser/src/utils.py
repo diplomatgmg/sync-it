@@ -1,47 +1,45 @@
-from collections.abc import Awaitable, Callable
-from functools import wraps
 import hashlib
 import re
-from typing import Any, ParamSpec, TypeVar, cast
+
+from common.logger import get_logger
+from constants.fingerprint import FINGERPRINT_STOPWORDS
 
 
 __all__ = [
+    "clear_html",
     "generate_fingerprint",
     "generate_hash",
-    "required_attrs",
 ]
 
 
-def generate_hash(value: str, algorithm: str = "md5") -> str:
+logger = get_logger(__name__)
+
+
+def generate_hash(value: str | int, algorithm: str = "md5") -> str:
     """Генерирует хеш на основе переданного значения и алгоритма."""
     hasher = hashlib.new(algorithm)
+
+    value = str(value)
     hasher.update(value.encode("utf-8"))
 
     return hasher.hexdigest()
 
 
-_P = ParamSpec("_P")
-_R = TypeVar("_R")
+def truncate_by_bytes(s: str, max_bytes: int) -> str:
+    """
+    Обрезает строку, чтобы ее UTF-8 представление не превышало max_bytes.
 
+    :param s: Исходная строка.
+    :param max_bytes: Максимальное количество байт.
+    """
+    encoded_s = s.encode("utf-8")
 
-def required_attrs(*attrs: str) -> Callable[[Callable[_P, Awaitable[_R]]], Callable[_P, Awaitable[_R]]]:
-    """Декоратор для проверки наличия обязательных атрибутов в экземпляре класса перед вызовом метода."""
+    if len(encoded_s) <= max_bytes:
+        return s
 
-    def decorator(func: Callable[_P, Awaitable[_R]]) -> Callable[_P, Awaitable[_R]]:
-        @wraps(func)
-        async def wrapper(self: Any, *args: _P.args, **kwargs: _P.kwargs) -> _R:
-            missing = [attr for attr in attrs if not hasattr(self, attr)]
-            if missing:
-                raise AttributeError(f"Missing attributes for {func.__name__}: {', '.join(missing)}")
-            return await func(self, *args, **kwargs)
+    truncated_bytes = encoded_s[:max_bytes]
 
-        return cast("Callable[_P, Awaitable[_R]]", wrapper)
-
-    return decorator
-
-
-# Слова, которые часто встречаются в описании вакансии
-stop_words = {"и", "с", "в"}
+    return truncated_bytes.decode("utf-8", errors="ignore")
 
 
 def generate_fingerprint(text: str) -> str:
@@ -59,6 +57,14 @@ def generate_fingerprint(text: str) -> str:
     text = re.sub(r"https?://\S+|www\.\S+", "", text)
     # Удаляем лишние символы
     text = re.sub(r"[^а-яa-z0-9/;().\s]", "", text.lower())
-    filtered_words = [word for word in text.split() if word not in stop_words]
+    filtered_words = [word for word in text.split() if word not in FINGERPRINT_STOPWORDS]
     sorted_words = sorted(filtered_words)
-    return " ".join(sorted_words)
+    split_words = " ".join(sorted_words)
+
+    # 2704 - максимальная длина байтов для индекса в БД
+    return truncate_by_bytes(split_words, 2704)
+
+
+def clear_html(text: str) -> str:
+    """Убирает HTML-теги из текста."""
+    return re.sub(r"(<[^>]*>)|(&quot;)", "", text)

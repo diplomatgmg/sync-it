@@ -7,7 +7,6 @@ from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import BaseVacancy
 from sqlalchemy import func, select, update
-from utils import required_attrs
 
 
 __all__ = ["VacancyRepository"]
@@ -20,7 +19,6 @@ logger = get_logger(__name__)
 SIMILARITY_THRESHOLD = 0.70
 
 
-# TODO: добавить декоратор класса. Если для метода не определен @required_attrs - выбрасывать исключение
 class VacancyRepository(BaseRepository):
     """Репозиторий для работы с моделями вакансий."""
 
@@ -87,22 +85,16 @@ class VacancyRepository(BaseRepository):
         logger.debug("Not found vacancy with hash %s", vacancy_hash)
         return False
 
-    @required_attrs("model")
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         """Получить set уже существующих хешей в БД."""
         stmt = select(self.model.hash).where(self.model.hash.in_(hashes))
         result = await self._session.execute(stmt)
         return {row[0] for row in result.fetchall()}
 
-    @required_attrs("model")
     async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
         """Найти дубликат вакансии по содержимому."""
-        stmt = (
-            select(self.model)
-            .where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
-            .order_by(func.similarity(self.model.fingerprint, fingerprint).desc())
-            .limit(1)
-        )
+
+        stmt = select(self.model).where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 

@@ -147,8 +147,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      vacancy-parser:
-        condition: service_healthy
       gpt-api:
         condition: service_healthy
       api-gateway:

@@ -1,6 +1,4 @@
 import asyncio
-
-# FIXME import importlib
 from typing import Literal
 
 from alembic import context
@@ -15,9 +13,6 @@ from sqlalchemy.sql.schema import SchemaItem
 
 config = context.config
 config.set_main_option("sqlalchemy.url", db_config.url.render_as_string(hide_password=False))
-
-# Models imports
-# FIXME importlib.import_module("database.models.vacancy")
 
 target_metadata = Base.metadata
 

@@ -6,6 +6,8 @@ from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints
 
 __all__ = [
     "HealthResponse",
+    "Profession",
+    "ProfessionResponse",
     "TelegramChannelMessage",
     "TelegramChannelMessagesResponse",
     "TelegramChannelUrl",
@@ -84,3 +86,12 @@ class VacancyResponse(BaseModel):
 
 class VacancyDeleteResponse(BaseModel):
     is_deleted: bool
+
+
+class Profession(BaseModel):
+    id: int
+    name: str
+
+
+class ProfessionResponse(BaseModel):
+    professions: list[Profession]
