@@ -17,5 +17,6 @@ app = Celery(
     broker=str(redis_config.celery_broker_dsn),
     backend=str(redis_config.celery_result_dsn),
 )
+app.conf.task_default_queue = 'processor_queue'
 app.conf.beat_schedule = beat_schedule
 app.autodiscover_tasks(["tasks"])
