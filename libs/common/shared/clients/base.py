@@ -5,7 +5,7 @@ from httpx import URL, AsyncClient
 __all__ = ["BaseClient"]
 
 
-class BaseClient:  # noqa: B903 Class could be dataclass or namedtuple
+class BaseClient:
     url: URL
 
     def __init__(self, client: AsyncClient = http_client) -> None:

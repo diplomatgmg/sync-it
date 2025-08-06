@@ -1,6 +1,6 @@
 import asyncio
 
-from celery import Celery  # type: ignore[import-untyped]
+from celery import Celery
 from celery_app.beat import beat_schedule
 from common.redis.config import redis_config
 
@@ -17,6 +17,5 @@ app = Celery(
     broker=str(redis_config.celery_broker_dsn),
     backend=str(redis_config.celery_result_dsn),
 )
-
 app.conf.beat_schedule = beat_schedule
 app.autodiscover_tasks(["tasks"])

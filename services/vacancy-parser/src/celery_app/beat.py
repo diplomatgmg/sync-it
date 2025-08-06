@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from celery.schedules import schedule  # type: ignore[import-untyped]
+from celery.schedules import schedule
 
 
 __all__ = ["beat_schedule"]

@@ -15,7 +15,7 @@ __all__ = ["parse_vacancies"]
 logger = get_logger(__name__)
 
 
-@app.task(name="parse_vacancies")  # type: ignore[misc]
+@app.task(name="parse_vacancies")
 def parse_vacancies() -> None:
     """Основная задача Celery для запуска всех парсеров."""
     loop.run_until_complete(run_all_parsers())
