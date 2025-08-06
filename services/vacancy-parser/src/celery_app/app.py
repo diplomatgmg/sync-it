@@ -13,7 +13,7 @@ __all__ = [
 
 loop = asyncio.new_event_loop()
 app = Celery(
-    "vacancy-processor",
+    "vacancy-parser",
     broker=str(redis_config.celery_broker_dsn),
     backend=str(redis_config.celery_result_dsn),
 )
