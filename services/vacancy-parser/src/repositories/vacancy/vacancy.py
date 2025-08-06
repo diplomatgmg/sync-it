@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 from common.logger import get_logger
 from common.shared.repositories import BaseRepository
+from constants.fingerprint import FINGERPRINT_SIMILARITY_THRESHOLD
 from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import BaseVacancy
@@ -13,10 +14,6 @@ __all__ = ["VacancyRepository"]
 
 
 logger = get_logger(__name__)
-
-
-# TODO: вынести в конфиг?
-SIMILARITY_THRESHOLD = 0.70
 
 
 class VacancyRepository(BaseRepository):
@@ -96,7 +93,7 @@ class VacancyRepository(BaseRepository):
 
         stmt = (
             select(self.model)
-            .where(func.similarity(self.model.fingerprint, fingerprint) > SIMILARITY_THRESHOLD)
+            .where(func.similarity(self.model.fingerprint, fingerprint) > FINGERPRINT_SIMILARITY_THRESHOLD)
             .limit(1)
         )
         result = await self._session.execute(stmt)

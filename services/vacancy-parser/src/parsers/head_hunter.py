@@ -35,7 +35,12 @@ class HeadHunterParser(BaseParser):
         vacancies: list[HeadHunterVacancy] = []
 
         for vacancy_id in new_vacancies_ids:
-            vacancy = await head_hunter_client.get_vacancy_by_id(vacancy_id)
+            try:
+                vacancy = await head_hunter_client.get_vacancy_by_id(vacancy_id)
+            except Exception as e:
+                logger.exception("Error processing vacancy with id %s", vacancy_id, exc_info=e)
+                continue
+
             if not vacancy:
                 logger.info("Skipping with id %s", vacancy_id)
                 continue

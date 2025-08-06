@@ -15,6 +15,7 @@ class SalaryCurrency(StrEnum):
     BYR = "BYR"
     GEL = "GEL"
     UZS = "UZS"
+    KGS = "KGS"
 
 
 class SalaryMode(StrEnum):
