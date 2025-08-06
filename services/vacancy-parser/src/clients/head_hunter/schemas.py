@@ -53,12 +53,12 @@ class HeadHunterVacancySalarySchema(BaseModel):
             return None
 
         if self.from_ and not self.to:
-            return f"от {self.from_} {self.currency} {self.mode.humanize()}"
+            return f"от {self.from_} {self.currency.humanize()} {self.mode.humanize()}"
 
         if not self.from_ and self.to:
-            return f"до {self.to} {self.currency} {self.mode.humanize()}"
+            return f"до {self.to} {self.currency.humanize()} {self.mode.humanize()}"
 
-        return f"от {self.from_} до {self.to} {self.currency} {self.mode.humanize()}"
+        return f"от {self.from_} до {self.to} {self.currency.humanize()} {self.mode.humanize()}"
 
 
 class HeadHunterVacancySchema(BaseModel):

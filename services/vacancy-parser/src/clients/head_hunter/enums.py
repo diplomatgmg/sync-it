@@ -17,6 +17,15 @@ class SalaryCurrency(StrEnum):
     UZS = "UZS"
     KGS = "KGS"
 
+    def humanize(self) -> str:
+        match self:
+            case self.RUR:
+                return "RUB"
+            case self.BYR:
+                return "BYN"
+
+        return str(self.value)
+
 
 class SalaryMode(StrEnum):
     MONTH = "MONTH"
