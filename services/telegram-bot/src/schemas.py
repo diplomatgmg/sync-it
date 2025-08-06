@@ -53,6 +53,7 @@ class Vacancy(BaseModel):
     id: int
     link: str
     published_at: datetime
+    company_name: str | None
     profession: Profession | None
     grades: list[Grade]
     work_formats: list[WorkFormat]

@@ -67,6 +67,7 @@ class HeadHunterParser(BaseParser):
                 fingerprint=fingerprint,
                 vacancy_id=vacancy.id,
                 link=vacancy.alternate_url,
+                employer=vacancy.employer.name,
                 name=vacancy.name,
                 description=clear_html(vacancy_description),
                 salary=vacancy.salary.humanize() if vacancy.salary else None,

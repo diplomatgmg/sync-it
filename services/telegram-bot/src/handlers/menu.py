@@ -31,13 +31,34 @@ async def handle_vacancies(callback: CallbackQuery) -> None:
         )
         return
 
-    # FIXME заглушка
-    vacancies_text = "\n".join(
-        [f"👉 {vacancy.link} (Опубликована {format_publication_time(vacancy.published_at)})" for vacancy in vacancies]
-    )[:1024]
+    vacancy = vacancies[0]
+
+    vacancy_text = f"<b>Должность:</b> {vacancy.profession.name if vacancy.profession else 'Неизвестно'}\n"
+
+    if vacancy.company_name:
+        vacancy_text += f"<b>Компания:</b> {vacancy.company_name}\n"
+    if vacancy.grades:
+        grade_names = [grade.name for grade in vacancy.grades]
+        vacancy_text += f"<b>Грейд:</b> {', '.join(grade_names)}\n"
+    if vacancy.work_formats:
+        work_format_names = [work_format.name for work_format in vacancy.work_formats]
+        vacancy_text += f"<b>Формат работы:</b> {', '.join(work_format_names)}\n"
+    if vacancy.workplace_description:
+        vacancy_text += f"\n<b>О месте работы:</b>\n{vacancy.workplace_description}\n"
+    if vacancy.responsibilities:
+        vacancy_text += f"\n<b>Обязанности:</b>\n{vacancy.responsibilities}\n"
+    if vacancy.requirements:
+        vacancy_text += f"\n<b>Требования:</b>\n{vacancy.requirements}\n"
+    if vacancy.conditions:
+        vacancy_text += f"\n<b>Условия:</b>\n{vacancy.conditions}\n"
+
+    vacancy_text += f"\n<b>Дата публикации:</b> {format_publication_time(vacancy.published_at)}\n"
+    vacancy_text += f"<b>Ссылка:</b> <a href='{vacancy.link}'>{vacancy.link}</a>"
 
     await safe_edit_message(
         callback,
-        text=f"👨‍💻 Доступные вакансии:\n{vacancies_text}",
+        text=vacancy_text,
         reply_markup=main_menu_keyboard(),
+        parse_mode="HTML",
+        disable_web_page_preview=True,
     )

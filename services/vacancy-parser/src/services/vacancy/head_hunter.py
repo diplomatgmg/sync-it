@@ -20,6 +20,7 @@ class HeadHunterVacancyService(BaseVacancyService[HeadHunterVacancyRepository]):
         fingerprint: str,
         vacancy_id: int,
         link: str,
+        employer: str,
         name: str,
         description: str,
         salary: str | None,
@@ -30,7 +31,7 @@ class HeadHunterVacancyService(BaseVacancyService[HeadHunterVacancyRepository]):
         key_skills: list[str],
         published_at: datetime,
     ) -> HeadHunterVacancy:
-        text_parts: list[str] = [f"Вакансия: {name}"]
+        text_parts: list[str] = [f"Компания: {employer}", f"Вакансия: {name}"]
         if salary:
             text_parts.append(f"Зарплата: {salary}")
         text_parts.extend((f"Опыт: {experience}", f"Занятость: {employment}", f"График работы: {schedule}"))

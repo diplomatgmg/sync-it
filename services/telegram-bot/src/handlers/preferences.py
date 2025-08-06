@@ -44,6 +44,17 @@ async def handle_show_options(
     )
 
 
+@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_PROFESSIONS))
+async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None:
+    await handle_show_options(
+        query,
+        session,
+        PreferenceCategoryCodeEnum.PROFESSION,
+        profession_client,
+        "Выберите направление:",
+    )
+
+
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_WORK_FORMATS))
 async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> None:
     await handle_show_options(
@@ -63,17 +74,6 @@ async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
         PreferenceCategoryCodeEnum.GRADE,
         grade_client,
         "Выберите грейд:",
-    )
-
-
-@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_PROFESSIONS))
-async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None:
-    await handle_show_options(
-        query,
-        session,
-        PreferenceCategoryCodeEnum.PROFESSION,
-        profession_client,
-        "Выберите направление:",
     )
 
 

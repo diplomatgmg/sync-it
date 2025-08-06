@@ -25,7 +25,9 @@ class VacancyExtractor:
     def __init__(self) -> None:
         self._paragraphs: list[str] | None = None
 
+        self.company_name: str | None = None
         self.profession: ProfessionEnum | None = None
+        self.salary: str | None = None
         self.grades: list[GradeEnum] = []
         self.work_formats: list[WorkFormatEnum] = []
         self.skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
@@ -40,7 +42,9 @@ class VacancyExtractor:
         cleaned_vacancy = self._clean_vacancy(vacancy)
         logger.debug("Start extracting vacancy: \n%s", cleaned_vacancy)
 
+        self.company_name = self._parse_company_name(cleaned_vacancy)
         self.profession = self._parse_profession(cleaned_vacancy)
+        self.salary = self._parse_salary(cleaned_vacancy)
         self.grades = self._parse_grades(cleaned_vacancy)
         self.work_formats = self._parse_work_formats(cleaned_vacancy)
         self.skills = self._parse_skills(cleaned_vacancy)
@@ -57,6 +61,7 @@ class VacancyExtractor:
         return (
             "<VacancyExtractorService(\n"
             f"\tprofession={self.profession!r},\n"
+            f"\tsalary={self.salary!r},\n"
             f"\tgrades={self.grades!r},\n"
             f"\twork_formats={self.work_formats!r},\n"
             f"\tskills={self.skills!r}\n"
@@ -75,6 +80,17 @@ class VacancyExtractor:
         )
 
     @staticmethod
+    def _parse_company_name(message: str) -> str | None:
+        """Извлекает название компании из сообщения."""
+        pattern = r"Компания:\s(.*)"
+        match = re.search(pattern, message)
+        if not match:
+            logger.warning("Company pattern not found in message: %s", message)
+            return None
+
+        return match.group(1).strip()
+
+    @staticmethod
     def _parse_profession(message: str) -> ProfessionEnum | None:
         """Извлекает профессию из сообщения."""
         pattern = r"Профессия:\s(.*)"
@@ -86,6 +102,25 @@ class VacancyExtractor:
         profession_str = match.group(1).strip()
 
         return map_to_profession_enum(profession_str)
+
+    @staticmethod
+    def _parse_salary(message: str) -> str | None:
+        """Извлекает зарплату из сообщения."""
+        pattern = r"Зарплата:\s(.*)"
+        match = re.search(pattern, message)
+        if not match:
+            logger.warning("Salary pattern not found in message: %s", message)
+            return None
+
+        salary_str = match.group(1).strip()
+        if not salary_str:
+            return None
+        if salary_str == "Неизвестно":
+            return None
+        if "обсуждается" in salary_str.lower():
+            return "None"
+
+        return salary_str
 
     @staticmethod
     def _parse_grades(message: str) -> list[GradeEnum]:

@@ -44,7 +44,7 @@ class HeadHunterVacancySalaryModeSchema(BaseModel):
 class HeadHunterVacancySalarySchema(BaseModel):
     from_: int | None = None
     to: int | None = None
-    currency: SalaryCurrency | None
+    currency: SalaryCurrency
     mode: HeadHunterVacancySalaryModeSchema
 
     def humanize(self) -> str | None:
@@ -86,13 +86,17 @@ class HeadHunterVacancyWorkFormatSchema(BaseModel):
 
 
 class HeadHunterVacancyKeySkillSchema(BaseModel):
-    id: str
+    name: str
+
+
+class HeadHunterVacancyEmployerSchema(BaseModel):
     name: str
 
 
 class HeadHunterDetailedVacancySchema(HeadHunterVacancySchema):
     id: int
     alternate_url: str  # Ссылка на вакансию UI версию HH
+    employer: HeadHunterVacancyEmployerSchema
     name: str
     description: str
     salary: HeadHunterVacancySalarySchema | None = Field(alias="salary_range")  # salary - deprecated.
