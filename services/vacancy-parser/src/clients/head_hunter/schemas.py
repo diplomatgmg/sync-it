@@ -85,6 +85,11 @@ class HeadHunterVacancyWorkFormatSchema(BaseModel):
     name: str
 
 
+class HeadHunterVacancyKeySkillSchema(BaseModel):
+    id: str
+    name: str
+
+
 class HeadHunterDetailedVacancySchema(HeadHunterVacancySchema):
     id: int
     alternate_url: str  # Ссылка на вакансию UI версию HH
@@ -95,6 +100,7 @@ class HeadHunterDetailedVacancySchema(HeadHunterVacancySchema):
     schedule: HeadHunterVacancyScheduleSchema
     employment: HeadHunterVacancyEmploymentSchema
     work_format: list[HeadHunterVacancyWorkFormatSchema]
+    key_skills: list[HeadHunterVacancyKeySkillSchema]
     published_at: datetime
 
 

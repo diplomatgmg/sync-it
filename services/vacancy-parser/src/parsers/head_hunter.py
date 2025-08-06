@@ -74,6 +74,7 @@ class HeadHunterParser(BaseParser):
                 schedule=vacancy.schedule.name,
                 employment=vacancy.employment.name,
                 work_formats=[wf.name for wf in vacancy.work_format],
+                key_skills=[ks.name for ks in vacancy.key_skills],
                 published_at=vacancy.published_at,
             )
 

@@ -27,6 +27,7 @@ class HeadHunterVacancyService(BaseVacancyService[HeadHunterVacancyRepository]):
         employment: str,
         schedule: str,
         work_formats: list[str],
+        key_skills: list[str],
         published_at: datetime,
     ) -> HeadHunterVacancy:
         text_parts: list[str] = [f"Вакансия: {name}"]
@@ -35,6 +36,8 @@ class HeadHunterVacancyService(BaseVacancyService[HeadHunterVacancyRepository]):
         text_parts.extend((f"Опыт: {experience}", f"Занятость: {employment}", f"График работы: {schedule}"))
         if work_formats:
             text_parts.append(f"Формат работы: {' '.join(work_formats)}")
+        if key_skills:
+            text_parts.append(f"Ключевые навыки: {' '.join(key_skills)}")
         text_parts.append(f"Описание: \n{description}")
 
         data = "\n".join(text_parts)
