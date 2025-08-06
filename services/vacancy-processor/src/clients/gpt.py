@@ -11,6 +11,9 @@ __all__ = ["gpt_client"]
 class _GPTClient(BaseClient):
     url = build_service_url(ServiceEnum.GPT_API, "/api/v1/completion")
 
+    def configure_client(self) -> None:
+        self.client.timeout = 30
+
     @limit_requests(requests_per_second=15)
     async def get_completion(self, prompt: str) -> str:
         response = await self.client.post(self.url, json={"prompt": prompt})

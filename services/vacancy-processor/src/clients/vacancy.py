@@ -23,7 +23,7 @@ class _VacancyClient(BaseClient):
         return data.vacancies
 
     async def delete(self, vacancy: ParsedVacancySchema) -> bool:
-        detail_vacancy_url = self.url.join(vacancy.hash)
+        detail_vacancy_url = f"{self.url}/{vacancy.hash}"
 
         response = await self.client.delete(detail_vacancy_url)
         response.raise_for_status()
