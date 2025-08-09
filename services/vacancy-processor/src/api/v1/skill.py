@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from common.database.engine import provide_async_session
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from repositories import SkillCategoryRepository, SkillRepository
 from schemas import SkillCategoryModelResponse, SkillCategoryModelSchema, SkillModelResponse, SkillModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,16 +16,19 @@ router = APIRouter()
 
 
 @router.get("/skills")
-async def get_skills(session: Annotated[AsyncSession, Depends(provide_async_session)]) -> SkillModelResponse:
+async def get_skills(
+    session: Annotated[AsyncSession, Depends(provide_async_session)],
+    category_id: Annotated[int | None, Query()] = None,
+) -> SkillModelResponse:
     """Возвращает актуальные скиллы."""
     repo = SkillRepository(session)
     service = SkillService(repo)
-    skill_models = await service.get_skills()
+    skill_models = await service.get_skills(category_id=category_id)
 
     return SkillModelResponse(skills=[SkillModelSchema.model_validate(s) for s in skill_models])
 
 
-@router.post("/skills/categories")
+@router.get("/skills/categories")
 async def get_skill_categories(
     session: Annotated[AsyncSession, Depends(provide_async_session)],
 ) -> SkillCategoryModelResponse:

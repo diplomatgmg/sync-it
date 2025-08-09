@@ -1,11 +1,18 @@
+from collections import defaultdict
+
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.main import MenuActionEnum, MenuCallback
 from clients.vacancy import vacancy_client
+from database.models.enums import PreferenceCategoryCodeEnum
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.preferences import preferences_keyboard
+from repositories import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
 from utils.formatters import format_publication_time
 from utils.message import safe_edit_message
+
+from services import UserService
 
 
 __all__ = ["router"]
@@ -20,8 +27,21 @@ async def handle_preferences(callback: CallbackQuery) -> None:
 
 
 @router.callback_query(MenuCallback.filter(F.action == MenuActionEnum.VACANCIES))
-async def handle_vacancies(callback: CallbackQuery) -> None:
-    vacancies = await vacancy_client.get_filtered()
+async def handle_vacancies(callback: CallbackQuery, session: AsyncSession) -> None:
+    user_repo = UserRepository(session)
+    user_service = UserService(user_repo)
+    user = await user_service.get(callback.from_user.id, with_preferences=True)
+
+    categorized_prefs = defaultdict(list)
+    for pref in user.preferences:
+        categorized_prefs[pref.category_code].append(pref.item_name)
+
+    vacancies = await vacancy_client.get_filtered(
+        professions=categorized_prefs[PreferenceCategoryCodeEnum.PROFESSION],
+        grades=categorized_prefs[PreferenceCategoryCodeEnum.GRADE],
+        work_formats=categorized_prefs[PreferenceCategoryCodeEnum.WORK_FORMAT],
+        skills=categorized_prefs[PreferenceCategoryCodeEnum.SKILL],
+    )
 
     if not vacancies:
         await safe_edit_message(

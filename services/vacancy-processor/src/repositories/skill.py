@@ -43,5 +43,10 @@ class SkillRepository(BaseRepository):
         result = await self._session.execute(stmt)
         return result.scalars().all()
 
+    async def get_by_category_id(self, category_id: int) -> Sequence[Skill]:
+        stmt = select(Skill).where(Skill.category_id == category_id)
+        result = await self._session.execute(stmt)
+        return result.scalars().all()
+
     def add(self, skill_model: Skill) -> None:
         self._session.add(skill_model)

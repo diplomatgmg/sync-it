@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from common.shared.services import BaseService
 from database.models import Vacancy
-from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
+from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from repositories import VacancyRepository
 
 
@@ -21,6 +21,7 @@ class VacancyService(BaseService[VacancyRepository]):
         professions: Sequence[ProfessionEnum] | None = None,
         grades: Sequence[GradeEnum] | None = None,
         work_formats: Sequence[WorkFormatEnum] | None = None,
+        skills: Sequence[SkillEnum] | None = None,
         limit: int | None = None,
     ) -> Sequence[Vacancy]:
         """Получает вакансии с применением фильтров."""
@@ -28,5 +29,6 @@ class VacancyService(BaseService[VacancyRepository]):
             professions=professions,
             grades=grades,
             work_formats=work_formats,
+            skills=skills,
             limit=limit,
         )

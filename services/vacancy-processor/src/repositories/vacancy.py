@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 
 from common.shared.repositories import BaseRepository
-from database.models import Grade, Profession, Vacancy, WorkFormat
-from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
+from database.models import Grade, Profession, Skill, Vacancy, WorkFormat
+from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
@@ -22,12 +22,14 @@ class VacancyRepository(BaseRepository):
         professions: Sequence[ProfessionEnum] | None = None,
         grades: Sequence[GradeEnum] | None = None,
         work_formats: Sequence[WorkFormatEnum] | None = None,
+        skills: Sequence[SkillEnum] | None = None,
         limit: int | None = 100,
     ) -> Sequence[Vacancy]:
         """Получает отфильтрованный список вакансий."""
         professions = professions or []
         grades = grades or []
         work_formats = work_formats or []
+        skills = skills or []
 
         stmt = (
             select(Vacancy)
@@ -46,6 +48,8 @@ class VacancyRepository(BaseRepository):
             stmt = stmt.filter(Vacancy.grades.any(Grade.name.in_(grades)))
         if work_formats:
             stmt = stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
+        if skills:
+            stmt = stmt.filter(Vacancy.work_formats.any(Skill.name.in_(skills)))
 
         result = await self._session.execute(stmt)
         return result.scalars().unique().all()

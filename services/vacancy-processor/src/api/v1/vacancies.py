@@ -2,7 +2,7 @@ from typing import Annotated
 
 from common.database.engine import provide_async_session
 from common.logger import get_logger
-from database.models.enums import GradeEnum, ProfessionEnum, WorkFormatEnum
+from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from fastapi import APIRouter, Depends, Query
 from repositories import VacancyRepository
 from schemas import ProcessedVacancyModelSchema, VacancyModelResponse
@@ -24,6 +24,7 @@ async def get_vacancies(
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
     grades: Annotated[list[GradeEnum] | None, Query()] = None,
     work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
+    skills: Annotated[list[SkillEnum] | None, Query()] = None,
     limit: int | None = None,
 ) -> VacancyModelResponse:
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
@@ -33,6 +34,7 @@ async def get_vacancies(
         professions,
         grades,
         work_formats,
+        skills=skills,
         limit=limit,
     )
 

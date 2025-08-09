@@ -8,6 +8,10 @@ __all__ = [
     "GradeResponse",
     "Profession",
     "ProfessionResponse",
+    "Skill",
+    "SkillCategory",
+    "SkillCategoryResponse",
+    "SkillResponse",
     "Vacancy",
     "VacancyRequest",
     "VacancyResponse",
@@ -47,6 +51,7 @@ class VacancyRequest(BaseModel):
     professions: list[str] | None = None
     grades: list[str] | None = None
     work_formats: list[str] | None = None
+    skills: list[str] | None = None
 
 
 class Vacancy(BaseModel):
@@ -65,3 +70,22 @@ class Vacancy(BaseModel):
 
 class VacancyResponse(BaseModel):
     vacancies: list[Vacancy]
+
+
+class SkillCategory(BaseModel):
+    id: int
+    name: str
+
+
+class Skill(BaseModel):
+    id: int
+    category_id: int
+    name: str
+
+
+class SkillCategoryResponse(BaseModel):
+    categories: list[SkillCategory]
+
+
+class SkillResponse(BaseModel):
+    skills: list[Skill]

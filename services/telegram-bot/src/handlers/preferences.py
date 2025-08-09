@@ -3,16 +3,16 @@ from typing import cast
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
-from clients import grade_client, profession_client, work_format_client
+from clients import grade_client, profession_client, skill_category_client, skill_client, work_format_client
 from common.logger import get_logger
 from database.models.enums import PreferenceCategoryCodeEnum
-from keyboard.inline.preferences import options_keyboard
+from keyboard.inline.preferences import options_keyboard, skill_category_keyboard
 from repositories import UserPreferenceRepository, UserRepository
+from services.user import UserService
+from services.user_preference import UserPreferenceService
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils.clients import ClientType, get_client
 from utils.message import get_message, safe_edit_message
-
-from services import UserPreferenceService, UserService
 
 
 __all__ = ["router"]
@@ -77,6 +77,40 @@ async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
     )
 
 
+@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_SKILL_CATEGORIES))
+async def handle_skill_categories(query: CallbackQuery) -> None:
+    skill_categories = await skill_category_client.get_all()
+
+    await safe_edit_message(
+        query,
+        text="Выберите категорию навыков:",
+        reply_markup=skill_category_keyboard(skill_categories),
+    )
+
+
+@router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_SKILLS))
+async def handle_skills(query: CallbackQuery, callback_data: PreferenceCallback, session: AsyncSession) -> None:
+    category_id = callback_data.item_id
+    skill_category_id = callback_data.skill_category_id
+
+    skills = await skill_client.get_by_category_id(category_id)
+
+    repo = UserRepository(session)
+    service = UserService(repo)
+    user = await service.get(query.from_user.id, with_preferences=True)
+
+    await safe_edit_message(
+        query,
+        text="Выберите навык:",
+        reply_markup=options_keyboard(
+            PreferenceCategoryCodeEnum.SKILL,
+            skills,
+            user,
+            skill_category_id=skill_category_id,
+        ),
+    )
+
+
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SELECT_OPTION))
 async def handle_select_option(
     callback: CallbackQuery,
@@ -86,18 +120,28 @@ async def handle_select_option(
     """Обрабатывает выбор/снятие выбора опции предпочтения."""
     category_code = cast("PreferenceCategoryCodeEnum", callback_data.category_code)
     item_id = cast("int", callback_data.item_id)
+    # Костыль. Нарушает общую архитектуру.
+    skill_category_id = callback_data.skill_category_id
 
-    client = get_client(category_code)
+    if category_code == PreferenceCategoryCodeEnum.SKILL:
+        if skill_category_id is None:
+            logger.error("Skill category id is None")
+            await callback.answer("Внутренняя ошибка. Попробуйте позже.", show_alert=True)
+            return
+        options = await skill_client.get_by_category_id(skill_category_id)
+    else:
+        client = get_client(category_code)
+        options = await client.get_all()
 
     item_name = ""
-    options = await client.get_all()
     for option in options:
         if option.id == item_id:
             item_name = option.name
             break
 
     if not item_name:
-        await callback.answer("Ошибка: опция не найдена.", show_alert=True)
+        logger.error("Option not found: %s. Options: %s", item_id, options)
+        await callback.answer("Внутренняя ошибка. Опция не найдена.", show_alert=True)
         return
 
     user_repo = UserRepository(session)
@@ -116,6 +160,11 @@ async def handle_select_option(
     await safe_edit_message(
         callback,
         text=message.text or "Выберите опцию:",
-        reply_markup=options_keyboard(category_code, options, user),
+        reply_markup=options_keyboard(
+            category_code,
+            options,
+            user,
+            skill_category_id=skill_category_id,
+        ),
         try_answer=True,
     )

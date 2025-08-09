@@ -107,6 +107,7 @@ class ProcessedVacancyModelSchema(BaseModel):
     id: int
     link: str
     published_at: datetime
+    company_name: str | None
     profession: ProfessionModelSchema | None
     grades: list[GradeModelSchema]
     work_formats: list[WorkFormatModelSchema]

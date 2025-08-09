@@ -12,15 +12,12 @@ class _VacancyClient(BaseClient):
 
     async def get_filtered(
         self,
-        profession: list[str] | None = None,
+        professions: list[str] | None = None,
         grades: list[str] | None = None,
         work_formats: list[str] | None = None,
+        skills: list[str] | None = None,
     ) -> list[Vacancy]:
-        params_model = VacancyRequest(
-            professions=profession,
-            grades=grades,
-            work_formats=work_formats,
-        )
+        params_model = VacancyRequest(professions=professions, grades=grades, work_formats=work_formats, skills=skills)
 
         response = await self.client.get(
             self.url,

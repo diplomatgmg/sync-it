@@ -2,7 +2,7 @@
 name = "gpt-api"
 dynamic = ["version"]
 dependencies = [
-    "g4f>=0.5.4.5",
+    "g4f>=0.5.8.1",
     "fastapi>=0.115.12",
     "uvicorn[standard]>=0.34.3",
     "syncit-core",

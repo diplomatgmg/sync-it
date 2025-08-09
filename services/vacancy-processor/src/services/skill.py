@@ -30,7 +30,10 @@ class SkillService(BaseService[SkillRepository]):
     async def get_skill_by_name(self, name: SkillEnum) -> Skill | None:
         return await self._repo.get_by_name(name)
 
-    async def get_skills(self) -> Sequence[Skill]:
+    async def get_skills(self, category_id: int | None = None) -> Sequence[Skill]:
+        if category_id is not None:
+            return await self._repo.get_by_category_id(category_id)
+
         return await self._repo.get_all()
 
     async def add_skill(self, skill: SkillEnum, category_id: int) -> Skill:
