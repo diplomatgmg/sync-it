@@ -6,9 +6,6 @@ services:
       dockerfile: infra/docker/gpt-api/Dockerfile
       target: ${ENV_MODE}
     env_file: ${PROJECT_ROOT}/infra/.env
-    volumes:
-      - ${PROJECT_ROOT}/services/gpt-api:/app/services/gpt-api
-      - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network
     healthcheck:

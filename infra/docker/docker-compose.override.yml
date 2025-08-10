@@ -1,24 +1,44 @@
 name: ${ENV_PROJECT_NAME}
 
 services:
+  api-gateway:
+    volumes:
+      - ${PROJECT_ROOT}/services/api-gateway:/app/services/api-gateway
+      - ${PROJECT_ROOT}/libs:/app/libs
+
   gpt-api:
     ports:
       - "${GPT_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+    volumes:
+      - ${PROJECT_ROOT}/services/gpt-api:/app/services/gpt-api
+      - ${PROJECT_ROOT}/libs:/app/libs
 
   telegram-api:
     ports:
       - "${TELEGRAM_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+    volumes:
+      - ${PROJECT_ROOT}/services/telegram-api:/app/services/telegram-api
+      - ${PROJECT_ROOT}/libs:/app/libs
 
   vacancy-parser:
     ports:
       - "${VACANCY_PARSER_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+    volumes:
+      - ${PROJECT_ROOT}/services/vacancy-parser:/app/services/vacancy-parser
+      - ${PROJECT_ROOT}/libs:/app/libs
 
   vacancy-processor:
     ports:
       - "${VACANCY_PROCESSOR_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+    volumes:
+      - ${PROJECT_ROOT}/services/vacancy-processor:/app/services/vacancy-processor
+      - ${PROJECT_ROOT}/libs:/app/libs
 
   telegram-bot:
     ports:
       - "${TELEGRAM_BOT_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
     healthcheck:
       test: [ "CMD", "true" ] # supress because webhook may be disabled
+    volumes:
+      - ${PROJECT_ROOT}/services/telegram-bot:/app/services/telegram-bot
+      - ${PROJECT_ROOT}/libs:/app/libs

@@ -6,9 +6,6 @@ services:
       dockerfile: infra/docker/telegram-api/Dockerfile
       target: ${ENV_MODE}
     env_file: ${PROJECT_ROOT}/infra/.env
-    volumes:
-      - ${PROJECT_ROOT}/services/telegram-api:/app/services/telegram-api
-      - ${PROJECT_ROOT}/libs:/app/libs
     networks:
       - app-network
     healthcheck:

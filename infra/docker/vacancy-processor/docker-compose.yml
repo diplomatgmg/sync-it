@@ -4,9 +4,6 @@ x-service-common: &service-common
     dockerfile: infra/docker/vacancy-processor/Dockerfile
     target: ${ENV_MODE}
   env_file: ${PROJECT_ROOT}/infra/.env
-  volumes:
-    - ${PROJECT_ROOT}/services/vacancy-processor:/app/services/vacancy-processor
-    - ${PROJECT_ROOT}/libs:/app/libs
   networks:
     - app-network
 
