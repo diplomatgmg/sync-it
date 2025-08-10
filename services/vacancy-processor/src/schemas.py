@@ -110,6 +110,7 @@ class ProcessedVacancyModelSchema(BaseModel):
     company_name: str | None
     profession: ProfessionModelSchema | None
     grades: list[GradeModelSchema]
+    salary: str | None
     work_formats: list[WorkFormatModelSchema]
     workplace_description: str | None
     responsibilities: str | None

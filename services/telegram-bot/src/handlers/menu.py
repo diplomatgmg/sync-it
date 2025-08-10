@@ -27,7 +27,7 @@ async def handle_preferences(callback: CallbackQuery) -> None:
 
 
 @router.callback_query(MenuCallback.filter(F.action == MenuActionEnum.VACANCIES))
-async def handle_vacancies(callback: CallbackQuery, session: AsyncSession) -> None:
+async def handle_vacancies(callback: CallbackQuery, session: AsyncSession) -> None:  # noqa: C901 Too complex
     user_repo = UserRepository(session)
     user_service = UserService(user_repo)
     user = await user_service.get(callback.from_user.id, with_preferences=True)
@@ -60,6 +60,8 @@ async def handle_vacancies(callback: CallbackQuery, session: AsyncSession) -> No
     if vacancy.grades:
         grade_names = [grade.name for grade in vacancy.grades]
         vacancy_text += f"<b>Грейд:</b> {', '.join(grade_names)}\n"
+    if vacancy.salary:
+        vacancy_text += f"<b>Зарплата:</b> {vacancy.salary}\n"
     if vacancy.work_formats:
         work_format_names = [work_format.name for work_format in vacancy.work_formats]
         vacancy_text += f"<b>Формат работы:</b> {', '.join(work_format_names)}\n"

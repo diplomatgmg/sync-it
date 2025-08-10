@@ -61,6 +61,7 @@ class Vacancy(BaseModel):
     company_name: str | None
     profession: Profession | None
     grades: list[Grade]
+    salary: str | None
     work_formats: list[WorkFormat]
     workplace_description: str | None
     responsibilities: str | None
