@@ -1,8 +1,6 @@
-from commands import get_bot_commands
 from common.logger import get_logger
-from core.loader import bot, dp
-from handlers import register_handler_routers
-from middlewares import register_middlewares
+from core import service_config
+from setup import start_polling, start_webhook
 import uvloop
 
 
@@ -12,16 +10,11 @@ __all__ = ()
 logger = get_logger(__name__)
 
 
-async def on_startup() -> None:
-    register_handler_routers(dp)
-    register_middlewares(dp)
-
-    await bot.set_my_commands(get_bot_commands())
-
-
 async def main() -> None:
-    dp.startup.register(on_startup)
-    await dp.start_polling(bot)
+    if service_config.use_webhook:
+        await start_webhook()
+    else:
+        await start_polling()
 
 
 if __name__ == "__main__":

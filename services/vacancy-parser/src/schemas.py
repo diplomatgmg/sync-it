@@ -1,7 +1,8 @@
 from datetime import datetime
 import re
 
-from pydantic import BaseModel, ConfigDict, HttpUrl, UrlConstraints
+from common.shared.schemas import HttpsUrl
+from pydantic import BaseModel, ConfigDict
 
 
 __all__ = [
@@ -17,14 +18,12 @@ __all__ = [
 ]
 
 
-class TelegramChannelUrl(HttpUrl):
+class TelegramChannelUrl(HttpsUrl):
     """
     A custom URL type for validating Telegram channel links.
 
     ex. valid URL: https://t.me/s/<channel_name>
     """
-
-    _constraints = UrlConstraints(allowed_schemes=["https"])
 
     def __init__(self, url: str) -> None:
         super().__init__(url)

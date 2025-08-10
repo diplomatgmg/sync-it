@@ -52,4 +52,4 @@ COPY ./libs/common/gateway ./libs/common/gateway
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 
-CMD ["hupper", "-q", "-m", "main"]
+CMD ["python", "main.py"]

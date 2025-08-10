@@ -5,17 +5,13 @@ dependencies = [
     "aiogram>=3.20.0.post0",
     "cachetools>=6.1.0",
     "database-lib",
+    "fastapi>=0.116.1",
     "gateway-lib",
     "logger-lib",
     "shared-lib",
     "syncit-core",
+    "uvicorn[standard]>=0.35.0",
     "uvloop>=0.21.0",
-]
-
-[dependency-groups]
-dev = [
-    "hupper>=1.12.1",
-    "types-cachetools>=6.1.0.20250717",
 ]
 
 [tool.uv.sources]

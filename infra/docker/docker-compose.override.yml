@@ -16,3 +16,9 @@ services:
   vacancy-processor:
     ports:
       - "${VACANCY_PROCESSOR_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+
+  telegram-bot:
+    ports:
+      - "${TELEGRAM_BOT_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
+    healthcheck:
+      test: [ "CMD", "true" ] # supress because webhook may be disabled

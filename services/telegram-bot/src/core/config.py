@@ -1,3 +1,4 @@
+from common.shared.schemas import HttpsUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +11,8 @@ class ServiceConfig(BaseSettings):
     token: str
     support_username: str
     rate_limit: float  # for throttling control in seconds
+    use_webhook: bool
+    webhook_url: HttpsUrl
 
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_BOT_")
 
