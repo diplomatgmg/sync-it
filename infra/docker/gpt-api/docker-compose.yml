@@ -1,11 +1,8 @@
 services:
   gpt-api:
     container_name: gpt-api
-    build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/docker/gpt-api/Dockerfile
-      target: ${ENV_MODE}
-    env_file: ${PROJECT_ROOT}/infra/.env
+    image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-gpt-api:latest
+    env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
     networks:
       - app-network
     healthcheck:

@@ -52,6 +52,7 @@ COPY ./libs/common/shared ./libs/common/shared
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/redis ./libs/common/redis
+COPY ./libs/common/gateway ./libs/common/gateway
 
 
 # ============================ #

@@ -1,11 +1,8 @@
 services:
   api-gateway:
     container_name: api-gateway
-    build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/docker/api-gateway/Dockerfile
-      target: ${ENV_MODE}
-    env_file: ${PROJECT_ROOT}/infra/.env
+    image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-api-gateway:latest
+    env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
     ports:
       - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     networks:

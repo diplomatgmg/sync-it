@@ -1,9 +1,6 @@
 x-service-common: &service-common
-  build:
-    context: ${PROJECT_ROOT}
-    dockerfile: infra/docker/vacancy-processor/Dockerfile
-    target: ${ENV_MODE}
-  env_file: ${PROJECT_ROOT}/infra/.env
+  image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-vacancy-processor:latest
+  env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
   networks:
     - app-network
 

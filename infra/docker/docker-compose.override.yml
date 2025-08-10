@@ -1,44 +1,84 @@
 name: ${ENV_PROJECT_NAME}
 
+x-service-common: &service-common
+  image: "" # Для dev разработки не нужен image
+  volumes:
+    - ${MAIN_COMPOSE_PROJECT_ROOT}/services:/app/services
+    - ${MAIN_COMPOSE_PROJECT_ROOT}/libs:/app/libs
+
+x-build-common: &build-common
+  context: ../..
+  target: ${ENV_MODE}
+
 services:
   api-gateway:
-    volumes:
-      - ${PROJECT_ROOT}/services/api-gateway:/app/services/api-gateway
-      - ${PROJECT_ROOT}/libs:/app/libs
+    build:
+      dockerfile: infra/docker/api-gateway/Dockerfile
+      <<: *build-common
+    <<: *service-common
 
   gpt-api:
+    build:
+      dockerfile: infra/docker/gpt-api/Dockerfile
+      <<: *build-common
     ports:
       - "${GPT_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
-    volumes:
-      - ${PROJECT_ROOT}/services/gpt-api:/app/services/gpt-api
-      - ${PROJECT_ROOT}/libs:/app/libs
+    <<: *service-common
 
   telegram-api:
+    build:
+      dockerfile: infra/docker/telegram-api/Dockerfile
+      <<: *build-common
     ports:
       - "${TELEGRAM_API_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
-    volumes:
-      - ${PROJECT_ROOT}/services/telegram-api:/app/services/telegram-api
-      - ${PROJECT_ROOT}/libs:/app/libs
+    <<: *service-common
 
   vacancy-parser:
+    build:
+      dockerfile: infra/docker/vacancy-parser/Dockerfile
+      <<: *build-common
     ports:
       - "${VACANCY_PARSER_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
-    volumes:
-      - ${PROJECT_ROOT}/services/vacancy-parser:/app/services/vacancy-parser
-      - ${PROJECT_ROOT}/libs:/app/libs
+    <<: *service-common
+
+  vacancy-parser-worker:
+    build:
+      dockerfile: infra/docker/vacancy-parser/Dockerfile
+      <<: *build-common
+    <<: *service-common
+
+  vacancy-parser-beat:
+    build:
+      dockerfile: infra/docker/vacancy-parser/Dockerfile
+      <<: *build-common
+    <<: *service-common
 
   vacancy-processor:
+    build:
+      dockerfile: infra/docker/vacancy-processor/Dockerfile
+      <<: *build-common
     ports:
       - "${VACANCY_PROCESSOR_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
-    volumes:
-      - ${PROJECT_ROOT}/services/vacancy-processor:/app/services/vacancy-processor
-      - ${PROJECT_ROOT}/libs:/app/libs
+    <<: *service-common
+
+  vacancy-processor-worker:
+    build:
+      dockerfile: infra/docker/vacancy-processor/Dockerfile
+      <<: *build-common
+    <<: *service-common
+
+  vacancy-processor-beat:
+    build:
+      dockerfile: infra/docker/vacancy-processor/Dockerfile
+      <<: *build-common
+    <<: *service-common
 
   telegram-bot:
+    build:
+      dockerfile: infra/docker/telegram-bot/Dockerfile
+      <<: *build-common
     ports:
       - "${TELEGRAM_BOT_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
     healthcheck:
       test: [ "CMD", "true" ] # supress because webhook may be disabled
-    volumes:
-      - ${PROJECT_ROOT}/services/telegram-bot:/app/services/telegram-bot
-      - ${PROJECT_ROOT}/libs:/app/libs
+    <<: *service-common

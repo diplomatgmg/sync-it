@@ -1,11 +1,8 @@
 services:
   telegram-api:
     container_name: telegram-api
-    build:
-      context: ${PROJECT_ROOT}
-      dockerfile: infra/docker/telegram-api/Dockerfile
-      target: ${ENV_MODE}
-    env_file: ${PROJECT_ROOT}/infra/.env
+    image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-telegram-api:latest
+    env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
     networks:
       - app-network
     healthcheck:
