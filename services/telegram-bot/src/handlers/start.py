@@ -19,12 +19,11 @@ __all__ = ["router"]
 router = Router(name=BotCommandEnum.START)
 
 
-async def send_welcome_message(target: Message | CallbackQuery, user: User, *, try_answer: bool = False) -> None:
+async def send_welcome_message(target: Message | CallbackQuery, user: User) -> None:
     linked_full_name = make_linked(user.full_name, user.username)
 
     await safe_edit_message(
         target,
-        try_answer=try_answer,
         text=f"Привет, {linked_full_name} 👋",
         reply_markup=main_keyboard(),
         parse_mode=ParseMode.HTML,
@@ -34,7 +33,7 @@ async def send_welcome_message(target: Message | CallbackQuery, user: User, *, t
 
 @router.message(Command(BotCommandEnum.START))
 async def handle_start(message: Message, user: User) -> None:
-    await send_welcome_message(message, user, try_answer=True)
+    await send_welcome_message(message, user)
 
 
 @router.callback_query(MenuCallback.filter(F.action == MenuActionEnum.MAIN))

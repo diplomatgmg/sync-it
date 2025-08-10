@@ -166,5 +166,4 @@ async def handle_select_option(
             user,
             skill_category_id=skill_category_id,
         ),
-        try_answer=True,
     )

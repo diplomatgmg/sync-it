@@ -2,7 +2,7 @@ from typing import NotRequired, TypedDict, Unpack
 
 from aiogram.client.default import Default
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.types import CallbackQuery, InaccessibleMessage, InlineKeyboardMarkup, Message
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from common.logger import get_logger
 from exceptions import MessageNotAvailableError, MessageNotModifiedError
 
@@ -33,8 +33,10 @@ def make_linked(text: str, link: str | None, *, use_quotes: bool = True) -> str:
     return f'"{bold_text}"' if use_quotes else bold_text
 
 
-async def get_message(query: CallbackQuery) -> Message:
+async def get_message(query: CallbackQuery | Message) -> Message:
     """Возвращает объект сообщения или выбрасывает исключение"""
+    if isinstance(query, Message):
+        return query
     if isinstance(query.message, Message):
         return query.message
 
@@ -43,37 +45,26 @@ async def get_message(query: CallbackQuery) -> Message:
     raise MessageNotAvailableError
 
 
-async def safe_edit_message(  # noqa: C901 Too complex
-    entity: CallbackQuery | Message, *, try_answer: bool = False, **kwargs: Unpack[EditMessageKwargs]
+async def safe_edit_message(
+    entity: CallbackQuery | Message,
+    **kwargs: Unpack[EditMessageKwargs],
 ) -> None:
-    message: Message | None = None
-
-    if isinstance(entity, CallbackQuery):
-        if isinstance(entity.message, Message):
-            message = entity.message
-        elif isinstance(entity.message, InaccessibleMessage):
-            logger.warning("Cannot edit inaccessible message, using try_answer=True")
-            try_answer = True
-
-    if isinstance(entity, Message):
-        message = entity
-
-    if not message:
-        logger.error("Message is not available")
-        return
+    """
+    Безопасно редактирует сообщение.
+    Если редактирование невозможно - отправляет новое.
+    """
+    message = await get_message(entity)
 
     try:
         await message.edit_text(**kwargs)
-    except TelegramBadRequest as bad_request_error:
-        if "message is not modified" in bad_request_error.message:
-            raise MessageNotModifiedError from bad_request_error
-        logger.exception("Failed to edit message with TelegramBadRequest", exc_info=bad_request_error)
-        await entity.answer("Произошла ошибка. Попробуйте позже.")
-    except Exception as e:
-        if try_answer:
-            try:
-                await message.answer(**kwargs)
-            except Exception as answer_error:
-                logger.exception("Failed to answer message", exc_info=answer_error)
-        else:
-            logger.exception("Failed to edit message", exc_info=e)
+    except Exception as err:
+        if isinstance(err, TelegramBadRequest) and "message is not modified" in err.message:
+            raise MessageNotModifiedError from err
+
+        try:
+            await message.answer(**kwargs)
+        except Exception as answer_err:
+            logger.exception(
+                "Failed to edit message and failed to answer as a fallback",
+                exc_info=answer_err,
+            )
