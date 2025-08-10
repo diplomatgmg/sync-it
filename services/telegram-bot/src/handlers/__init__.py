@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 from common.logger import get_logger
-from handlers import menu, noop, preferences, start, vacancies, whoami
+from handlers import menu, noop, preferences, start, support, vacancies, whoami
 
 
 __all__ = ["register_handler_routers"]
@@ -19,4 +19,5 @@ def register_handler_routers(dp: Dispatcher) -> None:
         menu.router,
         preferences.router,
         vacancies.router,
+        support.router,
     )
