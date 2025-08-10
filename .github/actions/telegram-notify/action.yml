@@ -1,0 +1,36 @@
+# $schema: https://json.schemastore.org/github-action.json
+
+name: Telegram Notify
+description: 'Send notification to Telegram'
+
+inputs:
+  job_name:
+    description: 'Name of the failed job'
+    required: true
+  title:
+    description: 'Notification title with emoji'
+    required: true
+  to:
+    description: 'Telegram Chat ID'
+    required: true
+  token:
+    description: 'Telegram Bot Token'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Send Telegram Notification
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ inputs.to }}
+        token: ${{ inputs.token }}
+        disable_web_page_preview: true
+        format: markdown
+        message: |
+          *${{ inputs.title }}*
+
+          📂 *Repo*: [${{ github.repository }}](${{ github.server_url }}/${{ github.repository }})
+          👤 *Actor*: [${{ github.actor }}](${{ github.server_url }}/${{ github.actor }})
+          🛠️ *Job*: [${{ inputs.job_name }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          ✉️ *Commit/PR*: ```${{ github.event.head_commit.message || github.event.pull_request.title }}```
