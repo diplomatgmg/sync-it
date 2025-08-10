@@ -13,7 +13,9 @@ __all__ = [
     "SkillCategoryResponse",
     "SkillResponse",
     "Vacancy",
-    "VacancyRequest",
+    "VacancyCursorPaginationRequest",
+    "VacancyCursorPaginationResponse",
+    "VacancyCursorPaginationSchema",
     "VacancyResponse",
     "WorkFormat",
     "WorkFormatResponse",
@@ -47,7 +49,7 @@ class WorkFormatResponse(BaseModel):
     work_formats: list[WorkFormat]
 
 
-class VacancyRequest(BaseModel):
+class VacancyCursorPaginationRequest(BaseModel):
     professions: list[str] | None = None
     grades: list[str] | None = None
     work_formats: list[str] | None = None
@@ -71,6 +73,16 @@ class Vacancy(BaseModel):
 
 class VacancyResponse(BaseModel):
     vacancies: list[Vacancy]
+
+
+class VacancyCursorPaginationSchema(BaseModel):
+    prev_id: int | None
+    next_id: int | None
+    vacancy: Vacancy | None
+
+
+class VacancyCursorPaginationResponse(BaseModel):
+    result: VacancyCursorPaginationSchema
 
 
 class SkillCategory(BaseModel):

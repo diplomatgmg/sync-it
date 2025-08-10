@@ -41,7 +41,12 @@ class VacancyService(BaseService[VacancyRepository]):
         work_formats: Sequence[WorkFormatEnum] | None = None,
         skills: Sequence[SkillEnum] | None = None,
     ) -> tuple[int | None, Vacancy | None, int | None]:
-        vacancy = await self._repo.get_by_id(vacancy_id)
+        if vacancy_id == -1:
+            vacancies = await self.get_vacancies(professions, grades, work_formats, skills, limit=1)
+            vacancy = vacancies[0] if vacancies else None
+        else:
+            vacancy = await self._repo.get_by_id(vacancy_id)
+
         if not vacancy:
             return None, None, None
 

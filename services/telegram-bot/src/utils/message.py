@@ -1,9 +1,10 @@
 from typing import NotRequired, TypedDict, Unpack
 
 from aiogram.client.default import Default
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, InaccessibleMessage, InlineKeyboardMarkup, Message
 from common.logger import get_logger
-from exceptions import MessageNotAvailableError
+from exceptions import MessageNotAvailableError, MessageNotModifiedError
 
 
 __all__ = [
@@ -42,7 +43,7 @@ async def get_message(query: CallbackQuery) -> Message:
     raise MessageNotAvailableError
 
 
-async def safe_edit_message(
+async def safe_edit_message(  # noqa: C901 Too complex
     entity: CallbackQuery | Message, *, try_answer: bool = False, **kwargs: Unpack[EditMessageKwargs]
 ) -> None:
     message: Message | None = None
@@ -63,12 +64,16 @@ async def safe_edit_message(
 
     try:
         await message.edit_text(**kwargs)
-    except Exception as edit_error:
+    except TelegramBadRequest as bad_request_error:
+        if "message is not modified" in bad_request_error.message:
+            raise MessageNotModifiedError from bad_request_error
+        logger.exception("Failed to edit message with TelegramBadRequest", exc_info=bad_request_error)
+        await entity.answer("Произошла ошибка. Попробуйте позже.")
+    except Exception as e:
         if try_answer:
             try:
                 await message.answer(**kwargs)
             except Exception as answer_error:
                 logger.exception("Failed to answer message", exc_info=answer_error)
         else:
-            logger.exception("Failed to edit message", exc_info=edit_error)
-            await entity.answer("Произошла ошибка. Попробуйте позже.")
+            logger.exception("Failed to edit message", exc_info=e)

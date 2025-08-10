@@ -3,7 +3,7 @@ from typing import Annotated
 from common.database.engine import provide_async_session
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Path, Query
 from repositories import VacancyRepository
 from schemas import (
     ProcessedVacancyModelSchema,
@@ -48,7 +48,12 @@ async def get_vacancies(
 
 @router.get("/vacancies/{vacancy_id}")
 async def get_vacancy_with_neighbors(
-    vacancy_id: int,
+    vacancy_id: Annotated[
+        int,
+        Path(
+            description="ID вакансии. Укажите -1, чтобы получить самую последнюю вакансию включая фильтрацию.",
+        ),
+    ],
     session: Annotated[AsyncSession, Depends(provide_async_session)],
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
     grades: Annotated[list[GradeEnum] | None, Query()] = None,
@@ -63,8 +68,8 @@ async def get_vacancy_with_neighbors(
     )
 
     result = VacancyWithNeighborsSchema(
-        previous_id=prev_id,
-        vacancy=ProcessedVacancyModelSchema.model_validate(vacancy) if vacancy else None,
+        prev_id=prev_id,
         next_id=next_id,
+        vacancy=ProcessedVacancyModelSchema.model_validate(vacancy) if vacancy else None,
     )
     return VacancyWithNeighborsResponse(result=result)

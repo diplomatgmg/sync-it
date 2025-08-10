@@ -126,9 +126,9 @@ class VacancyModelResponse(BaseModel):
 
 
 class VacancyWithNeighborsSchema(BaseModel):
-    previous_id: int | None
-    vacancy: ProcessedVacancyModelSchema | None
+    prev_id: int | None
     next_id: int | None
+    vacancy: ProcessedVacancyModelSchema | None
 
 
 class VacancyWithNeighborsResponse(BaseModel):

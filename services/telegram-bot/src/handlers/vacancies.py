@@ -1,0 +1,96 @@
+from collections import defaultdict
+from contextlib import suppress
+
+from aiogram import F, Router
+from aiogram.types import CallbackQuery
+from callbacks.vacancy import VacancyActionEnum, VacancyCallback
+from clients.vacancy import vacancy_client
+from database.models.enums import PreferenceCategoryCodeEnum
+from exceptions import MessageNotModifiedError
+from keyboard.inline.main import main_menu_keyboard
+from keyboard.inline.vacancies import vacancies_keyboard
+from repositories import UserRepository
+from sqlalchemy.ext.asyncio import AsyncSession
+from utils.formatters import format_publication_time
+from utils.message import safe_edit_message
+
+from services import UserService
+
+
+__all__ = ["router"]
+
+
+router = Router(name=VacancyCallback.__prefix__)
+
+
+@router.callback_query(VacancyCallback.filter(F.action == VacancyActionEnum.SHOW_VACANCY))
+async def handle_vacancies(callback: CallbackQuery, callback_data: VacancyCallback, session: AsyncSession) -> None:  # noqa: C901 Too complex
+    vacancy_id = callback_data.vacancy_id
+    if not vacancy_id:
+        # Самая актуальная вакансия используя предпочтения пользователя
+        vacancy_id = -1
+
+    user_repo = UserRepository(session)
+    user_service = UserService(user_repo)
+    user = await user_service.get(callback.from_user.id, with_preferences=True)
+
+    categorized_prefs = defaultdict(list)
+    for pref in user.preferences:
+        categorized_prefs[pref.category_code].append(pref.item_name)
+
+    result = await vacancy_client.get_by_id_with_cursor_pagination(
+        vacancy_id=vacancy_id,
+        professions=categorized_prefs[PreferenceCategoryCodeEnum.PROFESSION],
+        grades=categorized_prefs[PreferenceCategoryCodeEnum.GRADE],
+        work_formats=categorized_prefs[PreferenceCategoryCodeEnum.WORK_FORMAT],
+        skills=categorized_prefs[PreferenceCategoryCodeEnum.SKILL],
+    )
+    vacancy, prev_id, next_id = result.vacancy, result.prev_id, result.next_id
+
+    if not vacancy:
+        await safe_edit_message(
+            callback,
+            text="К сожалению, доступных вакансий нет.\nИзмените предпочтения или загляните сюда позже 😉",
+            reply_markup=main_menu_keyboard(),
+        )
+        return
+
+    vacancy_text = f"<b>Должность:</b> {vacancy.profession.name if vacancy.profession else 'Неизвестно'}\n"
+
+    if vacancy.company_name:
+        vacancy_text += f"<b>Компания:</b> {vacancy.company_name}\n"
+    if vacancy.grades:
+        grade_names = [grade.name for grade in vacancy.grades]
+        vacancy_text += f"<b>Грейд:</b> {', '.join(grade_names)}\n"
+    if vacancy.salary:
+        vacancy_text += f"<b>Зарплата:</b> {vacancy.salary}\n"
+    if vacancy.work_formats:
+        work_format_names = [work_format.name for work_format in vacancy.work_formats]
+        vacancy_text += f"<b>Формат работы:</b> {', '.join(work_format_names)}\n"
+    if vacancy.workplace_description:
+        vacancy_text += f"\n<b>О месте работы:</b>\n{vacancy.workplace_description}\n"
+    if vacancy.responsibilities:
+        vacancy_text += f"\n<b>Обязанности:</b>\n{vacancy.responsibilities}\n"
+    if vacancy.requirements:
+        vacancy_text += f"\n<b>Требования:</b>\n{vacancy.requirements}\n"
+    if vacancy.conditions:
+        vacancy_text += f"\n<b>Условия:</b>\n{vacancy.conditions}\n"
+
+    vacancy_text += f"\n<b>Дата публикации:</b> {format_publication_time(vacancy.published_at)}\n"
+    vacancy_text += f"<b>Ссылка:</b> <a href='{vacancy.link}'>{vacancy.link}</a>"
+
+    with suppress(MessageNotModifiedError):
+        await safe_edit_message(
+            callback,
+            text=vacancy_text,
+            reply_markup=vacancies_keyboard(
+                vacancy_link=vacancy.link,
+                previous_vacancy_id=prev_id,
+                next_vacancy_id=next_id,
+            ),
+            parse_mode="HTML",
+            disable_web_page_preview=True,
+        )
+
+    if vacancy_id == -1:
+        await callback.answer("Вакансии актуализированы")

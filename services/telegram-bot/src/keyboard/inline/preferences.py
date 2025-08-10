@@ -110,8 +110,14 @@ def skill_category_keyboard(categories: Sequence[SkillCategory]) -> InlineKeyboa
 
     builder.row(
         InlineKeyboardButton(
-            text="⬅️ Назад",
+            text="⬅️ К предпочтениям",
             callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
+            text="🏠 В меню",
+            callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
         )
     )
 

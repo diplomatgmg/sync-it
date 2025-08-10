@@ -1,6 +1,7 @@
 __all__ = [
     "BotError",
     "MessageNotAvailableError",
+    "MessageNotModifiedError",
 ]
 
 
@@ -13,3 +14,10 @@ class MessageNotAvailableError(BotError):
 
     def __init__(self, text: str | None = None) -> None:
         super().__init__(text or "Message is not available")
+
+
+class MessageNotModifiedError(Exception):
+    """Исключение, которое выбрасывается при попытке отредактировать сообщение на идентичное."""
+
+    def __init__(self, text: str | None = None) -> None:
+        super().__init__(text or "Message is not modified")
