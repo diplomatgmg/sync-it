@@ -1,5 +1,4 @@
 FROM python:3.13.4-alpine AS base
-FROM base AS builder
 
 ARG APP_PATH=/app
 ARG SERVICE_NAME=gpt-api
@@ -12,6 +11,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="${APP_PATH}/.venv/bin:$PATH"
 
 WORKDIR ${APP_PATH}
+
+FROM base AS builder
 
 RUN apk update \
     && apk add --no-cache uv \
@@ -34,14 +35,36 @@ FROM deps-base AS deps-prod
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 
 
-# ================================= #
-#           DEVELOPMENT             #
-# ================================= #
-FROM deps-dev AS development
+# ============================ #
+#         SOURCE CODE          #
+# ============================ #
+FROM builder AS source
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/environment ./libs/common/environment
+
+
+# ============================ #
+#         DEVELOPMENT          #
+# ============================ #
+FROM base AS development
+
+COPY --from=deps-dev ${APP_PATH}/.venv ./.venv
+COPY --from=source ${APP_PATH} .
+
+WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
+
+CMD ["python", "main.py"]
+
+
+# ============================ #
+#          PRODUCTION          #
+# ============================ #
+FROM base AS production
+
+COPY --from=deps-prod ${APP_PATH}/.venv ./.venv
+COPY --from=source ${APP_PATH} .
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 

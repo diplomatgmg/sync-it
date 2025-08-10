@@ -45,10 +45,12 @@ async def start_webhook() -> None:
         drop_pending_updates=True,
     )
 
-    uvicorn.run(
+    server_config = uvicorn.Config(
         "setup.webhook:app",
         host=env_config.service_internal_host,
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
     )
+    server = uvicorn.Server(server_config)
+    await server.serve()

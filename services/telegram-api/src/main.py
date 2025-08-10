@@ -27,7 +27,7 @@ async def healthcheck() -> HealthResponse:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-if __name__ == "__main__":
+def main() -> None:
     uvicorn.run(
         "main:app",
         host=env_config.service_internal_host,
@@ -35,3 +35,7 @@ if __name__ == "__main__":
         log_level=log_config.level.lower(),
         reload=env_config.debug,
     )
+
+
+if __name__ == "__main__":
+    main()

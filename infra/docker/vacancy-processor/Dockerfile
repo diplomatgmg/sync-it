@@ -1,5 +1,4 @@
 FROM python:3.13.4-alpine AS base
-FROM base AS builder
 
 ARG APP_PATH=/app
 ARG SERVICE_NAME=vacancy-processor
@@ -13,6 +12,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR ${APP_PATH}
 
+FROM base AS builder
+
 RUN apk update \
     && apk add --no-cache uv \
     && rm -rf /var/cache/apk/*
@@ -25,6 +26,7 @@ FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
 COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
+COPY ./libs/common/environment/pyproject.toml ./libs/common/environment/pyproject.toml
 COPY ./libs/common/shared/pyproject.toml ./libs/common/shared/pyproject.toml
 COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
@@ -39,16 +41,39 @@ FROM deps-base AS deps-prod
 RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 
 
-# ================================= #
-#           DEVELOPMENT             #
-# ================================= #
-FROM deps-dev AS development
+# ============================ #
+#         SOURCE CODE          #
+# ============================ #
+FROM builder AS source
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
+COPY ./libs/common/environment ./libs/common/environment
 COPY ./libs/common/shared ./libs/common/shared
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/redis ./libs/common/redis
+
+
+# ============================ #
+#         DEVELOPMENT          #
+# ============================ #
+FROM base AS development
+
+COPY --from=deps-dev ${APP_PATH}/.venv ./.venv
+COPY --from=source ${APP_PATH} .
+
+WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
+
+CMD ["python", "main.py"]
+
+
+# ============================ #
+#          PRODUCTION          #
+# ============================ #
+FROM base AS production
+
+COPY --from=deps-prod ${APP_PATH}/.venv ./.venv
+COPY --from=source ${APP_PATH} .
 
 WORKDIR ${APP_PATH}/${SERVICE_PATH}/src
 
