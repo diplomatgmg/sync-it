@@ -86,7 +86,7 @@ def options_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text="⬅️ Назад",
+            text="⬅️ К предпочтениям",
             callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
         )
     )
