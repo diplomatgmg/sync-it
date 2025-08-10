@@ -32,3 +32,29 @@ class VacancyService(BaseService[VacancyRepository]):
             skills=skills,
             limit=limit,
         )
+
+    async def get_vacancy_with_neighbors(
+        self,
+        vacancy_id: int,
+        professions: Sequence[ProfessionEnum] | None = None,
+        grades: Sequence[GradeEnum] | None = None,
+        work_formats: Sequence[WorkFormatEnum] | None = None,
+        skills: Sequence[SkillEnum] | None = None,
+    ) -> tuple[int | None, Vacancy | None, int | None]:
+        vacancy = await self._repo.get_by_id(vacancy_id)
+        if not vacancy:
+            return None, None, None
+
+        professions = professions or []
+        grades = grades or []
+        work_formats = work_formats or []
+        skills = skills or []
+
+        prev_id = await self._repo.get_prev_id(
+            vacancy.published_at, vacancy.id, professions, grades, work_formats, skills
+        )
+        next_id = await self._repo.get_next_id(
+            vacancy.published_at, vacancy.id, professions, grades, work_formats, skills
+        )
+
+        return prev_id, vacancy, next_id

@@ -19,6 +19,7 @@ __all__ = [
     "SkillModelResponse",
     "SkillModelSchema",
     "VacancyModelResponse",
+    "VacancyWithNeighborsResponse",
     "WorkFormatModelResponse",
     "WorkFormatModelSchema",
 ]
@@ -122,3 +123,13 @@ class ProcessedVacancyModelSchema(BaseModel):
 
 class VacancyModelResponse(BaseModel):
     vacancies: list[ProcessedVacancyModelSchema]
+
+
+class VacancyWithNeighborsSchema(BaseModel):
+    previous_id: int | None
+    vacancy: ProcessedVacancyModelSchema | None
+    next_id: int | None
+
+
+class VacancyWithNeighborsResponse(BaseModel):
+    result: VacancyWithNeighborsSchema
