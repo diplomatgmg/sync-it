@@ -25,6 +25,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(lifespan=lifespan)
 
 
+# FIXME: API key deps
 @app.post("/webhook")
 async def bot_webhook(update: Update) -> None:
     await dp.feed_webhook_update(bot=bot, update=update)
