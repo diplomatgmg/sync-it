@@ -20,6 +20,20 @@ services:
       start_period: 1s
       start_interval: 1s
 
+  pgbouncer:
+    image: bitnami/pgbouncer:1.24.1
+    container_name: pgbouncer
+    env_file: ../.env
+    ports:
+      - "${PGBOUNCER_PORT}:${PGBOUNCER_PORT}"
+    environment:
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   redis:
     image: redis:8.0.2-alpine
     container_name: redis
