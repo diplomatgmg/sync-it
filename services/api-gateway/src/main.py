@@ -66,13 +66,19 @@ async def healthcheck() -> HealthResponse:
 
 
 def main() -> None:
+    service_root_path = Path(__file__).parents[1]
+    service_libs_path = Path(__file__).parents[3] / "libs"
+
     uvicorn.run(
         "main:app",
         host=gateway_config.host,
         port=gateway_config.port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
-        reload_dirs=[str(Path(__file__).parents[3] / "libs")],
+        reload_dirs=[
+            str(service_root_path),
+            str(service_libs_path),
+        ],
     )
 
 

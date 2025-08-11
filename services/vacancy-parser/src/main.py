@@ -25,16 +25,20 @@ async def healthcheck() -> HealthResponse:
 async def main() -> None:
     await seed_models()
 
-    server_config = uvicorn.Config(
+    service_root_path = Path(__file__).parents[1]
+    service_libs_path = Path(__file__).parents[3] / "libs"
+
+    uvicorn.run(
         "main:app",
         host=env_config.service_internal_host,
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
-        reload_dirs=[str(Path(__file__).parents[3] / "libs")],
+        reload_dirs=[
+            str(service_root_path),
+            str(service_libs_path),
+        ],
     )
-    server = uvicorn.Server(server_config)
-    await server.serve()
 
 
 if __name__ == "__main__":
