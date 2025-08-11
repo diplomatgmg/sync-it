@@ -26,6 +26,7 @@ FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
 COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
+COPY ./libs/common/environment/pyproject.toml ./libs/common/environment/pyproject.toml
 COPY ./libs/common/shared/pyproject.toml ./libs/common/shared/pyproject.toml
 COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml

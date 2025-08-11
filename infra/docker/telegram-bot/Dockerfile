@@ -27,6 +27,7 @@ FROM builder AS deps-base
 COPY ./pyproject.toml ./uv.lock ./
 COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
 COPY ./libs/common/shared/pyproject.toml ./libs/common/shared/pyproject.toml
+COPY ./libs/common/environment/pyproject.toml ./libs/common/environment/pyproject.toml
 COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
 COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
 COPY ./libs/common/gateway/pyproject.toml ./libs/common/gateway/pyproject.toml
@@ -49,6 +50,7 @@ COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ${SERVICE_PATH}/alembic.ini ${SERVICE_PATH}/alembic.ini
 COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/shared ./libs/common/shared
+COPY ./libs/common/environment ./libs/common/environment
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/gateway ./libs/common/gateway
 
