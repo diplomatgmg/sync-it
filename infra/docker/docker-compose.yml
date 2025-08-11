@@ -89,16 +89,16 @@ services:
       service: telegram-bot
       file: telegram-bot/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
 
   telegram-bot:
     extends:
       service: telegram-bot
       file: telegram-bot/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
       api-gateway:
         condition: service_healthy
       vacancy-processor:
@@ -111,16 +111,16 @@ services:
       service: vacancy-parser
       file: vacancy-parser/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
 
   vacancy-parser:
     extends:
       service: vacancy-parser
       file: vacancy-parser/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
       telegram-api:
         condition: service_healthy
       api-gateway:
@@ -133,8 +133,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
 
   vacancy-parser-beat:
     extends:
@@ -151,16 +151,16 @@ services:
       service: vacancy-processor
       file: vacancy-processor/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
 
   vacancy-processor:
     extends:
       service: vacancy-processor
       file: vacancy-processor/docker-compose.yml
     depends_on:
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
       gpt-api:
         condition: service_healthy
       api-gateway:
@@ -173,8 +173,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      pgbouncer:
+        condition: service_started
 
   vacancy-processor-beat:
     extends:
