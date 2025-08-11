@@ -96,7 +96,7 @@ services:
       file: telegram-bot/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
 
   telegram-bot:
     extends:
@@ -104,7 +104,7 @@ services:
       file: telegram-bot/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
       api-gateway:
         condition: service_healthy
       vacancy-processor:
@@ -118,7 +118,7 @@ services:
       file: vacancy-parser/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
 
   vacancy-parser:
     extends:
@@ -126,7 +126,7 @@ services:
       file: vacancy-parser/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
       telegram-api:
         condition: service_healthy
       api-gateway:
@@ -140,7 +140,7 @@ services:
       redis:
         condition: service_healthy
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
 
   vacancy-parser-beat:
     extends:
@@ -158,7 +158,7 @@ services:
       file: vacancy-processor/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
 
   vacancy-processor:
     extends:
@@ -166,7 +166,7 @@ services:
       file: vacancy-processor/docker-compose.yml
     depends_on:
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
       gpt-api:
         condition: service_healthy
       api-gateway:
@@ -180,7 +180,7 @@ services:
       redis:
         condition: service_healthy
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
 
   vacancy-processor-beat:
     extends:
