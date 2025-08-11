@@ -1,0 +1,44 @@
+# $schema: https://json.schemastore.org/github-workflow.json
+
+name: Deploying
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "infra/docker/docker-compose.yml, Makefile"
+          target: "/srv/${{ vars.ENV_PROJECT_NAME }}"
+
+      - name: Start Docker services
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /srv/${{ vars.ENV_PROJECT_NAME }}
+            make migrate
+            make up
+
+      - name: Notify Telegram on Failure
+        if: failure()
+        uses: ./.github/actions/telegram-notify
+        with:
+          job_name: Deploy
+          title: ❌ Deploy Failure ❌
+          to: ${{ secrets.TELEGRAM_NOTIFIER_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_NOTIFIER_BOT_TOKEN }}
