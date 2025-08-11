@@ -8,7 +8,7 @@ services:
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://telegram-api:${ENV_SERVICE_INTERNAL_PORT}/health" ]
       interval: 30s
-      timeout: 3s
+      timeout: 5s
       retries: 3
       start_period: 7s
       start_interval: 1s

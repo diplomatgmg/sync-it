@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from common.environment.config import env_config
 from common.gateway.config import gateway_config
 from fastapi import Header, HTTPException
 from fastapi.security import APIKeyHeader
@@ -17,6 +18,9 @@ async def validate_api_key(request: Request, x_api_key: Annotated[str | None, He
     """Проверяет переданный API-ключ."""
     host = f"api-gateway:{gateway_config.port}"
     if request.headers["host"] == host:
+        return
+
+    if env_config.debug:
         return
 
     if x_api_key == gateway_config.api_key:
