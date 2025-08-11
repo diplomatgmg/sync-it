@@ -13,6 +13,7 @@ class ServiceConfig(BaseSettings):
     rate_limit: float  # for throttling control in seconds
     use_webhook: bool
     webhook_url: HttpsUrl
+    webhook_api_key: str
 
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_BOT_")
 
