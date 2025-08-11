@@ -46,9 +46,10 @@ RUN uv sync --frozen --no-dev --package $SERVICE_NAME
 FROM builder AS source
 
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
+COPY ${SERVICE_PATH}/alembic.ini ${SERVICE_PATH}/alembic.ini
+COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/shared ./libs/common/shared
 COPY ./libs/common/logger ./libs/common/logger
-COPY ./libs/common/database ./libs/common/database
 COPY ./libs/common/gateway ./libs/common/gateway
 
 

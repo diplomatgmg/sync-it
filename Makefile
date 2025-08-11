@@ -67,16 +67,22 @@ mm: # create migration s=<service> m="migration message"
 
 migrate: # apply migrations [s=<service>]
 	@if [ -z "$(s)" ]; then \
+  		echo "Searching services for migrations..."; \
 		for service in $(SERVICES); do \
-			if [ -f services/$$service/alembic.ini ]; then \
+			if $(COMPOSE_COMMAND) --profile migrator config --services | grep -q "^$$service-migrator$$"; then \
 				echo "Applying migrations for $$service..."; \
 				$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$$service --rm $$service-migrator alembic upgrade head; \
 			fi; \
 		done; \
-		echo "Migrations applied for all services with alembic"; \
+		echo "Migrations applied for all services with migrator"; \
 	else \
 		echo "Applying migrations for service $(s)..."; \
-		$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic upgrade head; \
+		if $(COMPOSE_COMMAND) --profile migrator config --services | grep -q "^$(s)-migrator$$"; then \
+			$(COMPOSE_COMMAND) run --quiet --no-TTY --workdir /app/services/$(s) --rm $(s)-migrator alembic upgrade head; \
+		else \
+			echo "No migrator service for $(s)"; \
+			exit 1; \
+		fi; \
 		echo "Migrations applied for service $(s)"; \
 	fi
 
