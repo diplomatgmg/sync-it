@@ -36,6 +36,9 @@ down: # compose down [s=<service>] [e="<extra> <extra2>"]
 stop: # compose stop [s=<service>] [e="<extra> <extra2>"]
 	$(call compose_action,stop)
 
+pull: # compose pull
+	$(call compose_action,pull)
+
 venv: # create/update venv
 	@uv sync --frozen --all-packages
 
