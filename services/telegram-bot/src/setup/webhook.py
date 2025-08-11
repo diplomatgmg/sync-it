@@ -9,10 +9,11 @@ from common.environment.config import env_config
 from common.logger.config import log_config
 from core import service_config
 from core.loader import bot, dp
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from setup.lifespan import on_shutdown, on_startup
 from starlette import status
+from starlette.requests import Request
 import uvicorn
 
 
@@ -29,16 +30,16 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(lifespan=lifespan)
 
 
-async def verify_telegram_secret(  # noqa: RUF029
+@app.post("/webhook")
+async def bot_webhook(
+    request: Request,
     x_telegram_bot_api_secret_token: Annotated[str | None, Header()] = None,
 ) -> None:
-    """Проверяет секретный токен, присланный от Telegram."""
     if service_config.webhook_api_key != x_telegram_bot_api_secret_token:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid secret token")
 
-
-@app.post("/webhook", dependencies=[Depends(verify_telegram_secret)])
-async def bot_webhook(update: Update) -> None:
+    data = await request.json()
+    update = Update.model_validate(data)
     await dp.feed_webhook_update(bot=bot, update=update)
 
 
