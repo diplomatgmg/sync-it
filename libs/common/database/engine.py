@@ -15,7 +15,7 @@ __all__ = [
 setup_alchemy_logging()
 
 
-engine = create_async_engine(db_config.url)
+engine = create_async_engine(db_config.url, pool_size=10, max_overflow=20)
 
 async_session_factory = async_sessionmaker(
     bind=engine,
