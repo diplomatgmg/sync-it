@@ -1,6 +1,5 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Annotated
 
 from aiogram.types import Update
@@ -64,17 +63,12 @@ async def start_webhook() -> None:
         secret_token=service_config.webhook_api_key,
     )
 
-    service_root_path = Path(__file__).parents[2]
-    service_libs_path = Path(__file__).parents[4] / "libs"
-
-    uvicorn.run(
+    config = uvicorn.Config(
         "setup.webhook:app",
         host=env_config.service_internal_host,
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
-        reload=env_config.debug,
-        reload_dirs=[
-            str(service_root_path),
-            str(service_libs_path),
-        ],
     )
+
+    server = uvicorn.Server(config=config)
+    await server.serve()
