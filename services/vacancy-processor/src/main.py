@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from schemas import HealthResponse
 from seeds import seed_models
 import uvicorn
-import uvloop
 
 
 logger = get_logger(__name__)
@@ -22,9 +21,7 @@ async def healthcheck() -> HealthResponse:
     return HealthResponse(status="Healthy")
 
 
-async def main() -> None:
-    await seed_models()
-
+def main() -> None:
     service_root_path = Path(__file__).parents[1]
     service_libs_path = Path(__file__).parents[3] / "libs"
 
@@ -42,4 +39,8 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    uvloop.run(main())
+    import asyncio
+
+    asyncio.run(seed_models())
+
+    main()
