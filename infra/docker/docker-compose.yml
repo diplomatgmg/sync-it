@@ -5,15 +5,13 @@ services:
     image: postgres:17.5-alpine
     container_name: postgres
     env_file: ../.env
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    command: -p ${POSTGRES_PORT}
+    command: -p ${DB_PORT}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}", "-p", "${POSTGRES_PORT}" ]
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}", "-p", "${DB_PORT}" ]
       interval: 10s
       timeout: 1s
       retries: 3
@@ -21,18 +19,26 @@ services:
       start_interval: 1s
 
   pgbouncer:
-    image: bitnami/pgbouncer:1.24.1
+    image: edoburu/pgbouncer:v1.24.1-p1
     container_name: pgbouncer
     env_file: ../.env
-    ports:
-      - "${PGBOUNCER_PORT}:${PGBOUNCER_PORT}"
     environment:
-      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - AUTH_TYPE=scram-sha-256
+      - LISTEN_PORT=${DB_PORT}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
     networks:
       - app-network
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "${DB_HOST}", "-p", "${DB_PORT}"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
+      start_interval: 1s
 
   redis:
     image: redis:8.0.2-alpine
