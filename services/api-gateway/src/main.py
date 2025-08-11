@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from common.environment.config import env_config
 from common.gateway.config import gateway_config
 from common.gateway.enums import ServiceEnum
@@ -70,6 +72,7 @@ def main() -> None:
         port=gateway_config.port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
+        reload_dirs=[str(Path(__file__).parents[3] / "libs")],
     )
 
 

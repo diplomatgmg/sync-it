@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from email.header import Header
+from pathlib import Path
 from typing import Annotated
 
 from aiogram.types import Update
@@ -63,6 +64,7 @@ async def start_webhook() -> None:
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
+        reload_dirs=[str(Path(__file__).parents[4] / "libs")],
     )
     server = uvicorn.Server(server_config)
     await server.serve()

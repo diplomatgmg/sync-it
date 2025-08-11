@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from api.v1 import router as v1_router
 from common.environment.config import env_config
 from common.logger import get_logger
@@ -33,6 +35,7 @@ def main() -> None:
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
         reload=env_config.debug,
+        reload_dirs=[str(Path(__file__).parents[3] / "libs")],
     )
 
 
