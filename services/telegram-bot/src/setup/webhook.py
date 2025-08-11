@@ -1,6 +1,5 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from email.header import Header
 from pathlib import Path
 from typing import Annotated
 
@@ -9,7 +8,7 @@ from common.environment.config import env_config
 from common.logger.config import log_config
 from core import service_config
 from core.loader import bot, dp
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel
 from setup.lifespan import on_shutdown, on_startup
 from starlette import status
@@ -30,11 +29,19 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(lifespan=lifespan)
 
 
+class WebhookResponse(BaseModel):
+    status: str
+
+
+class HealthResponse(BaseModel):
+    status: str
+
+
 @app.post("/webhook")
 async def bot_webhook(
     request: Request,
     x_telegram_bot_api_secret_token: Annotated[str | None, Header()] = None,
-) -> None:
+) -> WebhookResponse:
     if service_config.webhook_api_key != x_telegram_bot_api_secret_token:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid secret token")
 
@@ -42,9 +49,7 @@ async def bot_webhook(
     update = Update.model_validate(data)
     await dp.feed_webhook_update(bot=bot, update=update)
 
-
-class HealthResponse(BaseModel):
-    status: str
+    return WebhookResponse(status="ok")
 
 
 @app.get("/health")
