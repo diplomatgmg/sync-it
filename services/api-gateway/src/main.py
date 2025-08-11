@@ -17,12 +17,7 @@ logger = get_logger(__name__)
 app = FastAPI(title="API Gateway Service")
 
 
-@app.api_route(
-    "/{service}/{path:path}",
-    methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-    dependencies=[Depends(validate_api_key)],
-)
-async def gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Response:
+async def _proxy_logic(service: ServiceEnum, path: str, request: Request) -> Response:
     logger.debug("Proxy request to service: %s, path: %s", service, path)
 
     url = HttpUrl.build(
@@ -33,15 +28,12 @@ async def gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Re
     )
 
     async with AsyncClient(timeout=60) as client:
-        methods_with_body = {"POST", "PUT", "PATCH"}
-        json = await request.json() if request.method in methods_with_body else None
-
         response = await client.request(
             method=request.method,
             url=str(url),
             headers=request.headers,
             params=request.query_params,
-            json=json,
+            content=await request.body(),
         )
 
     return Response(
@@ -49,6 +41,21 @@ async def gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Re
         headers=response.headers,
         content=response.content,
     )
+
+
+@app.get("/{service}/{path:path}", dependencies=[Depends(validate_api_key)])
+async def get_gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Response:
+    return await _proxy_logic(service, path, request)
+
+
+@app.post("/{service}/{path:path}", dependencies=[Depends(validate_api_key)])
+async def post_gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Response:
+    return await _proxy_logic(service, path, request)
+
+
+@app.delete("/{service}/{path:path}", dependencies=[Depends(validate_api_key)])
+async def delete_gateway_proxy(service: ServiceEnum, path: str, request: Request) -> Response:
+    return await _proxy_logic(service, path, request)
 
 
 @app.get("/health")

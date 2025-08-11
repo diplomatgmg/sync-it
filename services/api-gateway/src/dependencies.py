@@ -1,23 +1,37 @@
+from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from typing import Annotated
 
 from common.environment.config import env_config
 from common.gateway.config import gateway_config
 from fastapi import Header, HTTPException
-from fastapi.security import APIKeyHeader
 from starlette import status
 from starlette.requests import Request
 
 
 __all__ = ["validate_api_key"]
 
-
-api_key_header = APIKeyHeader(name="X-API-Key")
+# Определено в compose файле
+TRUSTED_NETWORKS: set[IPv4Network | IPv6Network] = {
+    ip_network("172.25.0.0/16"),
+}
 
 
 async def validate_api_key(request: Request, x_api_key: Annotated[str | None, Header()] = None) -> None:  # noqa: RUF029
-    """Проверяет переданный API-ключ."""
-    host = f"api-gateway:{gateway_config.port}"
-    if request.headers["host"] == host:
+    """
+    Проверяет доступ к API Gateway.
+
+    - Пропускает запросы в dev-mode.
+    - Пропускает запросы на вебхук Telegram без проверки ключа.
+    - Для всех остальных запросов требует валидный X-API-Key.
+    """
+    if request.url.path.startswith("/telegram-bot/webhook"):
+        return
+
+    if request.client is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Could not determine client IP address")
+
+    client_ip = ip_address(request.client.host)
+    if any(client_ip in network for network in TRUSTED_NETWORKS):
         return
 
     if env_config.debug:
@@ -28,7 +42,7 @@ async def validate_api_key(request: Request, x_api_key: Annotated[str | None, He
 
     if x_api_key is None:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing API Key",
         )
 
