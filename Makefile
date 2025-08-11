@@ -1,13 +1,17 @@
+-include infra/.env
+
 COMPOSE_DIR := infra/docker
 COMPOSE_COMMAND := docker compose -f $(COMPOSE_DIR)/docker-compose.yml --env-file infra/.env
-OVERRIDE_FILE := $(COMPOSE_DIR)/docker-compose.override.yml
+COMPOSE_DEV_FILE := $(COMPOSE_DIR)/docker-compose.dev.yml
 
 SERVICES := api-gateway gpt-api telegram-api telegram-bot vacancy-parser vacancy-processor
 MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
 
-# Проверяем существование override-файла и добавляем его к COMPOSE_COMMAND
-ifeq ($(wildcard $(OVERRIDE_FILE)),$(OVERRIDE_FILE))
-    COMPOSE_COMMAND := $(COMPOSE_COMMAND) -f $(OVERRIDE_FILE)
+# Проверяем существование dev-файла и добавляем его к COMPOSE_COMMAND
+ifeq ($(ENV_MODE),development)
+    ifeq ($(wildcard $(COMPOSE_DEV_FILE)),$(COMPOSE_DEV_FILE))
+        COMPOSE_COMMAND := $(COMPOSE_COMMAND) -f $(COMPOSE_DEV_FILE)
+    endif
 endif
 
 define compose_action
