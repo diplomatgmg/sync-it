@@ -28,6 +28,11 @@ jobs:
           username: ${{ vars.ENV_DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
       - name: Build and push ${{ matrix.service }} image
         uses: docker/build-push-action@v6
         with:
@@ -35,6 +40,8 @@ jobs:
           context: .
           file: ./infra/docker/${{ matrix.service }}/Dockerfile
           tags: ${{ vars.ENV_DOCKER_USERNAME }}/${{ vars.ENV_PROJECT_NAME }}-${{ matrix.service }}:latest
+          cache-from: type=registry,ref=${{ vars.ENV_DOCKER_USERNAME }}/${{ vars.ENV_PROJECT_NAME }}-${{ matrix.service }}:cache
+          cache-to: type=registry,ref=${{ vars.ENV_DOCKER_USERNAME }}/${{ vars.ENV_PROJECT_NAME }}-${{ matrix.service }}:cache,mode=max
 
       - name: Notify Telegram on Failure
         if: failure()
