@@ -5,7 +5,8 @@ from clients import gpt_client, vacancy_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from repositories import GradeRepository, SkillRepository, VacancyRepository, WorkFormatRepository
+from repositories import SkillRepository, VacancyRepository, WorkFormatRepository
+from schemas.grade import GradeRead
 from schemas_old import ParsedVacancySchema
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
@@ -59,12 +60,11 @@ class VacancyProcessor:
 
             async with self._db_lock, get_async_session() as session, UnitOfWork() as uow:
                 vacancy_repo = VacancyRepository(session)
-                grade_repo = GradeRepository(session)
                 work_format_repo = WorkFormatRepository(session)
                 skill_repo = SkillRepository(session)
 
                 vacancy_service = VacancyService(vacancy_repo)
-                grade_service = GradeService(grade_repo)
+                grade_service = GradeService(uow)
                 profession_service = ProfessionService(uow)
                 work_format_service = WorkFormatService(work_format_repo)
                 skill_service = SkillService(skill_repo)
@@ -121,7 +121,8 @@ class VacancyProcessor:
             conditions=extracted_vacancy.conditions,
         )
 
-        vacancy_model.grades = grades
+        # FIXME. Костыль пока все переписываю на UOW
+        vacancy_model.grades = [Grade(id=grade.id, name=grade.name) for grade in grades]
         vacancy_model.work_formats = work_formats
         vacancy_model.skills = skills
 
@@ -140,7 +141,7 @@ class VacancyProcessor:
         return profession.id if profession else None
 
     @staticmethod
-    async def _resolve_grades(extracted_vacancy: VacancyExtractor, grade_service: GradeService) -> list[Grade]:
+    async def _resolve_grades(extracted_vacancy: VacancyExtractor, grade_service: GradeService) -> list[GradeRead]:
         grade_names = extracted_vacancy.grades
         grades = []
         for name in grade_names:

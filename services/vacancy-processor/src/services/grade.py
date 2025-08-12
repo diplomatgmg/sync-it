@@ -1,24 +1,28 @@
-from collections.abc import Sequence
-
-from common.shared.services import BaseService
+from common.shared.services.base import BaseUOWService
 from database.models import Grade
 from database.models.enums import GradeEnum
-from repositories import GradeRepository
+from schemas.grade import GradeCreate, GradeRead
+from unitofwork import UnitOfWork
 
 
 __all__ = ["GradeService"]
 
 
-class GradeService(BaseService[GradeRepository]):
+class GradeService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций, связанных с грейдами."""
 
-    async def get_grade_by_name(self, name: GradeEnum) -> Grade | None:
-        return await self._repo.get_by_name(name)
+    async def get_grade_by_name(self, name: GradeEnum) -> GradeRead | None:
+        grade = await self._uow.grades.get_by_name(name)
 
-    async def get_grades(self) -> Sequence[Grade]:
-        return await self._repo.get_all()
+        return GradeRead.model_validate(grade)
 
-    async def add_grade(self, grade_enum: GradeEnum) -> None:
-        """Создает экземпляр Grade и добавляет его в сессию через репозиторий."""
-        grade_model = Grade(name=grade_enum)
-        await self._repo.add(grade_model)
+    async def get_grades(self) -> list[GradeRead]:
+        grades = await self._uow.grades.get_all()
+
+        return [GradeRead.model_validate(g) for g in grades]
+
+    async def add_grade(self, grade: GradeCreate) -> GradeRead:
+        grade_model = Grade(name=grade.name)
+        created_grade = await self._uow.grades.add(grade_model)
+
+        return GradeRead.model_validate(created_grade)

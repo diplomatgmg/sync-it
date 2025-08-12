@@ -4,10 +4,11 @@ from typing import Annotated
 from fastapi import Depends
 from unitofwork import UnitOfWork
 
-from services import ProfessionService
+from services import GradeService, ProfessionService
 
 
 __all__ = [
+    "get_grade_service",
     "get_profession_service",
 ]
 
@@ -22,3 +23,8 @@ async def _get_uow_session() -> AsyncGenerator[UnitOfWork]:
 def get_profession_service(uow: Annotated[UnitOfWork, Depends(_get_uow_session)]) -> ProfessionService:
     """FastAPI зависимость для получения экземпляра сервиса BuildingService."""
     return ProfessionService(uow)
+
+
+def get_grade_service(uow: Annotated[UnitOfWork, Depends(_get_uow_session)]) -> GradeService:
+    """FastAPI зависимость для получения экземпляра сервиса GradeService."""
+    return GradeService(uow)
