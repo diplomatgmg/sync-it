@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from api.v1 import router as v1_router
 from common.environment.config import env_config
 from common.logger import get_logger
@@ -22,19 +20,11 @@ async def healthcheck() -> HealthResponse:
 
 
 def main() -> None:
-    service_root_path = Path(__file__).parents[1]
-    service_libs_path = Path(__file__).parents[3] / "libs"
-
     uvicorn.run(
         "main:app",
         host=env_config.service_internal_host,
         port=env_config.service_internal_port,
         log_level=log_config.level.lower(),
-        reload=env_config.debug,
-        reload_dirs=[
-            str(service_root_path),
-            str(service_libs_path),
-        ],
     )
 
 

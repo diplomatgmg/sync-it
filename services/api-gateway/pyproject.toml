@@ -15,3 +15,8 @@ logger-lib = { workspace = true }
 syncit-core = { workspace = true }
 environment-lib = { workspace = true }
 gateway-lib = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
+]

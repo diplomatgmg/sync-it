@@ -10,6 +10,11 @@ dependencies = [
     "uvicorn[standard]>=0.34.3",
 ]
 
+[dependency-groups]
+dev = [
+    "hupper>=1.12.1",
+]
+
 [tool.uv.sources]
 syncit-core = { workspace = true }
 logger-lib = { workspace = true }
