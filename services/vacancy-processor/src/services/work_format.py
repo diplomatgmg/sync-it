@@ -1,24 +1,28 @@
-from collections.abc import Sequence
-
-from common.shared.services import BaseService
+from common.shared.services.base import BaseUOWService
 from database.models import WorkFormat
 from database.models.enums import WorkFormatEnum
-from repositories import WorkFormatRepository
+from schemas.work_format import WorkFormatCreate, WorkFormatRead
+from unitofwork import UnitOfWork
 
 
 __all__ = ["WorkFormatService"]
 
 
-class WorkFormatService(BaseService[WorkFormatRepository]):
+class WorkFormatService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций, связанных с форматами работы."""
 
-    async def get_work_format_by_name(self, name: WorkFormatEnum) -> WorkFormat | None:
-        return await self._repo.get_by_name(name)
+    async def get_work_format_by_name(self, name: WorkFormatEnum) -> WorkFormatRead | None:
+        work_format = await self._uow.work_formats.get_by_name(name)
 
-    async def get_work_formats(self) -> Sequence[WorkFormat]:
-        return await self._repo.get_all()
+        return WorkFormatRead.model_validate(work_format) if work_format else None
 
-    async def add_work_format(self, work_format: WorkFormatEnum) -> None:
-        """Создает и добавляет формат работы в сессию (без коммита)."""
-        work_format_model = WorkFormat(name=work_format)
-        self._repo.add(work_format_model)
+    async def get_work_formats(self) -> list[WorkFormatRead]:
+        work_formats = await self._uow.work_formats.get_all()
+
+        return [WorkFormatRead.model_validate(wf) for wf in work_formats]
+
+    async def add_work_format(self, work_format: WorkFormatCreate) -> WorkFormatRead:
+        work_format_model = WorkFormat(name=work_format.name)
+        created_work_format = await self._uow.work_formats.add(work_format_model)
+
+        return WorkFormatRead.model_validate(created_work_format)

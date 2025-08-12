@@ -5,8 +5,9 @@ from clients import gpt_client, vacancy_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from repositories import SkillRepository, VacancyRepository, WorkFormatRepository
+from repositories import SkillRepository, VacancyRepository
 from schemas.grade import GradeRead
+from schemas.work_format import WorkFormatRead
 from schemas_old import ParsedVacancySchema
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
@@ -60,13 +61,12 @@ class VacancyProcessor:
 
             async with self._db_lock, get_async_session() as session, UnitOfWork() as uow:
                 vacancy_repo = VacancyRepository(session)
-                work_format_repo = WorkFormatRepository(session)
                 skill_repo = SkillRepository(session)
 
                 vacancy_service = VacancyService(vacancy_repo)
                 grade_service = GradeService(uow)
                 profession_service = ProfessionService(uow)
-                work_format_service = WorkFormatService(work_format_repo)
+                work_format_service = WorkFormatService(uow)
                 skill_service = SkillService(skill_repo)
 
                 # Выполняем всю логику сохранения в рамках одной транзакции
@@ -123,7 +123,7 @@ class VacancyProcessor:
 
         # FIXME. Костыль пока все переписываю на UOW
         vacancy_model.grades = [Grade(id=grade.id, name=grade.name) for grade in grades]
-        vacancy_model.work_formats = work_formats
+        vacancy_model.work_formats = [WorkFormat(id=wf.id, name=wf.name) for wf in work_formats]
         vacancy_model.skills = skills
 
         # `add_vacancy` не должен содержать коммита
@@ -153,7 +153,7 @@ class VacancyProcessor:
     @staticmethod
     async def _resolve_work_formats(
         extracted_vacancy: VacancyExtractor, work_format_service: WorkFormatService
-    ) -> list[WorkFormat]:
+    ) -> list[WorkFormatRead]:
         work_format_names = extracted_vacancy.work_formats
         work_formats = []
         for name in work_format_names:

@@ -16,14 +16,20 @@ class WorkFormatRepository(BaseRepository):
         """Находит формат работы по имени."""
         stmt = select(WorkFormat).where(WorkFormat.name == name)
         result = await self._session.execute(stmt)
+
         return result.scalar_one_or_none()
 
     async def get_all(self) -> Sequence[WorkFormat]:
         """Возвращает все форматы работы."""
         stmt = select(WorkFormat)
         result = await self._session.execute(stmt)
+
         return result.scalars().all()
 
-    def add(self, work_format_model: WorkFormat) -> None:
+    async def add(self, work_format: WorkFormat) -> WorkFormat:
         """Добавляет экземпляр формата работы в сессию."""
-        self._session.add(work_format_model)
+        self._session.add(work_format)
+        await self._session.flush()
+        await self._session.refresh(work_format)
+
+        return work_format
