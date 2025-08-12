@@ -4,7 +4,14 @@ from typing import Annotated
 from fastapi import Depends
 from unitofwork import UnitOfWork
 
-from services import GradeService, ProfessionService, SkillCategoryService, SkillService, WorkFormatService
+from services import (
+    GradeService,
+    ProfessionService,
+    SkillCategoryService,
+    SkillService,
+    VacancyService,
+    WorkFormatService,
+)
 
 
 __all__ = [
@@ -12,6 +19,7 @@ __all__ = [
     "get_profession_service",
     "get_skill_category_service",
     "get_skill_service",
+    "get_vacancy_service",
     "get_work_format_service",
 ]
 
@@ -46,3 +54,8 @@ def get_skill_category_service(uow: Annotated[UnitOfWork, Depends(_get_uow_sessi
 def get_skill_service(uow: Annotated[UnitOfWork, Depends(_get_uow_session)]) -> SkillService:
     """FastAPI зависимость для получения экземпляра сервиса SkillService."""
     return SkillService(uow)
+
+
+def get_vacancy_service(uow: Annotated[UnitOfWork, Depends(_get_uow_session)]) -> VacancyService:
+    """FastAPI зависимость для получения экземпляра сервиса VacancyService."""
+    return VacancyService(uow)

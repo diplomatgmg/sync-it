@@ -4,6 +4,7 @@ from repositories import (
     ProfessionRepository,
     SkillCategoryRepository,
     SkillRepository,
+    VacancyRepository,
     WorkFormatRepository,
 )
 
@@ -19,6 +20,7 @@ class UnitOfWork(BaseUnitOfWork):
     work_formats: WorkFormatRepository
     skill_categories: SkillCategoryRepository
     skills: SkillRepository
+    vacancies: VacancyRepository
 
     def init_repositories(self) -> None:
         self.professions = ProfessionRepository(self._session)
@@ -26,3 +28,4 @@ class UnitOfWork(BaseUnitOfWork):
         self.work_formats = WorkFormatRepository(self._session)
         self.skill_categories = SkillCategoryRepository(self._session)
         self.skills = SkillRepository(self._session)
+        self.vacancies = VacancyRepository(self._session)

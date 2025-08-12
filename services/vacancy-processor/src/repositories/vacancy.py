@@ -17,9 +17,13 @@ TSelect = TypeVar("TSelect", bound=Select[Any])
 class VacancyRepository(BaseRepository):
     """Репозиторий для управления вакансиями."""
 
-    def add(self, vacancy: Vacancy) -> None:
+    async def add(self, vacancy: Vacancy) -> Vacancy:
         """Добавляет экземпляр вакансии в сессию."""
         self._session.add(vacancy)
+        await self._session.flush()
+        await self._session.refresh(vacancy)
+
+        return vacancy
 
     async def get_by_id(self, vacancy_id: int) -> Vacancy | None:
         """Получает вакансию по ее id."""

@@ -2,14 +2,14 @@ import asyncio
 from itertools import starmap
 
 from clients import gpt_client, vacancy_client
+from clients.schemas import VacancySchema
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from repositories import VacancyRepository
 from schemas.grade import GradeRead
 from schemas.skill import SkillRead
+from schemas.vacancy import VacancyCreate
 from schemas.work_format import WorkFormatRead
-from schemas_old import ParsedVacancySchema
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
@@ -45,7 +45,7 @@ class VacancyProcessor:
 
         await asyncio.gather(*tasks)
 
-    async def process_prompt(self, prompt: str, vacancy: ParsedVacancySchema) -> None:
+    async def process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
         try:
             completion = await gpt_client.get_completion(prompt)
 
@@ -61,9 +61,7 @@ class VacancyProcessor:
             extracted_vacancy = self.vacancy_extractor.extract(completion)
 
             async with self._db_lock, get_async_session() as session, UnitOfWork() as uow:
-                vacancy_repo = VacancyRepository(session)
-
-                vacancy_service = VacancyService(vacancy_repo)
+                vacancy_service = VacancyService(uow)
                 grade_service = GradeService(uow)
                 profession_service = ProfessionService(uow)
                 work_format_service = WorkFormatService(uow)
@@ -91,7 +89,7 @@ class VacancyProcessor:
 
     async def _save_vacancy_in_transaction(
         self,
-        vacancy: ParsedVacancySchema,
+        vacancy: VacancySchema,
         extracted_vacancy: VacancyExtractor,
         vacancy_service: VacancyService,
         profession_service: ProfessionService,
@@ -127,7 +125,9 @@ class VacancyProcessor:
         vacancy_model.skills = [Skill(id=skill.id, name=skill.name, category_id=skill.category_id) for skill in skills]
 
         # `add_vacancy` не должен содержать коммита
-        await vacancy_service.add_vacancy(vacancy_model)
+        vacancy_data = VacancyCreate.model_validate(vacancy_model)
+
+        await vacancy_service.add_vacancy(vacancy_data)
 
     @staticmethod
     async def _resolve_profession_id(
