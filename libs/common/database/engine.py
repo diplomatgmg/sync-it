@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 
 __all__ = [
+    "async_session_factory",
     "get_async_session",
     "provide_async_session",
 ]

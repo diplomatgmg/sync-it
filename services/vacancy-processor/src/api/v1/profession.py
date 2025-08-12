@@ -1,10 +1,8 @@
 from typing import Annotated
 
-from common.database.engine import provide_async_session
+from api.depedencies import get_profession_service
+from api.v1.schemas import ProfessionListResponse
 from fastapi import APIRouter, Depends
-from repositories import ProfessionRepository
-from schemas import ProfessionModelResponse, ProfessionModelSchema
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import ProfessionService
 
@@ -16,10 +14,10 @@ router = APIRouter()
 
 
 @router.get("/professions")
-async def get_professions(session: Annotated[AsyncSession, Depends(provide_async_session)]) -> ProfessionModelResponse:
+async def get_professions(
+    service: Annotated[ProfessionService, Depends(get_profession_service)],
+) -> ProfessionListResponse:
     """Возвращает актуальных профессий."""
-    repo = ProfessionRepository(session)
-    service = ProfessionService(repo)
-    profession_models = await service.get_professions()
+    professions = await service.get_professions()
 
-    return ProfessionModelResponse(professions=[ProfessionModelSchema.model_validate(p) for p in profession_models])
+    return ProfessionListResponse(professions=professions)

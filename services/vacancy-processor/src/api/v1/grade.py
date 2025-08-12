@@ -3,7 +3,7 @@ from typing import Annotated
 from common.database.engine import provide_async_session
 from fastapi import APIRouter, Depends
 from repositories import GradeRepository
-from schemas import GradeModelResponse, GradeModelSchema
+from schemas_old import GradeModelResponse, GradeModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import GradeService

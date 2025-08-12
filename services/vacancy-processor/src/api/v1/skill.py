@@ -3,7 +3,7 @@ from typing import Annotated
 from common.database.engine import provide_async_session
 from fastapi import APIRouter, Depends, Query
 from repositories import SkillCategoryRepository, SkillRepository
-from schemas import SkillCategoryModelResponse, SkillCategoryModelSchema, SkillModelResponse, SkillModelSchema
+from schemas_old import SkillCategoryModelResponse, SkillCategoryModelSchema, SkillModelResponse, SkillModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import SkillCategoryService, SkillService

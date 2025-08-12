@@ -16,14 +16,20 @@ class ProfessionRepository(BaseRepository):
         """Находит профессию по имени."""
         stmt = select(Profession).where(Profession.name == name)
         result = await self._session.execute(stmt)
+
         return result.scalar_one_or_none()
 
     async def get_all(self) -> Sequence[Profession]:
         """Возвращает все профессии."""
         stmt = select(Profession)
         result = await self._session.execute(stmt)
+
         return result.scalars().all()
 
-    def add(self, profession_model: Profession) -> None:
+    async def add(self, profession: Profession) -> Profession:
         """Добавляет экземпляр профессии в сессию."""
-        self._session.add(profession_model)
+        self._session.add(profession)
+        await self._session.flush()
+        await self._session.refresh(profession)
+
+        return profession

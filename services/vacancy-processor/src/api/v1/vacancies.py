@@ -5,7 +5,7 @@ from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from fastapi import APIRouter, Depends, Path, Query
 from repositories import VacancyRepository
-from schemas import (
+from schemas_old import (
     ProcessedVacancyModelSchema,
     VacancyModelResponse,
     VacancyWithNeighborsResponse,

@@ -5,8 +5,9 @@ from clients import gpt_client, vacancy_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from repositories import GradeRepository, ProfessionRepository, SkillRepository, VacancyRepository, WorkFormatRepository
-from schemas import ParsedVacancySchema
+from repositories import GradeRepository, SkillRepository, VacancyRepository, WorkFormatRepository
+from schemas_old import ParsedVacancySchema
+from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
 
@@ -56,16 +57,15 @@ class VacancyProcessor:
 
             extracted_vacancy = self.vacancy_extractor.extract(completion)
 
-            async with self._db_lock, get_async_session() as session:
+            async with self._db_lock, get_async_session() as session, UnitOfWork() as uow:
                 vacancy_repo = VacancyRepository(session)
                 grade_repo = GradeRepository(session)
-                profession_repo = ProfessionRepository(session)
                 work_format_repo = WorkFormatRepository(session)
                 skill_repo = SkillRepository(session)
 
                 vacancy_service = VacancyService(vacancy_repo)
                 grade_service = GradeService(grade_repo)
-                profession_service = ProfessionService(profession_repo)
+                profession_service = ProfessionService(uow)
                 work_format_service = WorkFormatService(work_format_repo)
                 skill_service = SkillService(skill_repo)
 

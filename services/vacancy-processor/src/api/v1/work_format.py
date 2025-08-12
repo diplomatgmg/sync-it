@@ -3,7 +3,7 @@ from typing import Annotated
 from common.database.engine import provide_async_session
 from fastapi import APIRouter, Depends
 from repositories import WorkFormatRepository
-from schemas import WorkFormatModelResponse, WorkFormatModelSchema
+from schemas_old import WorkFormatModelResponse, WorkFormatModelSchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services import WorkFormatService

@@ -1,24 +1,28 @@
-from collections.abc import Sequence
-
-from common.shared.services import BaseService
+from common.shared.services.base import BaseUOWService
 from database.models import Profession
 from database.models.enums import ProfessionEnum
-from repositories import ProfessionRepository
+from schemas.profession import ProfessionCreate, ProfessionRead
+from unitofwork import UnitOfWork
 
 
 __all__ = ["ProfessionService"]
 
 
-class ProfessionService(BaseService[ProfessionRepository]):
+class ProfessionService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций, связанных с профессиями."""
 
-    async def get_profession_by_name(self, name: ProfessionEnum) -> Profession | None:
-        return await self._repo.get_by_name(name)
+    async def get_profession_by_name(self, name: ProfessionEnum) -> ProfessionRead | None:
+        profession = await self._uow.professions.get_by_name(name)
 
-    async def get_professions(self) -> Sequence[Profession]:
-        return await self._repo.get_all()
+        return ProfessionRead.model_validate(profession) if profession else None
 
-    async def add_profession(self, profession: ProfessionEnum) -> None:
-        """Создает и добавляет профессию в сессию (без коммита)."""
-        profession_model = Profession(name=profession)
-        self._repo.add(profession_model)
+    async def get_professions(self) -> list[ProfessionRead]:
+        professions = await self._uow.professions.get_all()
+
+        return [ProfessionRead.model_validate(p) for p in professions]
+
+    async def add_profession(self, profession: ProfessionCreate) -> ProfessionRead:
+        profession_model = Profession(name=profession.name)
+        created_profession = await self._uow.professions.add(profession_model)
+
+        return ProfessionRead.model_validate(created_profession)

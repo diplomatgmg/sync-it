@@ -2,7 +2,7 @@ from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.logger import get_logger
 from common.shared.clients import BaseClient
-from schemas import ParsedVacancyDeleteResponse, ParsedVacancyResponse, ParsedVacancySchema
+from schemas_old import ParsedVacancyDeleteResponse, ParsedVacancyResponse, ParsedVacancySchema
 
 
 __all__ = ["vacancy_client"]

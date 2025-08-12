@@ -1,16 +1,26 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from api.v1 import router as v1_router
 from common.environment.config import env_config
 from common.logger import get_logger
 from common.logger.config import log_config
 from fastapi import FastAPI
-from schemas import HealthResponse
+from schemas_old import HealthResponse
 from seeds import seed_models
 import uvicorn
 
 
 logger = get_logger(__name__)
 
-app = FastAPI(title="Vacancy Processor Service")
+
+@asynccontextmanager
+async def lifespan(_fast_api: FastAPI) -> AsyncGenerator[None]:
+    await seed_models()
+    yield
+
+
+app = FastAPI(title="Vacancy Processor Service", lifespan=lifespan)
 app.include_router(v1_router, prefix="/api/v1")
 
 
@@ -29,8 +39,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(seed_models())
-
     main()

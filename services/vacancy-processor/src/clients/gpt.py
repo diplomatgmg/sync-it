@@ -2,7 +2,7 @@ from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.shared.clients import BaseClient
 from common.shared.decorators import limit_requests
-from schemas import CompletionResponse
+from schemas_old import CompletionResponse
 
 
 __all__ = ["gpt_client"]
