@@ -97,7 +97,7 @@ class Skill(BaseModel):
 
 
 class SkillCategoryResponse(BaseModel):
-    categories: list[SkillCategory]
+    skill_categories: list[SkillCategory]
 
 
 class SkillResponse(BaseModel):

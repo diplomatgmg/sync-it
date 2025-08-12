@@ -25,7 +25,7 @@ class _SkillCategoryClient(BaseClient):
     async def get_all(self) -> list[SkillCategory]:
         response = await self.client.get(self.url)
         model_response = SkillCategoryResponse.model_validate(response.json())
-        return model_response.categories
+        return model_response.skill_categories
 
 
 skill_client = _SkillClient()

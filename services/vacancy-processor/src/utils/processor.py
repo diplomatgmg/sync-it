@@ -5,8 +5,9 @@ from clients import gpt_client, vacancy_client
 from common.database.engine import get_async_session
 from common.logger import get_logger
 from database.models import Grade, Skill, Vacancy, WorkFormat
-from repositories import SkillRepository, VacancyRepository
+from repositories import VacancyRepository
 from schemas.grade import GradeRead
+from schemas.skill import SkillRead
 from schemas.work_format import WorkFormatRead
 from schemas_old import ParsedVacancySchema
 from unitofwork import UnitOfWork
@@ -61,13 +62,12 @@ class VacancyProcessor:
 
             async with self._db_lock, get_async_session() as session, UnitOfWork() as uow:
                 vacancy_repo = VacancyRepository(session)
-                skill_repo = SkillRepository(session)
 
                 vacancy_service = VacancyService(vacancy_repo)
                 grade_service = GradeService(uow)
                 profession_service = ProfessionService(uow)
                 work_format_service = WorkFormatService(uow)
-                skill_service = SkillService(skill_repo)
+                skill_service = SkillService(uow)
 
                 # Выполняем всю логику сохранения в рамках одной транзакции
                 await self._save_vacancy_in_transaction(
@@ -124,7 +124,7 @@ class VacancyProcessor:
         # FIXME. Костыль пока все переписываю на UOW
         vacancy_model.grades = [Grade(id=grade.id, name=grade.name) for grade in grades]
         vacancy_model.work_formats = [WorkFormat(id=wf.id, name=wf.name) for wf in work_formats]
-        vacancy_model.skills = skills
+        vacancy_model.skills = [Skill(id=skill.id, name=skill.name, category_id=skill.category_id) for skill in skills]
 
         # `add_vacancy` не должен содержать коммита
         await vacancy_service.add_vacancy(vacancy_model)
@@ -143,7 +143,7 @@ class VacancyProcessor:
     @staticmethod
     async def _resolve_grades(extracted_vacancy: VacancyExtractor, grade_service: GradeService) -> list[GradeRead]:
         grade_names = extracted_vacancy.grades
-        grades = []
+        grades: list[GradeRead] = []
         for name in grade_names:
             grade = await grade_service.get_grade_by_name(name)
             if grade:
@@ -155,7 +155,7 @@ class VacancyProcessor:
         extracted_vacancy: VacancyExtractor, work_format_service: WorkFormatService
     ) -> list[WorkFormatRead]:
         work_format_names = extracted_vacancy.work_formats
-        work_formats = []
+        work_formats: list[WorkFormatRead] = []
         for name in work_format_names:
             work_format = await work_format_service.get_work_format_by_name(name)
             if work_format:
@@ -163,9 +163,9 @@ class VacancyProcessor:
         return work_formats
 
     @staticmethod
-    async def _resolve_skills(extracted_vacancy: VacancyExtractor, skill_service: SkillService) -> list[Skill]:
+    async def _resolve_skills(extracted_vacancy: VacancyExtractor, skill_service: SkillService) -> list[SkillRead]:
         skill_names = [skill for _, skill in extracted_vacancy.skills]
-        skills = []
+        skills: list[SkillRead] = []
         for name in skill_names:
             skill = await skill_service.get_skill_by_name(name)
             if skill:

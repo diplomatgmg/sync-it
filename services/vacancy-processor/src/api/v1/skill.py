@@ -1,10 +1,9 @@
 from typing import Annotated
 
-from common.database.engine import provide_async_session
+from api.depedencies import get_skill_category_service, get_skill_service
+from api.v1.schemas import SkillCategoryListResponse, SkillListResponse
 from fastapi import APIRouter, Depends, Query
-from repositories import SkillCategoryRepository, SkillRepository
-from schemas_old import SkillCategoryModelResponse, SkillCategoryModelSchema, SkillModelResponse, SkillModelSchema
-from sqlalchemy.ext.asyncio import AsyncSession
+from schemas.skill import SkillRead
 
 from services import SkillCategoryService, SkillService
 
@@ -17,25 +16,20 @@ router = APIRouter()
 
 @router.get("/skills")
 async def get_skills(
-    session: Annotated[AsyncSession, Depends(provide_async_session)],
+    service: Annotated[SkillService, Depends(get_skill_service)],
     category_id: Annotated[int | None, Query()] = None,
-) -> SkillModelResponse:
+) -> SkillListResponse:
     """Возвращает актуальные скиллы."""
-    repo = SkillRepository(session)
-    service = SkillService(repo)
-    skill_models = await service.get_skills(category_id=category_id)
+    skills = await service.get_skills(category_id=category_id)
 
-    return SkillModelResponse(skills=[SkillModelSchema.model_validate(s) for s in skill_models])
+    return SkillListResponse(skills=[SkillRead.model_validate(s) for s in skills])
 
 
 @router.get("/skills/categories")
 async def get_skill_categories(
-    session: Annotated[AsyncSession, Depends(provide_async_session)],
-) -> SkillCategoryModelResponse:
+    service: Annotated[SkillCategoryService, Depends(get_skill_category_service)],
+) -> SkillCategoryListResponse:
     """Возвращает актуальные категории скиллов."""
-    repo = SkillCategoryRepository(session)
-    service = SkillCategoryService(repo)
-    skill_category_models = await service.get_categories()
-    skill_category_schemas = [SkillCategoryModelSchema.model_validate(c) for c in skill_category_models]
+    skill_categories = await service.get_categories()
 
-    return SkillCategoryModelResponse(categories=skill_category_schemas)
+    return SkillCategoryListResponse(skill_categories=skill_categories)
