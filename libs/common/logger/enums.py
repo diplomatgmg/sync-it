@@ -7,5 +7,5 @@ __all__ = ["LogLevel"]
 class LogLevel(StrEnum):
     DEBUG = "DEBUG"
     INFO = "INFO"
-    WARN = "WARN"
+    WARNING = "WARNING"
     ERROR = "ERROR"
