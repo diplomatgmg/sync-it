@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from common.logger import get_logger
 from database.models.vacancy import TelegramVacancy
 from parsers.base import BaseParser
-from schemas import TelegramChannelUrl
+from schemas_old import TelegramChannelUrl
 from services.http.telegram import fetch_newest_telegram_messages
 from services.vacancy import TelegramVacancyService
 from utils import generate_fingerprint

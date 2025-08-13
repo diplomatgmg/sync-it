@@ -4,7 +4,7 @@ from database.models import Source
 from database.models.enums import SourceEnum
 from database.models.vacancy import TelegramVacancy
 from repositories.vacancy.vacancy import VacancyRepository
-from schemas import TelegramChannelUrl
+from schemas_old import TelegramChannelUrl
 from sqlalchemy import func, select
 from utils import generate_hash
 

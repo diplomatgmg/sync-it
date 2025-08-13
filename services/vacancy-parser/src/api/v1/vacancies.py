@@ -4,7 +4,7 @@ from common.database.engine import provide_async_session
 from common.logger import get_logger
 from fastapi import APIRouter, Depends
 from repositories.vacancy import VacancyRepository
-from schemas import VacancyDeleteResponse, VacancyModelSchema, VacancyResponse
+from schemas_old import VacancyDeleteResponse, VacancyModelSchema, VacancyResponse
 from services.vacancy import VacancyService
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from database.models.vacancy import TelegramVacancy
 from repositories.vacancy import TelegramVacancyRepository
-from schemas import TelegramChannelUrl
+from schemas_old import TelegramChannelUrl
 from services.vacancy import BaseVacancyService
 
 

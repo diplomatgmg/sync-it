@@ -1,4 +1,4 @@
-from schemas import TelegramChannelUrl
+from schemas_old import TelegramChannelUrl
 
 
 __all__ = ["channel_links"]

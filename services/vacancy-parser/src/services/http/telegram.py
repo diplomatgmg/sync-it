@@ -2,7 +2,7 @@ from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.logger import get_logger
 from httpx import AsyncClient
-from schemas import TelegramChannelMessage, TelegramChannelMessagesResponse
+from schemas_old import TelegramChannelMessage, TelegramChannelMessagesResponse
 
 
 __all__ = ["fetch_newest_telegram_messages"]
