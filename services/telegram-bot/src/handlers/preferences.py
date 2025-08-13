@@ -153,7 +153,7 @@ async def handle_select_option(
     await user_preferences_service.toggle_preference(user_preference_create)
     await uow.commit()
 
-    user = await user_service.get_by_telegram_id(user.id, with_preferences=True)
+    user = await user_service.get_by_telegram_id(user.telegram_id, with_preferences=True)
 
     message = await get_message(callback)
 
