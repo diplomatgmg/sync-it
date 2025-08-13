@@ -53,6 +53,12 @@ services:
       <<: *build-common
     <<: *service-common
 
+  vacancy-parser-migrator:
+    build:
+      dockerfile: infra/docker/vacancy-parser/Dockerfile
+      <<: *build-common
+    <<: *service-common
+
   vacancy-processor:
     build:
       dockerfile: infra/docker/vacancy-processor/Dockerfile
@@ -73,6 +79,12 @@ services:
       <<: *build-common
     <<: *service-common
 
+  vacancy-processor-migrator:
+    build:
+      dockerfile: infra/docker/vacancy-processor/Dockerfile
+      <<: *build-common
+    <<: *service-common
+
   telegram-bot:
     build:
       dockerfile: infra/docker/telegram-bot/Dockerfile
@@ -81,4 +93,10 @@ services:
       - "${TELEGRAM_BOT_PORT}:${ENV_SERVICE_INTERNAL_PORT}"
     healthcheck:
       test: [ "CMD", "true" ] # supress because webhook may be disabled
+    <<: *service-common
+
+  telegram-bot-migrator:
+    build:
+      dockerfile: infra/docker/telegram-bot/Dockerfile
+      <<: *build-common
     <<: *service-common
