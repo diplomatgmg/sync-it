@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
 from schemas.user import UserCreate
+from sqlalchemy.exc import NoResultFound
 
 
 if TYPE_CHECKING:
@@ -31,8 +32,9 @@ class AuthMiddleware(BaseMiddleware):
 
         user_service: UserService = data["user_service"]
 
-        user = await user_service.get_by_telegram_id(telegram_user.id)
-        if not user:
+        try:
+            user = await user_service.get_by_telegram_id(telegram_user.id)
+        except NoResultFound:
             user_create = UserCreate(
                 telegram_id=telegram_user.id,
                 username=telegram_user.username,
