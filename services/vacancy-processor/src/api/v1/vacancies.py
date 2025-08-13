@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
-@router.get("/vacancies")
+@router.get("")
 async def get_vacancies(
     service: Annotated[VacancyService, Depends(get_vacancy_service)],
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
@@ -37,13 +37,13 @@ async def get_vacancies(
     return VacancyListResponse(vacancies=vacancies)
 
 
-@router.get("/vacancies/{vacancy_id}")
+@router.get("/{vacancy_id}")
 async def get_vacancy_with_neighbors(
     service: Annotated[VacancyService, Depends(get_vacancy_service)],
     vacancy_id: Annotated[
         int,
         Path(
-            description="ID вакансии. Укажите -1, чтобы получить самую последнюю вакансию включая фильтрацию.",
+            description="ID вакансии. Укажите -1, чтобы получить самую последнюю вакансию с заданными фильтрами.",
         ),
     ],
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,

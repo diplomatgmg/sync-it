@@ -21,7 +21,7 @@ async def lifespan(_fast_api: FastAPI) -> AsyncGenerator[None]:
 
 
 app = FastAPI(title="Vacancy Processor Service", lifespan=lifespan)
-app.include_router(health_router, prefix="/health")
+app.include_router(health_router)
 app.include_router(v1_router, prefix="/api/v1")
 
 

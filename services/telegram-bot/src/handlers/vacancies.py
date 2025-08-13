@@ -22,7 +22,9 @@ router = Router(name=VacancyCallback.__prefix__)
 
 
 @router.callback_query(VacancyCallback.filter(F.action == VacancyActionEnum.SHOW_VACANCY))
-async def handle_vacancies(callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService) -> None:  # noqa: C901 Too complex
+async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
+    callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService
+) -> None:
     vacancy_id = callback_data.vacancy_id
     if not vacancy_id:
         # Самая актуальная вакансия используя предпочтения пользователя
@@ -63,6 +65,9 @@ async def handle_vacancies(callback: CallbackQuery, callback_data: VacancyCallba
     if vacancy.work_formats:
         work_format_names = [work_format.name for work_format in vacancy.work_formats]
         vacancy_text += f"<b>Формат работы:</b> {', '.join(work_format_names)}\n"
+    if vacancy.skills:
+        skill_names = [skill.name for skill in vacancy.skills]
+        vacancy_text += f"<b>Ключевые навыки:</b> {', '.join(skill_names)}\n"
     if vacancy.workplace_description:
         vacancy_text += f"\n<b>О месте работы:</b>\n{vacancy.workplace_description}\n"
     if vacancy.responsibilities:

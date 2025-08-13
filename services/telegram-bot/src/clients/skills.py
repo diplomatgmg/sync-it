@@ -1,8 +1,8 @@
 from async_lru import alru_cache
+from clients.schemas import SkillCategoryResponse, SkillCategorySchema, SkillResponse, SkillSchema
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.shared.clients import BaseClient
-from schemas_bot import Skill, SkillCategory, SkillCategoryResponse, SkillResponse
 
 
 __all__ = ["skill_category_client", "skill_client"]
@@ -12,9 +12,10 @@ class _SkillClient(BaseClient):
     url = build_service_url(ServiceEnum.VACANCY_PROCESSOR, "api/v1/skills")
 
     @alru_cache(ttl=60 * 60 * 24)
-    async def get_by_category_id(self, category_id: int) -> list[Skill]:
+    async def get_by_category_id(self, category_id: int) -> list[SkillSchema]:
         response = await self.client.get(self.url, params={"category_id": category_id})
         model_response = SkillResponse.model_validate(response.json())
+
         return model_response.skills
 
 
@@ -22,9 +23,10 @@ class _SkillCategoryClient(BaseClient):
     url = build_service_url(ServiceEnum.VACANCY_PROCESSOR, "api/v1/skills/categories")
 
     @alru_cache(ttl=60 * 60 * 24)
-    async def get_all(self) -> list[SkillCategory]:
+    async def get_all(self) -> list[SkillCategorySchema]:
         response = await self.client.get(self.url)
         model_response = SkillCategoryResponse.model_validate(response.json())
+
         return model_response.skill_categories
 
 

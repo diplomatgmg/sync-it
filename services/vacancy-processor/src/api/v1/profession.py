@@ -13,7 +13,7 @@ __all__ = ["router"]
 router = APIRouter()
 
 
-@router.get("/professions")
+@router.get("")
 async def get_professions(
     service: Annotated[ProfessionService, Depends(get_profession_service)],
 ) -> ProfessionListResponse:

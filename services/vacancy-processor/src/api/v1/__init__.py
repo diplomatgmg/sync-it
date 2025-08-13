@@ -6,8 +6,8 @@ __all__ = ["router"]
 
 
 router = APIRouter()
-router.include_router(vacancies.router)
-router.include_router(skill.router)
-router.include_router(grade.router)
-router.include_router(profession.router)
-router.include_router(work_format.router)
+router.include_router(vacancies.router, prefix="/vacancies")
+router.include_router(skill.router, prefix="/skills")
+router.include_router(grade.router, prefix="/grades")
+router.include_router(profession.router, prefix="/professions")
+router.include_router(work_format.router, prefix="/work_formats")

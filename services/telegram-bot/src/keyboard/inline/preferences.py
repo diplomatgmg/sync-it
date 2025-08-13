@@ -1,12 +1,12 @@
-from collections.abc import Sequence
+from typing import TypeVar
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
+from clients.schemas import GradeSchema, ProfessionSchema, SkillCategorySchema, SkillSchema, WorkFormatSchema
 from database.models.enums import PreferenceCategoryCodeEnum
 from schemas.user import UserWithPreferences
-from schemas_bot import Grade, Profession, Skill, SkillCategory, WorkFormat
 
 
 __all__ = [
@@ -53,9 +53,12 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardBuilder(markup=buttons).as_markup()
 
 
-def options_keyboard(
+OptionsType = TypeVar("OptionsType", GradeSchema, ProfessionSchema, WorkFormatSchema, SkillSchema, SkillCategorySchema)
+
+
+def options_keyboard[OptionsType: (GradeSchema, ProfessionSchema, WorkFormatSchema, SkillSchema, SkillCategorySchema)](
     category_code: PreferenceCategoryCodeEnum,
-    options: Sequence[Grade | Profession | WorkFormat | Skill | SkillCategory],
+    options: list[OptionsType],
     user: UserWithPreferences,
     # Архитектурная ошибка. Параметра не должно тут быть.
     skill_category_id: int | None = None,
@@ -93,7 +96,7 @@ def options_keyboard(
     return builder.as_markup()
 
 
-def skill_category_keyboard(categories: Sequence[SkillCategory]) -> InlineKeyboardMarkup:
+def skill_category_keyboard(categories: list[SkillCategorySchema]) -> InlineKeyboardMarkup:
     """Генерирует клавиатуру с опциями для выбора категории навыков."""
     builder = InlineKeyboardBuilder()
 

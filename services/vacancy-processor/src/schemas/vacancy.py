@@ -1,6 +1,10 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
+from schemas.grade import GradeRead
+from schemas.profession import ProfessionRead
+from schemas.skill import SkillRead
+from schemas.work_format import WorkFormatRead
 
 
 __all__ = [
@@ -13,7 +17,7 @@ class BaseVacancy(BaseModel):
     hash: str
     link: str
 
-    profession_id: int
+    profession: ProfessionRead | None
     company_name: str | None
     salary: str | None
     workplace_description: str | None
@@ -30,5 +34,9 @@ class VacancyCreate(BaseVacancy):
 
 class VacancyRead(BaseVacancy):
     id: int
+
+    skills: list[SkillRead]
+    grades: list[GradeRead]
+    work_formats: list[WorkFormatRead]
 
     model_config = ConfigDict(from_attributes=True)

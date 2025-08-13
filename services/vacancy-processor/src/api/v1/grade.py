@@ -13,7 +13,7 @@ __all__ = ["router"]
 router = APIRouter()
 
 
-@router.get("/grades")
+@router.get("")
 async def get_grades(service: Annotated[GradeService, Depends(get_grade_service)]) -> GradeListResponse:
     """Возвращает актуальных грейдов."""
     grades = await service.get_grades()

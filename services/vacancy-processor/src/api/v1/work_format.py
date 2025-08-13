@@ -13,7 +13,7 @@ __all__ = ["router"]
 router = APIRouter()
 
 
-@router.get("/work_formats")
+@router.get("")
 async def get_work_formats(
     service: Annotated[WorkFormatService, Depends(get_work_format_service)],
 ) -> WorkFormatListResponse:

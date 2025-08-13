@@ -7,4 +7,4 @@ __all__ = ["router"]
 
 router = APIRouter()
 
-router.include_router(health.router)
+router.include_router(health.router, prefix="/health")

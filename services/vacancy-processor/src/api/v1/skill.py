@@ -14,7 +14,7 @@ __all__ = ["router"]
 router = APIRouter()
 
 
-@router.get("/skills")
+@router.get("")
 async def get_skills(
     service: Annotated[SkillService, Depends(get_skill_service)],
     category_id: Annotated[int | None, Query()] = None,
@@ -25,7 +25,7 @@ async def get_skills(
     return SkillListResponse(skills=[SkillRead.model_validate(s) for s in skills])
 
 
-@router.get("/skills/categories")
+@router.get("/categories")
 async def get_skill_categories(
     service: Annotated[SkillCategoryService, Depends(get_skill_category_service)],
 ) -> SkillCategoryListResponse:

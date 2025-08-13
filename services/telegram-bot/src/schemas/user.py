@@ -31,7 +31,7 @@ class UserRead(BaseUser):
 
     @property
     def full_name(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name or ''}".strip()
 
 
 class UserWithPreferences(UserRead):

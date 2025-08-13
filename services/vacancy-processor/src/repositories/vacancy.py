@@ -102,6 +102,7 @@ class VacancyRepository(BaseRepository):
             joinedload(Vacancy.profession),
             joinedload(Vacancy.grades),
             joinedload(Vacancy.work_formats),
+            joinedload(Vacancy.skills),
         )
 
     @staticmethod
