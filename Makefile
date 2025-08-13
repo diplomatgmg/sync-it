@@ -7,9 +7,11 @@ COMPOSE_DEV_FILE := $(COMPOSE_DIR)/docker-compose.dev.yml
 SERVICES := api-gateway gpt-api telegram-api telegram-bot vacancy-parser vacancy-processor
 MYPY_DIRS := libs $(foreach service,$(SERVICES),services/$(service)/src)
 
-# Проверяем существование dev-файла и добавляем его к COMPOSE_COMMAND
-ifeq ($(wildcard $(COMPOSE_DEV_FILE)),$(COMPOSE_DEV_FILE))
-	COMPOSE_COMMAND := $(COMPOSE_COMMAND) -f $(COMPOSE_DEV_FILE)
+# Проверяем существование dev-файла и добавляем его к COMPOSE_COMMAND если включен режим разработки
+ifeq ($(ENV_MODE),development)
+	ifeq ($(wildcard $(COMPOSE_DEV_FILE)),$(COMPOSE_DEV_FILE))
+		COMPOSE_COMMAND := $(COMPOSE_COMMAND) -f $(COMPOSE_DEV_FILE)
+	endif
 endif
 
 define compose_action
