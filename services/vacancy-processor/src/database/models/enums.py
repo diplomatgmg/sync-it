@@ -57,7 +57,7 @@ class CurrencyEnum(BaseStrEnum):
 
 
 class SkillCategoryEnum(BaseStrEnum):
-    LANGUAGES = "Languages"
+    LANGUAGES = "Языки программирования"
     BACKEND = "Backend"
     FRONTEND = "Frontend"
     DEVOPS = "DevOps"

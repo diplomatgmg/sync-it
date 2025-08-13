@@ -89,10 +89,17 @@ def options_keyboard[OptionsType: (GradeSchema, ProfessionSchema, WorkFormatSche
 
     builder.row(
         InlineKeyboardButton(
-            text="⬅️ К предпочтениям",
-            callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
+            text="⬅️ К категориям навыков",
+            callback_data=PreferenceCallback(action=PreferenceActionEnum.SHOW_SKILL_CATEGORIES).pack(),
         )
     )
+    builder.row(
+        InlineKeyboardButton(
+            text="🏠 В меню",
+            callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
+        )
+    )
+
     return builder.as_markup()
 
 
