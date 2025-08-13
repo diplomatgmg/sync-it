@@ -3,13 +3,12 @@ from typing import TYPE_CHECKING, Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
-from repositories import UserRepository
-
-from services import UserService
+from schemas.user import UserCreate
 
 
 if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
+    from services import UserService
+
 
 __all__ = ["AuthMiddleware"]
 
@@ -26,16 +25,22 @@ class AuthMiddleware(BaseMiddleware):
         if not isinstance(event, (Message, CallbackQuery)):
             return await handler(event, data)
 
-        session: AsyncSession = data["session"]
-        user = event.from_user
-
-        if user is None:
+        telegram_user = event.from_user
+        if telegram_user is None:
             return await handler(event, data)
 
-        user_repo = UserRepository(session)
-        user_service = UserService(user_repo)
+        user_service: UserService = data["user_service"]
 
-        user_model = await user_service.get_or_create(user)
-        data["user"] = user_model
+        user = await user_service.get_by_telegram_id(telegram_user.id)
+        if not user:
+            user_create = UserCreate(
+                telegram_id=telegram_user.id,
+                username=telegram_user.username,
+                first_name=telegram_user.first_name,
+                last_name=telegram_user.last_name,
+            )
+            user = await user_service.add_user(user_create)
+
+        data["user"] = user
 
         return await handler(event, data)

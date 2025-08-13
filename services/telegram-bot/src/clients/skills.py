@@ -2,7 +2,7 @@ from async_lru import alru_cache
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.shared.clients import BaseClient
-from schemas import Skill, SkillCategory, SkillCategoryResponse, SkillResponse
+from schemas_bot import Skill, SkillCategory, SkillCategoryResponse, SkillResponse
 
 
 __all__ = ["skill_category_client", "skill_client"]

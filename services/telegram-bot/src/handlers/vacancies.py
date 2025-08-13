@@ -9,8 +9,6 @@ from database.models.enums import PreferenceCategoryCodeEnum
 from exceptions import MessageNotModifiedError
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.vacancies import vacancies_keyboard
-from repositories import UserRepository
-from sqlalchemy.ext.asyncio import AsyncSession
 from utils.formatters import format_publication_time
 from utils.message import safe_edit_message
 
@@ -24,15 +22,13 @@ router = Router(name=VacancyCallback.__prefix__)
 
 
 @router.callback_query(VacancyCallback.filter(F.action == VacancyActionEnum.SHOW_VACANCY))
-async def handle_vacancies(callback: CallbackQuery, callback_data: VacancyCallback, session: AsyncSession) -> None:  # noqa: C901 Too complex
+async def handle_vacancies(callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService) -> None:  # noqa: C901 Too complex
     vacancy_id = callback_data.vacancy_id
     if not vacancy_id:
         # Самая актуальная вакансия используя предпочтения пользователя
         vacancy_id = -1
 
-    user_repo = UserRepository(session)
-    user_service = UserService(user_repo)
-    user = await user_service.get(callback.from_user.id, with_preferences=True)
+    user = await user_service.get_by_telegram_id(callback.from_user.id, with_preferences=True)
 
     categorized_prefs = defaultdict(list)
     for pref in user.preferences:

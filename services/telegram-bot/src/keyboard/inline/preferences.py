@@ -4,9 +4,9 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.preference import PreferenceActionEnum, PreferenceCallback
-from database.models import User
 from database.models.enums import PreferenceCategoryCodeEnum
-from schemas import Grade, Profession, Skill, SkillCategory, WorkFormat
+from schemas.user import UserWithPreferences
+from schemas_bot import Grade, Profession, Skill, SkillCategory, WorkFormat
 
 
 __all__ = [
@@ -56,7 +56,7 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
 def options_keyboard(
     category_code: PreferenceCategoryCodeEnum,
     options: Sequence[Grade | Profession | WorkFormat | Skill | SkillCategory],
-    user: User,
+    user: UserWithPreferences,
     # Архитектурная ошибка. Параметра не должно тут быть.
     skill_category_id: int | None = None,
 ) -> InlineKeyboardMarkup:

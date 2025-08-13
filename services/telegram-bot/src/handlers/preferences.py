@@ -7,10 +7,10 @@ from clients import grade_client, profession_client, skill_category_client, skil
 from common.logger import get_logger
 from database.models.enums import PreferenceCategoryCodeEnum
 from keyboard.inline.preferences import options_keyboard, skill_category_keyboard
-from repositories import UserPreferenceRepository, UserRepository
+from schemas.user_preference import UserPreferenceCreate
 from services.user import UserService
 from services.user_preference import UserPreferenceService
-from sqlalchemy.ext.asyncio import AsyncSession
+from unitofwork import UnitOfWork
 from utils.clients import ClientType, get_client
 from utils.message import get_message, safe_edit_message
 
@@ -26,16 +26,14 @@ router = Router(name=PreferenceCallback.__prefix__)
 
 async def handle_show_options(
     query: CallbackQuery,
-    session: AsyncSession,
+    user_service: UserService,
     category_code: PreferenceCategoryCodeEnum,
     client: ClientType,
     message_text: str,
 ) -> None:
     options = await client.get_all()
 
-    repo = UserRepository(session)
-    service = UserService(repo)
-    user = await service.get(query.from_user.id, with_preferences=True)
+    user = await user_service.get_by_telegram_id(query.from_user.id, with_preferences=True)
 
     await safe_edit_message(
         query,
@@ -45,10 +43,10 @@ async def handle_show_options(
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_PROFESSIONS))
-async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None:
+async def handle_profession(query: CallbackQuery, user_service: UserService) -> None:
     await handle_show_options(
         query,
-        session,
+        user_service,
         PreferenceCategoryCodeEnum.PROFESSION,
         profession_client,
         "Выберите направление:",
@@ -56,10 +54,10 @@ async def handle_profession(query: CallbackQuery, session: AsyncSession) -> None
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_WORK_FORMATS))
-async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> None:
+async def handle_work_format(query: CallbackQuery, user_service: UserService) -> None:
     await handle_show_options(
         query,
-        session,
+        user_service,
         PreferenceCategoryCodeEnum.WORK_FORMAT,
         work_format_client,
         "Выберите формат работы:",
@@ -67,10 +65,10 @@ async def handle_work_format(query: CallbackQuery, session: AsyncSession) -> Non
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_GRADES))
-async def handle_grade(query: CallbackQuery, session: AsyncSession) -> None:
+async def handle_grade(query: CallbackQuery, user_service: UserService) -> None:
     await handle_show_options(
         query,
-        session,
+        user_service,
         PreferenceCategoryCodeEnum.GRADE,
         grade_client,
         "Выберите грейд:",
@@ -89,15 +87,13 @@ async def handle_skill_categories(query: CallbackQuery) -> None:
 
 
 @router.callback_query(PreferenceCallback.filter(F.action == PreferenceActionEnum.SHOW_SKILLS))
-async def handle_skills(query: CallbackQuery, callback_data: PreferenceCallback, session: AsyncSession) -> None:
+async def handle_skills(query: CallbackQuery, callback_data: PreferenceCallback, user_service: UserService) -> None:
     category_id = callback_data.item_id
     skill_category_id = callback_data.skill_category_id
 
     skills = await skill_client.get_by_category_id(category_id)
 
-    repo = UserRepository(session)
-    service = UserService(repo)
-    user = await service.get(query.from_user.id, with_preferences=True)
+    user = await user_service.get_by_telegram_id(query.from_user.id, with_preferences=True)
 
     await safe_edit_message(
         query,
@@ -115,7 +111,9 @@ async def handle_skills(query: CallbackQuery, callback_data: PreferenceCallback,
 async def handle_select_option(
     callback: CallbackQuery,
     callback_data: PreferenceCallback,
-    session: AsyncSession,
+    user_service: UserService,
+    user_preferences_service: UserPreferenceService,
+    uow: UnitOfWork,
 ) -> None:
     """Обрабатывает выбор/снятие выбора опции предпочтения."""
     category_code = cast("PreferenceCategoryCodeEnum", callback_data.category_code)
@@ -144,16 +142,18 @@ async def handle_select_option(
         await callback.answer("Внутренняя ошибка. Опция не найдена.", show_alert=True)
         return
 
-    user_repo = UserRepository(session)
-    user_service = UserService(user_repo)
-    user = await user_service.get(callback.from_user.id, with_preferences=True)
+    user = await user_service.get_by_telegram_id(callback.from_user.id, with_preferences=True)
+    user_preference_create = UserPreferenceCreate(
+        user_id=user.id,
+        category_code=category_code,
+        item_id=item_id,
+        item_name=item_name,
+    )
 
-    preference_repo = UserPreferenceRepository(session)
-    preference_service = UserPreferenceService(preference_repo)
-    await preference_service.toggle_preference(user, category_code, item_id, item_name)
+    await user_preferences_service.toggle_preference(user_preference_create)
+    await uow.commit()
 
-    await session.commit()
-    await session.refresh(user, attribute_names=["preferences"])
+    user = await user_service.get_by_telegram_id(user.id, with_preferences=True)
 
     message = await get_message(callback)
 

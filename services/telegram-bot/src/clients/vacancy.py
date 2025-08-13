@@ -1,7 +1,7 @@
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.shared.clients import BaseClient
-from schemas import (
+from schemas_bot import (
     VacancyCursorPaginationRequest,
     VacancyCursorPaginationResponse,
     VacancyCursorPaginationSchema,

@@ -2,7 +2,7 @@ from async_lru import alru_cache
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.shared.clients import BaseClient
-from schemas import Grade, GradeResponse
+from schemas_bot import Grade, GradeResponse
 
 
 __all__ = ["grade_client"]

@@ -1,31 +1,37 @@
-from aiogram.types import User as TelegramUser
-from common.logger import get_logger
-from common.shared.services import BaseService
+from typing import Literal, overload
+
+from common.shared.services.base import BaseUOWService
 from database.models import User
-from repositories import UserRepository
-from sqlalchemy.exc import NoResultFound
+from schemas.user import UserCreate, UserRead, UserWithPreferences
+from unitofwork import UnitOfWork
 
 
 __all__ = ["UserService"]
 
-logger = get_logger(__name__)
 
+class UserService(BaseUOWService[UnitOfWork]):
+    @overload
+    async def get_by_telegram_id(self, telegram_id: int, *, with_preferences: Literal[True]) -> UserWithPreferences: ...
+    @overload
+    async def get_by_telegram_id(self, telegram_id: int, *, with_preferences: Literal[False] = False) -> UserRead: ...
+    async def get_by_telegram_id(
+        self, telegram_id: int, *, with_preferences: bool = False
+    ) -> UserRead | UserWithPreferences:
+        user = await self._uow.users.get_by_telegram_id(telegram_id, with_preferences=with_preferences)
 
-class UserService(BaseService[UserRepository]):
-    async def get(self, telegram_id: int, *, with_preferences: bool = False) -> User:
-        return await self._repo.get_by_telegram_id(telegram_id, with_preferences=with_preferences)
+        if with_preferences:
+            return UserWithPreferences.model_validate(user)
 
-    async def get_or_create(self, telegram_user: TelegramUser) -> User:
+        return UserRead.model_validate(user)
+
+    async def add_user(self, user: UserCreate) -> UserRead:
         """Получает пользователя по telegram_id. Если его нет, создает нового."""
-        try:
-            return await self.get(telegram_user.id)
-        except NoResultFound:
-            logger.debug("User with telegram_id %s not found. Creating new user.", telegram_user.id)
-            user_model = User(
-                telegram_id=telegram_user.id,
-                username=telegram_user.username,
-                first_name=telegram_user.first_name,
-                last_name=telegram_user.last_name,
-            )
+        user_model = User(
+            telegram_id=user.telegram_id,
+            username=user.username,
+            first_name=user.first_name,
+            last_name=user.last_name,
+        )
+        created_user = await self._uow.users.add(user_model)
 
-            return await self._repo.create(user_model)
+        return UserRead.model_validate(created_user)

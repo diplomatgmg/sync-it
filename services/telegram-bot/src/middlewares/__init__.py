@@ -4,6 +4,7 @@ from common.logger import get_logger
 from middlewares.auth import AuthMiddleware
 from middlewares.database import DatabaseMiddleware
 from middlewares.logging import LoggingMiddleware
+from middlewares.service import ServiceMiddleware
 from middlewares.throttling import ThrottlingMiddleware
 
 
@@ -21,5 +22,7 @@ def register_middlewares(dp: Dispatcher) -> None:
 
     dp.message.outer_middleware(ThrottlingMiddleware())
     dp.callback_query.outer_middleware(ThrottlingMiddleware())
+
     dp.update.outer_middleware(DatabaseMiddleware())
+    dp.update.outer_middleware(ServiceMiddleware())
     dp.message.middleware(AuthMiddleware())
