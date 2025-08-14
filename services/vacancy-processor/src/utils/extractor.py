@@ -140,7 +140,7 @@ class VacancyExtractor:
         for part in grade_parts:
             clean_part = part.strip()
 
-            grade = GradeEnum.get_safe(clean_part)
+            grade = GradeEnum(clean_part)
             if not grade:
                 logger.warning("Unknown grade part: %s (full: %s)", clean_part, grade_str)
                 continue
@@ -167,7 +167,7 @@ class VacancyExtractor:
         for part in work_format_parts:
             clean_part = part.strip()
 
-            work_format = WorkFormatEnum.get_safe(clean_part)
+            work_format = WorkFormatEnum(clean_part)
             if not work_format:
                 logger.warning("Unknown work format part: %s (full: %s)", clean_part, work_format_str)
                 continue

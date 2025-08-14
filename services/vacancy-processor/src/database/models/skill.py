@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 from database.models import Base
-from database.models.enums import SkillCategoryEnum, SkillEnum
 from database.models.tables import vacancy_skill_table
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,7 +18,6 @@ if TYPE_CHECKING:
 
 class SkillCategory(Base):
     __tablename__ = "skill_category"
-    _enums = (("name", SkillCategoryEnum),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(32), unique=True)
@@ -29,7 +27,6 @@ class SkillCategory(Base):
 
 class Skill(Base):
     __tablename__ = "skill"
-    _enums = (("name", SkillEnum),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(32), unique=True)
