@@ -14,7 +14,8 @@ class _WorkFormatClient(BaseClient):
     @alru_cache(ttl=60 * 60 * 24)
     async def get_all(self) -> list[WorkFormatSchema]:
         response = await self.client.get(self.url)
-        model_response = WorkFormatResponse.model_validate(response.json())
+        data = response.json()
+        model_response = WorkFormatResponse.model_validate(data)
 
         return model_response.work_formats
 

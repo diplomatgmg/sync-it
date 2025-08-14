@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from datetime import UTC, datetime
 
 from common.logger import get_logger
@@ -36,7 +36,7 @@ class VacancyRepository(BaseRepository):
 
         return source_id
 
-    async def get_recent_vacancies(self, limit: int = 100) -> Sequence[BaseVacancy]:
+    async def get_recent_vacancies(self, limit: int = 100) -> list[BaseVacancy]:
         """Получить последние актуальные вакансии по всем сервисам."""
         vacancies: list[BaseVacancy] = []
 
@@ -54,11 +54,6 @@ class VacancyRepository(BaseRepository):
 
         vacancies.sort(key=lambda x: x.published_at, reverse=True)
         return vacancies[:limit]
-
-    async def bulk_create(self, vacancies: Sequence[BaseVacancy]) -> int:
-        """Массовое добавление вакансий."""
-        self._session.add_all(vacancies)
-        return len(vacancies)
 
     async def mark_as_deleted(self, vacancy_hash: str) -> bool:
         """
@@ -86,7 +81,8 @@ class VacancyRepository(BaseRepository):
         """Получить set уже существующих хешей в БД."""
         stmt = select(self.model.hash).where(self.model.hash.in_(hashes))
         result = await self._session.execute(stmt)
-        return {row[0] for row in result.fetchall()}
+
+        return set(result.scalars().all())
 
     async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
         """Найти дубликат вакансии по содержимому."""
@@ -97,10 +93,19 @@ class VacancyRepository(BaseRepository):
             .limit(1)
         )
         result = await self._session.execute(stmt)
+
         return result.scalar_one_or_none()
 
     async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
         """Получить % схожести между двумя fingerprint."""
         result = await self._session.execute(select(func.similarity(fingerprint1, fingerprint2)))
         score = result.scalar() or 0.0
+
         return round(score * 100, 2)
+
+    async def add(self, vacancy: BaseVacancy) -> BaseVacancy:
+        self._session.add(vacancy)
+        await self._session.flush()
+        await self._session.refresh(vacancy)
+
+        return vacancy

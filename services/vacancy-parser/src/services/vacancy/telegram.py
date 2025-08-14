@@ -1,36 +1,28 @@
-from datetime import datetime
-
 from database.models.vacancy import TelegramVacancy
-from repositories.vacancy import TelegramVacancyRepository
-from schemas_old import TelegramChannelUrl
+from parsers.schemas import TelegramChannelUrl
+from schemas.vacancy import TelegramVacancyCreate, TelegramVacancyRead
 from services.vacancy import BaseVacancyService
 
 
 __all__ = ["TelegramVacancyService"]
 
 
-class TelegramVacancyService(BaseVacancyService[TelegramVacancyRepository]):
+class TelegramVacancyService(BaseVacancyService):
     """Сервис для бизнес-логики, связанной с вакансиями из Телеграма."""
 
+    vacancy_create_schema: TelegramVacancyCreate
+    vacancy_read_schema: TelegramVacancyRead
+
     async def get_last_message_id(self, link: TelegramChannelUrl) -> int | None:
-        return await self._repo.get_last_message_id(link)
+        return await self._uow.tg_vacancies.get_last_message_id(link)
 
-    async def find_duplicate_by_fingerprint(self, fingerprint: str) -> TelegramVacancy | None: ...
+    async def add_vacancy(self, vacancy: TelegramVacancyCreate) -> TelegramVacancyRead:
+        source_id = await self._uow.vacancies.get_source_id()
 
-    async def prepare_instance(
-        self,
-        fingerprint: str,
-        link: str,
-        channel_username: str,
-        message_id: int,
-        message_datetime: datetime,
-        message_text: str,
-    ) -> TelegramVacancy:
-        return await self._repo.prepare_instance(
-            fingerprint=fingerprint,
-            link=link,
-            channel_username=channel_username,
-            message_id=message_id,
-            published_at=message_datetime,
-            data=message_text,
+        vacancy_model = TelegramVacancy(
+            source_id=source_id,
+            **vacancy.model_dump(),
         )
+        created_vacancy = await self._uow.tg_vacancies.add(vacancy_model)
+
+        return self.vacancy_read_schema.model_validate(created_vacancy)

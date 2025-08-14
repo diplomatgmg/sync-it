@@ -6,20 +6,13 @@ from pydantic import BaseModel, Field, field_validator
 
 
 __all__ = [
-    "HeadHunterDetailedVacancySchema",
-    "HeadHunterVacancyRequest",
-    "HeadHunterVacancyResponse",
+    "HeadHunterVacancyDetailResponse",
+    "HeadHunterVacancyListResponse",
     "HeadHunterVacancySchema",
 ]
 
 
 logger = get_logger(__name__)
-
-
-class HeadHunterVacancyRequest(BaseModel):
-    page: int
-    per_page: int
-    test: str
 
 
 class HeadHunterVacancySalaryModeSchema(BaseModel):
@@ -93,7 +86,7 @@ class HeadHunterVacancyEmployerSchema(BaseModel):
     name: str
 
 
-class HeadHunterDetailedVacancySchema(HeadHunterVacancySchema):
+class HeadHunterVacancyDetailResponse(HeadHunterVacancySchema):
     id: int
     alternate_url: str  # Ссылка на вакансию UI версию HH
     employer: HeadHunterVacancyEmployerSchema
@@ -108,7 +101,7 @@ class HeadHunterDetailedVacancySchema(HeadHunterVacancySchema):
     published_at: datetime
 
 
-class HeadHunterVacancyResponse(BaseModel):
+class HeadHunterVacancyListResponse(BaseModel):
     items: list[HeadHunterVacancySchema]
     page: int
     pages: int

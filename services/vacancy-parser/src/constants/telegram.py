@@ -1,4 +1,4 @@
-from schemas_old import TelegramChannelUrl
+from parsers.schemas import TelegramChannelUrl
 
 
 __all__ = ["channel_links"]
@@ -12,4 +12,4 @@ channel_usernames: set[str] = {
     "python_djangojobs",
 }
 
-channel_links: set[TelegramChannelUrl] = {TelegramChannelUrl.create(username) for username in channel_usernames}
+channel_links: set[TelegramChannelUrl] = {TelegramChannelUrl.create(u) for u in channel_usernames}

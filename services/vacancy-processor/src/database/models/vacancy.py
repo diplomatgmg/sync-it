@@ -30,7 +30,7 @@ class Vacancy(Base):
 
     published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
-    profession_id: Mapped[int] = mapped_column(ForeignKey("profession.id", ondelete="CASCADE"), nullable=True)
+    profession_id: Mapped[int | None] = mapped_column(ForeignKey("profession.id", ondelete="CASCADE"), nullable=True)
     profession: Mapped["Profession"] = relationship(back_populates="vacancies")
 
     grades: Mapped[list["Grade"]] = relationship(secondary=vacancy_grade_table, back_populates="vacancies")

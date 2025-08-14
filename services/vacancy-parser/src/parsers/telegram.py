@@ -1,24 +1,25 @@
 from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
+from clients.telegram import telegram_client
 from common.logger import get_logger
-from database.models.vacancy import TelegramVacancy
 from parsers.base import BaseParser
-from schemas_old import TelegramChannelUrl
-from services.http.telegram import fetch_newest_telegram_messages
-from services.vacancy import TelegramVacancyService
+from parsers.schemas import TelegramChannelUrl
+from schemas.vacancy import TelegramVacancyCreate
 from utils import generate_fingerprint
 
 
 __all__ = ["TelegramParser"]
+
+if TYPE_CHECKING:
+    from services.vacancy import TelegramVacancyService
 
 
 logger = get_logger(__name__)
 
 
 class TelegramParser(BaseParser):
-    service: TelegramVacancyService
-
-    def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
+    def __init__(self, service: "TelegramVacancyService", channel_links: Iterable[TelegramChannelUrl]) -> None:
         super().__init__()
         self.service = service
         self.channel_links = channel_links
@@ -38,8 +39,7 @@ class TelegramParser(BaseParser):
         last_message_id = await self.service.get_last_message_id(channel_link)
         logger.info("Last message id for channel '%s' is %s", channel_link, last_message_id)
 
-        # TODO: Создать клиент для работы с Telegram API
-        newest_messages = await fetch_newest_telegram_messages(channel_link.channel_username, last_message_id)
+        newest_messages = await telegram_client.get_newest_messages(channel_link.channel_username, last_message_id)
 
         if not newest_messages:
             logger.info("No new messages for channel '%s'", channel_link)
@@ -47,7 +47,7 @@ class TelegramParser(BaseParser):
 
         logger.info("Got %s new messages", len(newest_messages))
 
-        vacancies = []
+        vacancies: list[TelegramVacancyCreate] = []
         for message in newest_messages:
             fingerprint = generate_fingerprint(message.text)
             if fingerprint in self.parsed_fingerprints:
@@ -69,27 +69,27 @@ class TelegramParser(BaseParser):
                 )
                 continue
 
-            vacancy = await self.service.prepare_instance(
+            vacancy_create = TelegramVacancyCreate(
                 fingerprint=fingerprint,
                 link=f"{channel_link}/{message.id}",
                 channel_username=channel_link.channel_username,
                 message_id=message.id,
-                message_datetime=message.datetime,
-                message_text=message.text,
+                published_at=message.datetime,
+                data=message.text,
             )
-            vacancies.append(vacancy)
+            vacancies.append(vacancy_create)
 
-            if len(vacancies) >= self.BATCH_SIZE:
-                logger.info("Saving batch of %d vacancies...", len(vacancies))
-                new_vacancies = await self._get_new_vacancies(vacancies)
-                await self.save_vacancies(new_vacancies)
-                vacancies.clear()
+        new_vacancies = await self._get_new_vacancies(vacancies)
 
-        if vacancies:
-            new_vacancies = await self._get_new_vacancies(vacancies)
-            await self.save_vacancies(new_vacancies)
+        if not vacancies or not new_vacancies:
+            logger.info("No new vacancies for channel '%s'", channel_link)
+            return
 
-    async def _get_new_vacancies(self, vacancies: list[TelegramVacancy]) -> list[TelegramVacancy]:
+        for new_vacancy in new_vacancies:
+            await self.service.add_vacancy(new_vacancy)
+            logger.info("New vacancy: %s", new_vacancy.link)
+
+    async def _get_new_vacancies(self, vacancies: list[TelegramVacancyCreate]) -> list[TelegramVacancyCreate]:
         vacancy_hashes = [v.hash for v in vacancies]
         existing_hashes = await self.service.get_existing_hashes(vacancy_hashes)
 

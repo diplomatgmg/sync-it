@@ -3,22 +3,21 @@ from typing import TYPE_CHECKING
 from clients.head_hunter import head_hunter_client
 from common.logger import get_logger
 from parsers.base import BaseParser
-from services.vacancy import HeadHunterVacancyService
+from schemas.vacancy import HeadHunterVacancyCreate
 from utils import clear_html, generate_fingerprint, generate_hash
 
 
-if TYPE_CHECKING:
-    from database.models.vacancy import HeadHunterVacancy
-
-
 __all__ = ["HeadHunterParser"]
+
+if TYPE_CHECKING:
+    from services.vacancy import HeadHunterVacancyService
 
 
 logger = get_logger(__name__)
 
 
 class HeadHunterParser(BaseParser):
-    def __init__(self, service: HeadHunterVacancyService) -> None:
+    def __init__(self, service: "HeadHunterVacancyService") -> None:
         super().__init__()
         self.service = service
 
@@ -32,7 +31,7 @@ class HeadHunterParser(BaseParser):
         new_vacancies_ids = [v_id for v_id in newest_vacancy_ids if generate_hash(v_id) not in existing_hashes]
         logger.info("Found %s new vacancies", len(new_vacancies_ids))
 
-        vacancies: list[HeadHunterVacancy] = []
+        vacancies: list[HeadHunterVacancyCreate] = []
 
         for vacancy_id in new_vacancies_ids:
             try:
@@ -44,6 +43,7 @@ class HeadHunterParser(BaseParser):
             if not vacancy:
                 logger.info("Skipping with id %s", vacancy_id)
                 continue
+
             vacancy_description = clear_html(vacancy.description)
 
             fingerprint = generate_fingerprint(vacancy_description)
@@ -63,13 +63,13 @@ class HeadHunterParser(BaseParser):
                 )
                 continue
 
-            vacancy_model = await self.service.prepare_instance(
+            vacancy_create = HeadHunterVacancyCreate(
                 fingerprint=fingerprint,
                 vacancy_id=vacancy.id,
                 link=vacancy.alternate_url,
                 employer=vacancy.employer.name,
                 name=vacancy.name,
-                description=clear_html(vacancy_description),
+                description=clear_html(vacancy.description),
                 salary=vacancy.salary.humanize() if vacancy.salary else None,
                 experience=vacancy.experience.name,
                 schedule=vacancy.schedule.name,
@@ -79,11 +79,8 @@ class HeadHunterParser(BaseParser):
                 published_at=vacancy.published_at,
             )
 
-            vacancies.append(vacancy_model)
+            vacancies.append(vacancy_create)
 
-            if len(vacancies) >= self.BATCH_SIZE:
-                logger.info("Saving batch of %d vacancies...", len(vacancies))
-                await self.save_vacancies(vacancies)
-                vacancies.clear()
-
-        await self.save_vacancies(vacancies)
+        for new_vacancy in vacancies:
+            await self.service.add_vacancy(new_vacancy)
+            logger.info("Added vacancy %s", new_vacancy.link)

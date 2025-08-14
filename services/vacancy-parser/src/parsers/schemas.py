@@ -1,21 +1,10 @@
-from datetime import datetime
 import re
+from typing import Self
 
 from common.shared.schemas import HttpsUrl
-from pydantic import BaseModel, ConfigDict
 
 
-__all__ = [
-    "HealthResponse",
-    "Profession",
-    "ProfessionResponse",
-    "TelegramChannelMessage",
-    "TelegramChannelMessagesResponse",
-    "TelegramChannelUrl",
-    "VacancyDeleteResponse",
-    "VacancyModelSchema",
-    "VacancyResponse",
-]
+__all__ = ["TelegramChannelUrl"]
 
 
 class TelegramChannelUrl(HttpsUrl):
@@ -30,8 +19,8 @@ class TelegramChannelUrl(HttpsUrl):
         self._validate_url()
 
     @classmethod
-    def create(cls, username: str) -> "TelegramChannelUrl":
-        return TelegramChannelUrl(f"https://t.me/s/{username}")
+    def create(cls, username: str) -> Self:
+        return cls(f"https://t.me/s/{username}")
 
     @property
     def channel_username(self) -> str:
@@ -54,43 +43,3 @@ class TelegramChannelUrl(HttpsUrl):
                 f"Invalid Telegram channel URL: path '{self.path}' must be in format '/s/<channel_name>' "
                 "with username 5-32 chars, letters, digits, underscore only"
             )
-
-
-class TelegramChannelMessage(BaseModel):
-    id: int
-    datetime: datetime
-    text: str
-
-
-class TelegramChannelMessagesResponse(BaseModel):
-    messages: list[TelegramChannelMessage]
-
-
-class HealthResponse(BaseModel):
-    status: str
-
-
-class VacancyModelSchema(BaseModel):
-    hash: str
-    link: str
-    data: str
-    published_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class VacancyResponse(BaseModel):
-    vacancies: list[VacancyModelSchema]
-
-
-class VacancyDeleteResponse(BaseModel):
-    is_deleted: bool
-
-
-class Profession(BaseModel):
-    id: int
-    name: str
-
-
-class ProfessionResponse(BaseModel):
-    professions: list[Profession]

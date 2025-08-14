@@ -14,7 +14,8 @@ class _SkillClient(BaseClient):
     @alru_cache(ttl=60 * 60 * 24)
     async def get_by_category_id(self, category_id: int) -> list[SkillSchema]:
         response = await self.client.get(self.url, params={"category_id": category_id})
-        model_response = SkillResponse.model_validate(response.json())
+        data = response.json()
+        model_response = SkillResponse.model_validate(data)
 
         return model_response.skills
 
@@ -25,7 +26,8 @@ class _SkillCategoryClient(BaseClient):
     @alru_cache(ttl=60 * 60 * 24)
     async def get_all(self) -> list[SkillCategorySchema]:
         response = await self.client.get(self.url)
-        model_response = SkillCategoryResponse.model_validate(response.json())
+        data = response.json()
+        model_response = SkillCategoryResponse.model_validate(data)
 
         return model_response.skill_categories
 

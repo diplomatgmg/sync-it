@@ -2,8 +2,8 @@ import asyncio
 from typing import Any
 
 from clients.head_hunter.schemas import (
-    HeadHunterDetailedVacancySchema,
-    HeadHunterVacancyResponse,
+    HeadHunterVacancyDetailResponse,
+    HeadHunterVacancyListResponse,
 )
 from clients.profession import profession_client
 from common.logger import get_logger
@@ -48,7 +48,7 @@ class _HeadHunterClient(BaseClient):
     # но при постоянных долгих запросах выдается 403 как ddos.
     # Реальное долгосрочное ограничение 1 запрос в секунду.
     @limit_requests(concurrency_limit=10, requests_per_second=10)
-    async def _fetch_page(self, page: int, text_query: str) -> HeadHunterVacancyResponse:
+    async def _fetch_page(self, page: int, text_query: str) -> HeadHunterVacancyListResponse:
         """Загружает и валидирует одну страницу вакансий."""
         params = QueryParams(
             {
@@ -63,8 +63,9 @@ class _HeadHunterClient(BaseClient):
 
         response = await self.client.get(self.url, params=params)
         response.raise_for_status()
+        data = response.json()
 
-        return HeadHunterVacancyResponse.model_validate(response.json())
+        return HeadHunterVacancyListResponse.model_validate(data)
 
     async def get_newest_vacancy_ids(self) -> list[int]:
         """Асинхронно получает id актуальных вакансиий."""
@@ -85,7 +86,7 @@ class _HeadHunterClient(BaseClient):
         return all_vacancy_ids
 
     @limit_requests(concurrency_limit=5, requests_per_second=5)
-    async def get_vacancy_by_id(self, vacancy_id: int) -> HeadHunterDetailedVacancySchema | None:
+    async def get_vacancy_by_id(self, vacancy_id: int) -> HeadHunterVacancyDetailResponse | None:
         """Загружает и валидирует одну детальную вакансию по ее ID."""
         detailed_url = f"{self.url}/{vacancy_id}"
         response = await self.client.get(detailed_url)
@@ -94,8 +95,9 @@ class _HeadHunterClient(BaseClient):
             return None
 
         response.raise_for_status()
+        data = response.json()
 
-        return HeadHunterDetailedVacancySchema.model_validate(response.json())
+        return HeadHunterVacancyDetailResponse.model_validate(data)
 
 
 head_hunter_client = _HeadHunterClient()

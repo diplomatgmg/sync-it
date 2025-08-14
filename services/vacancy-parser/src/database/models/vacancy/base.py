@@ -17,7 +17,7 @@ class BaseVacancy(Base):
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     fingerprint: Mapped[str] = mapped_column(Text, unique=True)
 
-    source_id: Mapped[int] = mapped_column(ForeignKey("source.id", ondelete="RESTRICT"), index=True)
+    source_id: Mapped[int] = mapped_column(ForeignKey("source.id", ondelete="RESTRICT"), nullable=False, index=True)
 
     link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(TEXT)

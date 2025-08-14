@@ -1,12 +1,11 @@
 import asyncio
 
 from celery_app import app, loop
-from common.database.engine import get_async_session
 from common.logger import get_logger
 from constants.telegram import channel_links
 from parsers import HeadHunterParser, TelegramParser
-from repositories.vacancy import HeadHunterVacancyRepository, TelegramVacancyRepository
 from services.vacancy import HeadHunterVacancyService, TelegramVacancyService
+from unitofwork import UnitOfWork
 
 
 __all__ = ["parse_vacancies"]
@@ -37,18 +36,16 @@ async def run_all_parsers() -> None:
 
 
 async def parse_telegram_vacancies() -> None:
-    async with get_async_session() as session:
-        repo = TelegramVacancyRepository(session)
-        service = TelegramVacancyService(repo)
+    async with UnitOfWork() as uow:
+        service = TelegramVacancyService(uow)
         parser = TelegramParser(service, channel_links)
         await parser.parse()
-        await session.commit()
+        await uow.commit()
 
 
 async def parse_head_hunter_vacancies() -> None:
-    async with get_async_session() as session:
-        repo = HeadHunterVacancyRepository(session)
-        service = HeadHunterVacancyService(repo)
+    async with UnitOfWork() as uow:
+        service = HeadHunterVacancyService(uow)
         parser = HeadHunterParser(service)
         await parser.parse()
-        await session.commit()
+        await uow.commit()
