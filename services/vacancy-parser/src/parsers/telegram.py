@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from clients.telegram import telegram_client
 from common.logger import get_logger
 from parsers.base import BaseParser
-from parsers.schemas import TelegramChannelUrl
 from schemas.vacancy import TelegramVacancyCreate
 from utils import generate_fingerprint
 
@@ -12,16 +11,17 @@ from utils import generate_fingerprint
 __all__ = ["TelegramParser"]
 
 if TYPE_CHECKING:
+    from parsers.schemas import TelegramChannelUrl
+
     from services import TelegramVacancyService
 
 
 logger = get_logger(__name__)
 
 
-class TelegramParser(BaseParser):
-    def __init__(self, service: "TelegramVacancyService", channel_links: Iterable[TelegramChannelUrl]) -> None:
-        super().__init__()
-        self.service = service
+class TelegramParser(BaseParser["TelegramVacancyService"]):
+    def __init__(self, service: "TelegramVacancyService", channel_links: Iterable["TelegramChannelUrl"]) -> None:
+        super().__init__(service)
         self.channel_links = channel_links
 
     async def parse(self) -> None:
@@ -33,7 +33,7 @@ class TelegramParser(BaseParser):
             except Exception as e:
                 logger.exception("Error processing channel '%s'", channel_link, exc_info=e)
 
-    async def _process_channel(self, channel_link: TelegramChannelUrl) -> None:
+    async def _process_channel(self, channel_link: "TelegramChannelUrl") -> None:
         logger.info("Start parsing channel '%s'", channel_link)
 
         last_message_id = await self.service.get_last_message_id(channel_link)
@@ -50,12 +50,6 @@ class TelegramParser(BaseParser):
         vacancies: list[TelegramVacancyCreate] = []
         for message in newest_messages:
             fingerprint = generate_fingerprint(message.text)
-            if fingerprint in self.parsed_fingerprints:
-                logger.info("Vacancy with fingerprint '%s' already exists", fingerprint)
-                continue
-
-            self.parsed_fingerprints.add(fingerprint)
-
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(

@@ -9,10 +9,9 @@ __all__ = ["BaseParser"]
 logger = get_logger(__name__)
 
 
-class BaseParser(ABC):
-    def __init__(self) -> None:
-        # Запоминаем fingerprints, которые получили на основе новых спарсенных вакансий, чтобы избежать конфликта с БД
-        self.parsed_fingerprints: set[str] = set()
+class BaseParser[ServiceType](ABC):
+    def __init__(self, service: ServiceType) -> None:
+        self.service = service
 
     @abstractmethod
     async def parse(self) -> None:

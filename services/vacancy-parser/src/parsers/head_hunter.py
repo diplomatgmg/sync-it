@@ -12,13 +12,12 @@ __all__ = ["HeadHunterParser"]
 if TYPE_CHECKING:
     from services import HeadHunterVacancyService
 
-
 logger = get_logger(__name__)
 
 
-class HeadHunterParser(BaseParser):
+class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
     def __init__(self, service: "HeadHunterVacancyService") -> None:
-        super().__init__()
+        super().__init__(service)
         self.service = service
 
     async def parse(self) -> None:
@@ -47,12 +46,6 @@ class HeadHunterParser(BaseParser):
             vacancy_description = clear_html(vacancy.description)
 
             fingerprint = generate_fingerprint(vacancy_description)
-            if fingerprint in self.parsed_fingerprints:
-                logger.info("Vacancy with fingerprint '%s' already exists", fingerprint)
-                continue
-
-            self.parsed_fingerprints.add(fingerprint)
-
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(
