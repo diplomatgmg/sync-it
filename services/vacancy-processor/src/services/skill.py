@@ -1,4 +1,4 @@
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import Skill, SkillCategory
 from database.models.enums import SkillCategoryEnum, SkillEnum
 from schemas.skill import SkillCategoryCreate, SkillCategoryRead, SkillCreate, SkillRead
@@ -22,7 +22,7 @@ class SkillCategoryService(BaseUOWService[UnitOfWork]):
         return [SkillCategoryRead.model_validate(c) for c in skill_categories]
 
     async def add_category(self, category: SkillCategoryCreate) -> SkillCategoryRead:
-        skill_category_model = SkillCategory(name=category.name)
+        skill_category_model = SkillCategory(**category.model_dump())
         created_skill_category = await self._uow.skill_categories.add(skill_category_model)
 
         return SkillCategoryRead.model_validate(created_skill_category)
@@ -45,7 +45,7 @@ class SkillService(BaseUOWService[UnitOfWork]):
         return [SkillRead.model_validate(s) for s in skills]
 
     async def add_skill(self, skill: SkillCreate) -> SkillRead:
-        skill_model = Skill(name=skill.name, category_id=skill.category_id)
+        skill_model = Skill(**skill.model_dump())
         created_skill = await self._uow.skills.add(skill_model)
 
         return SkillRead.model_validate(created_skill)

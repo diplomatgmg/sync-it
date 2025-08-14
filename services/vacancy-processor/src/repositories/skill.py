@@ -47,6 +47,16 @@ class SkillRepository(BaseRepository):
 
         return result.scalars().all()
 
+    async def get_by_ids(self, ids: Sequence[int]) -> Sequence[Skill]:
+        """Возвращает форматы работы по списку ID."""
+        if not ids:
+            return []
+
+        stmt = select(Skill).where(Skill.id.in_(ids))
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
     async def filter_by_category_id(self, category_id: int) -> Sequence[Skill]:
         stmt = select(Skill).where(Skill.category_id == category_id)
         result = await self._session.execute(stmt)

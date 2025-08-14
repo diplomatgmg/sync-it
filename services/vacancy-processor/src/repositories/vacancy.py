@@ -21,7 +21,7 @@ class VacancyRepository(BaseRepository):
         """Добавляет экземпляр вакансии в сессию."""
         self._session.add(vacancy)
         await self._session.flush()
-        await self._session.refresh(vacancy)
+        await self._session.refresh(vacancy, attribute_names=["profession", "skills", "grades", "work_formats"])
 
         return vacancy
 

@@ -11,7 +11,7 @@ class HeadHunterVacancy(Vacancy):
 
     id: Mapped[int] = mapped_column(ForeignKey("vacancies.id"), primary_key=True)
 
-    vacancy_id: Mapped[int] = mapped_column(nullable=False)
+    vacancy_id: Mapped[int] = mapped_column()
 
     __mapper_args__ = {  # noqa: RUF012
         "polymorphic_identity": "head_hunter",

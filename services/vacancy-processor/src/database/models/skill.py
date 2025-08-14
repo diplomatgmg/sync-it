@@ -31,7 +31,7 @@ class Skill(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(32), unique=True)
 
-    category_id: Mapped[int] = mapped_column(ForeignKey("skill_category.id", ondelete="CASCADE"), nullable=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey("skill_category.id", ondelete="CASCADE"))
     category: Mapped["SkillCategory"] = relationship(back_populates="skills")
 
     vacancies: Mapped[list["Vacancy"]] = relationship(

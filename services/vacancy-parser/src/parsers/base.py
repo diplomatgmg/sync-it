@@ -12,6 +12,7 @@ logger = get_logger(__name__)
 class BaseParser[ServiceType](ABC):
     def __init__(self, service: ServiceType) -> None:
         self.service = service
+        self._processed_fingerprints: set[str] = set()
 
     @abstractmethod
     async def parse(self) -> None:

@@ -1,4 +1,4 @@
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import WorkFormat
 from database.models.enums import WorkFormatEnum
 from schemas.work_format import WorkFormatCreate, WorkFormatRead
@@ -22,7 +22,7 @@ class WorkFormatService(BaseUOWService[UnitOfWork]):
         return [WorkFormatRead.model_validate(wf) for wf in work_formats]
 
     async def add_work_format(self, work_format: WorkFormatCreate) -> WorkFormatRead:
-        work_format_model = WorkFormat(name=work_format.name)
+        work_format_model = WorkFormat(**work_format.model_dump())
         created_work_format = await self._uow.work_formats.add(work_format_model)
 
         return WorkFormatRead.model_validate(created_work_format)

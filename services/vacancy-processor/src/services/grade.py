@@ -1,4 +1,4 @@
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import Grade
 from database.models.enums import GradeEnum
 from schemas.grade import GradeCreate, GradeRead
@@ -22,7 +22,7 @@ class GradeService(BaseUOWService[UnitOfWork]):
         return [GradeRead.model_validate(g) for g in grades]
 
     async def add_grade(self, grade: GradeCreate) -> GradeRead:
-        grade_model = Grade(name=grade.name)
+        grade_model = Grade(**grade.model_dump())
         created_grade = await self._uow.grades.add(grade_model)
 
         return GradeRead.model_validate(created_grade)

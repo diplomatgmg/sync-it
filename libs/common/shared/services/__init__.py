@@ -1,4 +1,4 @@
-from common.shared.services.base import BaseService
+from common.shared.services.base import BaseUOWService
 
 
-__all__ = ["BaseService"]
+__all__ = ["BaseUOWService"]

@@ -1,26 +1,23 @@
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
 
 from clients.telegram import telegram_client
 from common.logger import get_logger
 from parsers.base import BaseParser
+from parsers.schemas import TelegramChannelUrl
 from schemas.vacancy import TelegramVacancyCreate
 from utils import generate_fingerprint
 
+from services import TelegramVacancyService
+
 
 __all__ = ["TelegramParser"]
-
-if TYPE_CHECKING:
-    from parsers.schemas import TelegramChannelUrl
-
-    from services import TelegramVacancyService
 
 
 logger = get_logger(__name__)
 
 
-class TelegramParser(BaseParser["TelegramVacancyService"]):
-    def __init__(self, service: "TelegramVacancyService", channel_links: Iterable["TelegramChannelUrl"]) -> None:
+class TelegramParser(BaseParser[TelegramVacancyService]):
+    def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
         super().__init__(service)
         self.channel_links = channel_links
 
@@ -33,7 +30,7 @@ class TelegramParser(BaseParser["TelegramVacancyService"]):
             except Exception as e:
                 logger.exception("Error processing channel '%s'", channel_link, exc_info=e)
 
-    async def _process_channel(self, channel_link: "TelegramChannelUrl") -> None:
+    async def _process_channel(self, channel_link: TelegramChannelUrl) -> None:
         logger.info("Start parsing channel '%s'", channel_link)
 
         last_message_id = await self.service.get_last_message_id(channel_link)
@@ -50,6 +47,14 @@ class TelegramParser(BaseParser["TelegramVacancyService"]):
         vacancies: list[TelegramVacancyCreate] = []
         for message in newest_messages:
             fingerprint = generate_fingerprint(message.text)
+            if fingerprint in self._processed_fingerprints:
+                logger.debug(
+                    "Skipping vacancy %s/%s because fingerprint already processed in this run",
+                    channel_link,
+                    message.id,
+                )
+                continue
+
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(
@@ -63,6 +68,8 @@ class TelegramParser(BaseParser["TelegramVacancyService"]):
                 )
                 await self.service.update_vacancy_published_at(duplicate.hash, message.datetime)
                 continue
+
+            self._processed_fingerprints.add(fingerprint)
 
             vacancy_create = TelegramVacancyCreate(
                 fingerprint=fingerprint,

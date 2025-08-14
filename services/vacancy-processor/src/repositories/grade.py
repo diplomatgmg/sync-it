@@ -13,7 +13,7 @@ class GradeRepository(BaseRepository):
     """Репозиторий для управления грейдами в базе данных."""
 
     async def get_by_name(self, name: GradeEnum) -> Grade | None:
-        """Находит грейд по его имени (Enum)."""
+        """Находит грейд по его имени."""
         stmt = select(Grade).where(Grade.name == name)
         result = await self._session.execute(stmt)
 
@@ -22,6 +22,16 @@ class GradeRepository(BaseRepository):
     async def get_all(self) -> Sequence[Grade]:
         """Возвращает все существующие грейды."""
         stmt = select(Grade)
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
+    async def get_by_ids(self, ids: Sequence[int]) -> Sequence[Grade]:
+        """Возвращает грейды по списку ID."""
+        if not ids:
+            return []
+
+        stmt = select(Grade).where(Grade.id.in_(ids))
         result = await self._session.execute(stmt)
 
         return result.scalars().all()

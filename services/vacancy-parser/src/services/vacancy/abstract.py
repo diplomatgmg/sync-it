@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from common.shared.services.base import BaseUOWService
-from repositories import VacancyRepository
+from common.shared.services import BaseUOWService
 from schemas.vacancy import VacancyCreate, VacancyRead
 from unitofwork import UnitOfWork
 
 
 __all__ = ["AbstractVacancyService"]
+
+if TYPE_CHECKING:
+    from repositories import VacancyRepository
 
 
 class AbstractVacancyService[
@@ -18,14 +21,14 @@ class AbstractVacancyService[
 ](BaseUOWService[UnitOfWork], ABC):
     _read_schema: type[VacancyReadType]
     _create_schema: type[VacancyCreateType]
-    _repo: VacancyRepositoryType
+    _repo: "VacancyRepositoryType"
 
-    def __init__(self, uow: UnitOfWork) -> None:
+    def __init__(self, uow: "UnitOfWork") -> None:
         super().__init__(uow)
         self._repo = self._get_repo()
 
     @abstractmethod
-    def _get_repo(self) -> VacancyRepositoryType:
+    def _get_repo(self) -> "VacancyRepositoryType":
         pass
 
     async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> VacancyReadType | None:

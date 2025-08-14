@@ -1,8 +1,8 @@
 """added models
 
-Revision ID: 5e788f22fc16
+Revision ID: c2f4cc1a2bba
 Revises: 2843301e18c5
-Create Date: 2025-06-30 16:22:19.283117
+Create Date: 2025-08-14 22:40:27.481934
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5e788f22fc16'
+revision: str = 'c2f4cc1a2bba'
 down_revision: Union[str, Sequence[str], None] = '2843301e18c5'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -69,6 +69,13 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('hash', sa.String(length=32), nullable=False),
     sa.Column('link', sa.String(length=256), nullable=False),
+    sa.Column('company_name', sa.String(length=64), nullable=True),
+    sa.Column('salary', sa.String(length=32), nullable=True),
+    sa.Column('workplace_description', sa.Text(), nullable=True),
+    sa.Column('responsibilities', sa.Text(), nullable=True),
+    sa.Column('requirements', sa.Text(), nullable=True),
+    sa.Column('conditions', sa.Text(), nullable=True),
+    sa.Column('published_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('profession_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['profession_id'], ['vacancy_processor.profession.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),

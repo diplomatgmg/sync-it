@@ -17,7 +17,6 @@ class BaseVacancy(BaseModel):
     hash: str
     link: str
 
-    profession: ProfessionRead | None
     company_name: str | None
     salary: str | None
     workplace_description: str | None
@@ -29,12 +28,13 @@ class BaseVacancy(BaseModel):
 
 
 class VacancyCreate(BaseVacancy):
-    pass
+    profession_id: int | None
 
 
 class VacancyRead(BaseVacancy):
     id: int
 
+    profession: ProfessionRead | None
     skills: list[SkillRead]
     grades: list[GradeRead]
     work_formats: list[WorkFormatRead]

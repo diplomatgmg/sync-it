@@ -1,8 +1,8 @@
 """added models
 
-Revision ID: ffd40a30d8e7
+Revision ID: c29635cbd78c
 Revises: b040edb2dcb1
-Create Date: 2025-08-14 10:01:45.312877
+Create Date: 2025-08-14 22:40:33.589812
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ffd40a30d8e7'
+revision: str = 'c29635cbd78c'
 down_revision: Union[str, Sequence[str], None] = 'b040edb2dcb1'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

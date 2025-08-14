@@ -26,6 +26,16 @@ class WorkFormatRepository(BaseRepository):
 
         return result.scalars().all()
 
+    async def get_by_ids(self, ids: Sequence[int]) -> Sequence[WorkFormat]:
+        """Возвращает форматы работы по списку ID."""
+        if not ids:
+            return []
+
+        stmt = select(WorkFormat).where(WorkFormat.id.in_(ids))
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
     async def add(self, work_format: WorkFormat) -> WorkFormat:
         """Добавляет экземпляр формата работы в сессию."""
         self._session.add(work_format)

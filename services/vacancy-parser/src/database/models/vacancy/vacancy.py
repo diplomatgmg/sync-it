@@ -12,15 +12,15 @@ class Vacancy(Base):
     __tablename__ = "vacancies"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    source: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
+    source: Mapped[str] = mapped_column(String(16), index=True)
 
-    hash: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
-    fingerprint: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
-    link: Mapped[str] = mapped_column(String(256), nullable=False, unique=True)
+    hash: Mapped[str] = mapped_column(String(32), unique=True)
+    fingerprint: Mapped[str] = mapped_column(Text, unique=True)
+    link: Mapped[str] = mapped_column(String(256), unique=True)
     data: Mapped[str] = mapped_column(Text)
 
-    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
 
     __mapper_args__ = {  # noqa: RUF012
         "polymorphic_on": source,

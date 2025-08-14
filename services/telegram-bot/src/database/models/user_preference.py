@@ -16,13 +16,13 @@ class UserPreference(Base):
     __tablename__ = "user_preference"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
     # ex.: grade, profession, work_format
-    category_code: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
+    category_code: Mapped[str] = mapped_column(String(16), index=True)
 
-    item_id: Mapped[int] = mapped_column(nullable=False)
-    item_name: Mapped[str] = mapped_column(String(32), nullable=False)
+    item_id: Mapped[int] = mapped_column()
+    item_name: Mapped[str] = mapped_column(String(32))
 
     user: Mapped["User"] = relationship(back_populates="preferences", lazy="selectin")
 

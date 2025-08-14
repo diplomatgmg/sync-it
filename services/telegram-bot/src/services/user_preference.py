@@ -1,5 +1,5 @@
 from common.logger import get_logger
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import UserPreference
 from schemas.user_preference import UserPreferenceCreate
 from unitofwork import UnitOfWork

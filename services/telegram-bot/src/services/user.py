@@ -1,6 +1,6 @@
 from typing import Literal, overload
 
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import User
 from schemas.user import UserCreate, UserRead, UserWithPreferences
 from unitofwork import UnitOfWork

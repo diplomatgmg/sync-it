@@ -1,4 +1,4 @@
-from common.shared.services.base import BaseUOWService
+from common.shared.services import BaseUOWService
 from database.models import Profession
 from database.models.enums import ProfessionEnum
 from schemas.profession import ProfessionCreate, ProfessionRead
@@ -22,7 +22,7 @@ class ProfessionService(BaseUOWService[UnitOfWork]):
         return [ProfessionRead.model_validate(p) for p in professions]
 
     async def add_profession(self, profession: ProfessionCreate) -> ProfessionRead:
-        profession_model = Profession(name=profession.name)
+        profession_model = Profession(**profession.model_dump())
         created_profession = await self._uow.professions.add(profession_model)
 
         return ProfessionRead.model_validate(created_profession)
