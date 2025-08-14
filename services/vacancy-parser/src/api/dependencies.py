@@ -2,7 +2,6 @@ from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi import Depends
-from schemas.vacancy import VacancyCreate, VacancyRead
 from unitofwork import UnitOfWork
 
 from services import VacancyService
@@ -20,6 +19,6 @@ async def _get_uow_session() -> AsyncGenerator[UnitOfWork]:
 
 def get_vacancy_service(
     uow: Annotated[UnitOfWork, Depends(_get_uow_session)],
-) -> VacancyService[VacancyRead, VacancyCreate]:
+) -> VacancyService:
     """FastAPI зависимость для получения экземпляра сервиса VacancyService."""
-    return VacancyService[VacancyRead, VacancyCreate](uow)
+    return VacancyService(uow)

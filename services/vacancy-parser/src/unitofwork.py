@@ -1,4 +1,5 @@
 from common.shared.unitofwork import BaseUnitOfWork
+from database.models import Vacancy
 from repositories import HeadHunterVacancyRepository, TelegramVacancyRepository, VacancyRepository
 
 
@@ -8,7 +9,7 @@ __all__ = ["UnitOfWork"]
 class UnitOfWork(BaseUnitOfWork):
     """Конкретная реализация UoW для SQLAlchemy."""
 
-    vacancies: VacancyRepository
+    vacancies: VacancyRepository[Vacancy]
     tg_vacancies: TelegramVacancyRepository
     hh_vacancies: HeadHunterVacancyRepository
 
