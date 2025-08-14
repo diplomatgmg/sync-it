@@ -24,22 +24,6 @@ class VacancyRepository(BaseRepository):
 
         return result.scalars().all()
 
-    async def mark_as_deleted(self, vacancy_hash: str) -> bool:
-        """
-        Удаляет вакансию из первой подходящей таблицы по хешу.
-
-        True - вакансия помечена как удаленная
-        False - вакансия не найдена
-        """
-        stmt = (
-            update(Vacancy)
-            .where(Vacancy.hash == vacancy_hash)
-            .where(Vacancy.deleted_at.is_(None))
-            .values(deleted_at=datetime.now(tz=UTC))
-        )
-        result = await self._session.execute(stmt)
-        return bool(result.rowcount)
-
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         """Получить set уже существующих хешей в БД."""
         stmt = select(Vacancy.hash).where(Vacancy.hash.in_(hashes))
@@ -63,3 +47,25 @@ class VacancyRepository(BaseRepository):
         result = await self._session.execute(select(func.similarity(fingerprint1, fingerprint2)))
         similarity = result.scalar() or 0.0
         return round(similarity * 100, 2)
+
+    async def update_published_at(self, vacancy_hash: str, published_at: datetime) -> bool:
+        """Обновляет дату публикации вакансии."""
+        stmt = update(Vacancy).where(Vacancy.hash == vacancy_hash).values(published_at=published_at)
+        result = await self._session.execute(stmt)
+        return bool(result.rowcount)
+
+    async def mark_as_deleted(self, vacancy_hash: str) -> bool:
+        """
+        Удаляет вакансию из первой подходящей таблицы по хешу.
+
+        True - вакансия помечена как удаленная
+        False - вакансия не найдена
+        """
+        stmt = (
+            update(Vacancy)
+            .where(Vacancy.hash == vacancy_hash)
+            .where(Vacancy.deleted_at.is_(None))
+            .values(deleted_at=datetime.now(tz=UTC))
+        )
+        result = await self._session.execute(stmt)
+        return bool(result.rowcount)

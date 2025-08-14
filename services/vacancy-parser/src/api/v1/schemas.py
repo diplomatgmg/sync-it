@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from schemas.vacancy import BaseVacancyRead
+from pydantic import BaseModel, Field
+from schemas.vacancy import VacancyRead
 
 
 __all__ = [
@@ -8,8 +8,12 @@ __all__ = [
 ]
 
 
+class VacancySchema(VacancyRead):
+    fingerprint: str = Field(exclude=True)
+
+
 class VacancyListResponse(BaseModel):
-    vacancies: list[BaseVacancyRead]
+    vacancies: list[VacancySchema]
 
 
 class VacancyDeleteResponse(BaseModel):

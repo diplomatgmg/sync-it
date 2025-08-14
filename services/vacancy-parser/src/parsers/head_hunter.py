@@ -61,6 +61,7 @@ class HeadHunterParser(BaseParser):
                     vacancy.alternate_url,
                     duplicate.link,
                 )
+                await self.service.update_vacancy_published_at(duplicate.hash, vacancy.published_at)
                 continue
 
             vacancy_create = HeadHunterVacancyCreate(

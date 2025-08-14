@@ -67,6 +67,7 @@ class TelegramParser(BaseParser):
                     message.id,
                     duplicate.link,
                 )
+                await self.service.update_vacancy_published_at(duplicate.hash, message.datetime)
                 continue
 
             vacancy_create = TelegramVacancyCreate(

@@ -2,14 +2,17 @@ from database.models import TelegramVacancy
 from parsers.schemas import TelegramChannelUrl
 from schemas.vacancy import TelegramVacancyCreate, TelegramVacancyRead
 
-from services import BaseVacancyService
+from services import VacancyService
 
 
 __all__ = ["TelegramVacancyService"]
 
 
-class TelegramVacancyService(BaseVacancyService):
+class TelegramVacancyService(VacancyService[TelegramVacancyRead, TelegramVacancyCreate]):
     """Сервис для бизнес-логики, связанной с вакансиями из Телеграма."""
+
+    _read_schema = TelegramVacancyRead
+    _create_schema = TelegramVacancyCreate
 
     async def get_last_message_id(self, link: TelegramChannelUrl) -> int | None:
         return await self._uow.tg_vacancies.get_last_message_id(link)
@@ -18,4 +21,4 @@ class TelegramVacancyService(BaseVacancyService):
         vacancy_model = TelegramVacancy(**vacancy.model_dump())
         created_vacancy = await self._uow.tg_vacancies.add(vacancy_model)
 
-        return TelegramVacancyRead.model_validate(created_vacancy)
+        return self._read_schema.model_validate(created_vacancy)

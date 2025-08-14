@@ -16,6 +16,8 @@ class CompletionResponse(BaseModel):
 
 
 class VacancySchema(BaseModel):
+    id: int
+    source: str
     hash: str
     link: str
     data: str

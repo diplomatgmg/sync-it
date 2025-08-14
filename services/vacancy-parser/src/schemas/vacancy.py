@@ -6,53 +6,63 @@ from utils import generate_hash
 
 
 __all__ = [
-    "BaseVacancyCreate",
-    "BaseVacancyRead",
     "HeadHunterVacancyCreate",
     "HeadHunterVacancyRead",
     "TelegramVacancyCreate",
     "TelegramVacancyRead",
+    "VacancyCreate",
     "VacancyRead",
 ]
 
 
 class BaseVacancy(BaseModel):
+    source: SourceEnum
     fingerprint: str
     link: str
     published_at: datetime
 
+
+class VacancyCreate(BaseVacancy):
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def source(self) -> SourceEnum:
-        raise NotImplementedError("Define source in child class")
+    def hash(self) -> str:
+        raise NotImplementedError("Define hash in child class")
 
 
-class BaseVacancyCreate(BaseVacancy):
-    pass
-
-
-class BaseVacancyRead(BaseVacancy):
+class VacancyRead(BaseVacancy):
     id: int
     hash: str
+    data: str
     deleted_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class VacancyRead(BaseVacancyRead, BaseVacancy):
+class BaseTelegramVacancy(BaseVacancy):
+    source: SourceEnum = SourceEnum.TELEGRAM
+    channel_username: str
+    message_id: int
+
+
+class TelegramVacancyCreate(BaseTelegramVacancy, VacancyCreate):
+    data: str
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def hash(self) -> str:
+        return generate_hash(f"{self.link}:{self.message_id}")
+
+
+class TelegramVacancyRead(BaseTelegramVacancy, VacancyRead):
     pass
 
 
 class BaseHeadHunterVacancy(BaseVacancy):
+    source: SourceEnum = SourceEnum.HEAD_HUNTER
     vacancy_id: int
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def source(self) -> SourceEnum:
-        return SourceEnum.HEAD_HUNTER
 
-
-class HeadHunterVacancyCreate(BaseVacancyCreate, BaseHeadHunterVacancy):
+class HeadHunterVacancyCreate(BaseHeadHunterVacancy, VacancyCreate):
     employer: str
     name: str
     description: str
@@ -90,28 +100,5 @@ class HeadHunterVacancyCreate(BaseVacancyCreate, BaseHeadHunterVacancy):
         return "\n".join(text_parts)
 
 
-class HeadHunterVacancyRead(BaseVacancyRead, BaseHeadHunterVacancy):
-    pass
-
-
-class BaseTelegramVacancy(BaseVacancy):
-    channel_username: str
-    message_id: int
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def source(self) -> SourceEnum:
-        return SourceEnum.TELEGRAM
-
-
-class TelegramVacancyCreate(BaseVacancyCreate, BaseTelegramVacancy):
+class HeadHunterVacancyRead(BaseHeadHunterVacancy, VacancyRead):
     data: str
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def hash(self) -> str:
-        return generate_hash(f"{self.link}:{self.message_id}")
-
-
-class TelegramVacancyRead(BaseVacancyRead, BaseTelegramVacancy):
-    pass

@@ -14,9 +14,9 @@ class Vacancy(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     source: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
 
-    hash: Mapped[str] = mapped_column(String(32), unique=True)
-    fingerprint: Mapped[str] = mapped_column(Text, unique=True)
-    link: Mapped[str] = mapped_column(String(256), unique=True)
+    hash: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
+    fingerprint: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    link: Mapped[str] = mapped_column(String(256), nullable=False, unique=True)
     data: Mapped[str] = mapped_column(Text)
 
     published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

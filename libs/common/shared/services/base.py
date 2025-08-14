@@ -22,9 +22,9 @@ class BaseService[RepoType: BaseRepository]:  # noqa: B903 Class could be datacl
         self._repo = repo
 
 
-UnitOfWorkType = TypeVar("UnitOfWorkType", bound=BaseUnitOfWork)
-
-
-class BaseUOWService[UnitOfWorkType: BaseUnitOfWork]:  # noqa: B903 Class could be dataclass or namedtuple
+class BaseUOWService[UnitOfWorkType: BaseUnitOfWork]:
     def __init__(self, uow: UnitOfWorkType) -> None:
         self._uow = uow
+
+    async def commit(self) -> None:
+        await self._uow.commit()
