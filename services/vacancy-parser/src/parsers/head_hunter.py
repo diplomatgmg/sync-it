@@ -32,7 +32,7 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
 
         vacancies: list[HeadHunterVacancyCreate] = []
 
-        for vacancy_id in new_vacancies_ids:
+        for vacancy_id in new_vacancies_ids[:50]:
             try:
                 vacancy = await head_hunter_client.get_vacancy_by_id(vacancy_id)
             except Exception as e:

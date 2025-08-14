@@ -1,6 +1,5 @@
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
-from typing import cast
 
 from common.logger import get_logger
 from common.shared.repositories import BaseRepository
@@ -20,7 +19,7 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
 
     _model: type[Vacancy] = Vacancy
 
-    async def get_recent_vacancies(self, limit: int = 100) -> Sequence[VacancyModelType]:
+    async def get_recent_vacancies(self, limit: int = 100) -> Sequence[Vacancy]:
         """Получить последние актуальные вакансии."""
         stmt = (
             select(self._model)
@@ -29,9 +28,7 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
             .limit(limit)
         )
         result = await self._session.execute(stmt)
-        vacancies = result.scalars().all()
-
-        return cast("Sequence[VacancyModelType]", vacancies)
+        return result.scalars().all()
 
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         """Получить set уже существующих хешей в БД."""
@@ -40,7 +37,7 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
 
         return set(result.scalars().all())
 
-    async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> VacancyModelType | None:
+    async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> Vacancy | None:
         """Найти дубликат вакансии по содержимому."""
         stmt = (
             select(self._model)
@@ -48,9 +45,7 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
             .limit(1)
         )
         result = await self._session.execute(stmt)
-        vacancy = result.scalar_one_or_none()
-
-        return cast("VacancyModelType | None", vacancy)
+        return result.scalar_one_or_none()
 
     async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
         """Получить % схожести между двумя fingerprint."""

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 __all__ = ["TelegramVacancyService"]
 
 
-class TelegramVacancyService(VacancyService[TelegramVacancyRead, TelegramVacancyCreate]):
+class TelegramVacancyService(VacancyService):
     """Сервис для бизнес-логики, связанной с вакансиями из Телеграма."""
 
     _read_schema = TelegramVacancyRead

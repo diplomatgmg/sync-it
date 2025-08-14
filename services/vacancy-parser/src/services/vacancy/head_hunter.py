@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 __all__ = ["HeadHunterVacancyService"]
 
 
-class HeadHunterVacancyService(VacancyService[HeadHunterVacancyRead, HeadHunterVacancyCreate]):
+class HeadHunterVacancyService(VacancyService):
     """Сервис для бизнес-логики, связанной с вакансиями из HeadHunter."""
 
     _read_schema = HeadHunterVacancyRead
