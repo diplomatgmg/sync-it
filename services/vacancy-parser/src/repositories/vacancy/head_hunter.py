@@ -14,10 +14,3 @@ class HeadHunterVacancyRepository(VacancyRepository[HeadHunterVacancy]):
         result = await self._session.execute(stmt)
 
         return result.scalar_one_or_none()
-
-    async def add(self, vacancy: HeadHunterVacancy) -> HeadHunterVacancy:
-        self._session.add(vacancy)
-        await self._session.flush()
-        await self._session.refresh(vacancy)
-
-        return vacancy

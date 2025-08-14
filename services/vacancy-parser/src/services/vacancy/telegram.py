@@ -1,27 +1,22 @@
-from typing import TYPE_CHECKING
-
 from database.models import TelegramVacancy
 from parsers.schemas import TelegramChannelUrl
+from repositories import TelegramVacancyRepository
 from schemas.vacancy import TelegramVacancyCreate, TelegramVacancyRead
 
 from services import VacancyService
 
 
-if TYPE_CHECKING:
-    from repositories import TelegramVacancyRepository
-
-
 __all__ = ["TelegramVacancyService"]
 
 
-class TelegramVacancyService(VacancyService):
+class TelegramVacancyService(VacancyService[TelegramVacancyRead, TelegramVacancyCreate, TelegramVacancyRepository]):
     """Сервис для бизнес-логики, связанной с вакансиями из Телеграма."""
 
     _read_schema = TelegramVacancyRead
     _create_schema = TelegramVacancyCreate
-    _repo: "TelegramVacancyRepository"
+    _repo: "TelegramVacancyRepository"  # type: ignore[assignment]
 
-    def _get_repo(self) -> "TelegramVacancyRepository":
+    def _get_repo(self) -> "TelegramVacancyRepository":  # type: ignore[override]
         return self._uow.tg_vacancies
 
     async def get_last_message_id(self, link: TelegramChannelUrl) -> int | None:

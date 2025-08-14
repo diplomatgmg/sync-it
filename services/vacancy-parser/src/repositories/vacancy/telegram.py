@@ -15,10 +15,3 @@ class TelegramVacancyRepository(VacancyRepository[TelegramVacancy]):
         smtp = select(func.max(self._model.message_id)).where(self._model.channel_username == link.channel_username)
         result = await self._session.execute(smtp)
         return result.scalar_one_or_none()
-
-    async def add(self, vacancy: TelegramVacancy) -> TelegramVacancy:
-        self._session.add(vacancy)
-        await self._session.flush()
-        await self._session.refresh(vacancy)
-
-        return vacancy
