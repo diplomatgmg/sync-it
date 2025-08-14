@@ -30,20 +30,18 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
         new_vacancies_ids = [v_id for v_id in newest_vacancy_ids if generate_hash(v_id) not in existing_hashes]
         logger.info("Found %s new vacancies", len(new_vacancies_ids))
 
-        vacancies: list[HeadHunterVacancyCreate] = []
-
-        for vacancy_id in new_vacancies_ids[:50]:
+        for vacancy_id in new_vacancies_ids:
             try:
-                vacancy = await head_hunter_client.get_vacancy_by_id(vacancy_id)
+                vacancy_detail = await head_hunter_client.get_vacancy_by_id(vacancy_id)
             except Exception as e:
                 logger.exception("Error processing vacancy with id %s", vacancy_id, exc_info=e)
                 continue
 
-            if not vacancy:
+            if not vacancy_detail:
                 logger.info("Skipping with id %s", vacancy_id)
                 continue
 
-            vacancy_description = clear_html(vacancy.description)
+            vacancy_description = clear_html(vacancy_detail.description)
 
             fingerprint = generate_fingerprint(vacancy_description)
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
@@ -51,30 +49,27 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
                 logger.info(
                     "Found duplicate vacancy with similarity %s%%. New vacancy link: %s, Existing vacancy link: %s, ",
                     await self.service.get_similarity_score(fingerprint, duplicate.fingerprint),
-                    vacancy.alternate_url,
+                    vacancy_detail.alternate_url,
                     duplicate.link,
                 )
-                await self.service.update_vacancy_published_at(duplicate.hash, vacancy.published_at)
+                await self.service.update_vacancy_published_at(duplicate.hash, vacancy_detail.published_at)
                 continue
 
-            vacancy_create = HeadHunterVacancyCreate(
+            vacancy = HeadHunterVacancyCreate(
                 fingerprint=fingerprint,
-                vacancy_id=vacancy.id,
-                link=vacancy.alternate_url,
-                employer=vacancy.employer.name,
-                name=vacancy.name,
-                description=clear_html(vacancy.description),
-                salary=vacancy.salary.humanize() if vacancy.salary else None,
-                experience=vacancy.experience.name,
-                schedule=vacancy.schedule.name,
-                employment=vacancy.employment.name,
-                work_formats=[wf.name for wf in vacancy.work_format],
-                key_skills=[ks.name for ks in vacancy.key_skills],
-                published_at=vacancy.published_at,
+                vacancy_id=vacancy_detail.id,
+                link=vacancy_detail.alternate_url,
+                employer=vacancy_detail.employer.name,
+                name=vacancy_detail.name,
+                description=clear_html(vacancy_detail.description),
+                salary=vacancy_detail.salary.humanize() if vacancy_detail.salary else None,
+                experience=vacancy_detail.experience.name,
+                schedule=vacancy_detail.schedule.name,
+                employment=vacancy_detail.employment.name,
+                work_formats=[wf.name for wf in vacancy_detail.work_format],
+                key_skills=[ks.name for ks in vacancy_detail.key_skills],
+                published_at=vacancy_detail.published_at,
             )
 
-            vacancies.append(vacancy_create)
-
-        for new_vacancy in vacancies:
-            await self.service.add_vacancy(new_vacancy)
-            logger.info("Added vacancy %s", new_vacancy.link)
+            await self.service.add_vacancy(vacancy)
+            logger.info("Added vacancy %s", vacancy.link)
