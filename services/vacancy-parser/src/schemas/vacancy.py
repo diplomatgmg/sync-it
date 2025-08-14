@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from database.models.enums import SourceEnum
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from utils import generate_hash
 
 
@@ -63,15 +63,16 @@ class BaseHeadHunterVacancy(BaseVacancy):
 
 
 class HeadHunterVacancyCreate(BaseHeadHunterVacancy, VacancyCreate):
-    employer: str
-    name: str
-    description: str
-    salary: str | None
-    experience: str
-    employment: str
-    schedule: str
-    work_formats: list[str]
-    key_skills: list[str]
+    # Exclude поля нужны для расчета data. Для модели они лишние
+    employer: str = Field(exclude=True)
+    name: str = Field(exclude=True)
+    description: str = Field(exclude=True)
+    salary: str | None = Field(exclude=True)
+    experience: str = Field(exclude=True)
+    employment: str = Field(exclude=True)
+    schedule: str = Field(exclude=True)
+    work_formats: list[str] = Field(exclude=True)
+    key_skills: list[str] = Field(exclude=True)
 
     @computed_field  # type: ignore[prop-decorator]
     @property
