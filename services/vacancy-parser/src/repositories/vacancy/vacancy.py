@@ -1,12 +1,10 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 
 from common.logger import get_logger
 from common.shared.repositories import BaseRepository
 from constants.fingerprint import FINGERPRINT_SIMILARITY_THRESHOLD
-from database.models import Source
-from database.models.enums import SourceEnum
-from database.models.vacancy import BaseVacancy
+from database.models import Vacancy
 from sqlalchemy import func, select, update
 
 
@@ -19,41 +17,12 @@ logger = get_logger(__name__)
 class VacancyRepository(BaseRepository):
     """Репозиторий для работы с моделями вакансий."""
 
-    source: SourceEnum
-    model: type[BaseVacancy]
-
-    __source_id: int | None = None
-
-    async def get_source_id(self) -> int:
-        if self.__source_id is not None:
-            return self.__source_id
-
-        stmt = select(Source.id).where(Source.name == self.source)
+    async def get_recent_vacancies(self, limit: int = 100) -> Sequence[Vacancy]:
+        """Получить последние актуальные вакансии."""
+        stmt = select(Vacancy).where(Vacancy.deleted_at.is_(None)).order_by(Vacancy.published_at.desc()).limit(limit)
         result = await self._session.execute(stmt)
-        source_id = result.scalar_one()
 
-        self.__source_id = source_id
-
-        return source_id
-
-    async def get_recent_vacancies(self, limit: int = 100) -> list[BaseVacancy]:
-        """Получить последние актуальные вакансии по всем сервисам."""
-        vacancies: list[BaseVacancy] = []
-
-        subclasses = BaseVacancy.__subclasses__()
-
-        for subclass in subclasses:
-            stmt = (
-                select(subclass)
-                .where(subclass.deleted_at.is_(None))
-                .order_by(subclass.published_at.desc())
-                .limit(limit)
-            )
-            result = await self._session.execute(stmt)
-            vacancies.extend(result.scalars().all())
-
-        vacancies.sort(key=lambda x: x.published_at, reverse=True)
-        return vacancies[:limit]
+        return result.scalars().all()
 
     async def mark_as_deleted(self, vacancy_hash: str) -> bool:
         """
@@ -62,34 +31,27 @@ class VacancyRepository(BaseRepository):
         True - вакансия помечена как удаленная
         False - вакансия не найдена
         """
-        for subclass in BaseVacancy.__subclasses__():
-            stmt = (
-                update(subclass)
-                .where(subclass.hash == vacancy_hash)
-                .where(subclass.deleted_at.is_(None))
-                .values(deleted_at=datetime.now(tz=UTC))
-            )
-            result = await self._session.execute(stmt)
-            if bool(result.rowcount):
-                logger.debug("Marked as deleted vacancy with hash %s", vacancy_hash)
-                return True
-
-        logger.debug("Not found vacancy with hash %s", vacancy_hash)
-        return False
+        stmt = (
+            update(Vacancy)
+            .where(Vacancy.hash == vacancy_hash)
+            .where(Vacancy.deleted_at.is_(None))
+            .values(deleted_at=datetime.now(tz=UTC))
+        )
+        result = await self._session.execute(stmt)
+        return bool(result.rowcount)
 
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         """Получить set уже существующих хешей в БД."""
-        stmt = select(self.model.hash).where(self.model.hash.in_(hashes))
+        stmt = select(Vacancy.hash).where(Vacancy.hash.in_(hashes))
         result = await self._session.execute(stmt)
 
         return set(result.scalars().all())
 
-    async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> BaseVacancy | None:
+    async def find_duplicate_vacancy_by_fingerprint(self, fingerprint: str) -> Vacancy | None:
         """Найти дубликат вакансии по содержимому."""
-
         stmt = (
-            select(self.model)
-            .where(func.similarity(self.model.fingerprint, fingerprint) > FINGERPRINT_SIMILARITY_THRESHOLD)
+            select(Vacancy)
+            .where(func.similarity(Vacancy.fingerprint, fingerprint) > FINGERPRINT_SIMILARITY_THRESHOLD)
             .limit(1)
         )
         result = await self._session.execute(stmt)
@@ -99,13 +61,5 @@ class VacancyRepository(BaseRepository):
     async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
         """Получить % схожести между двумя fingerprint."""
         result = await self._session.execute(select(func.similarity(fingerprint1, fingerprint2)))
-        score = result.scalar() or 0.0
-
-        return round(score * 100, 2)
-
-    async def add(self, vacancy: BaseVacancy) -> BaseVacancy:
-        self._session.add(vacancy)
-        await self._session.flush()
-        await self._session.refresh(vacancy)
-
-        return vacancy
+        similarity = result.scalar() or 0.0
+        return round(similarity * 100, 2)

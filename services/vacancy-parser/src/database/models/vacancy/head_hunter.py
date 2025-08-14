@@ -1,15 +1,18 @@
-from database.models.enums import SourceEnum
-from database.models.vacancy import BaseVacancy
+from database.models import Vacancy
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 
 __all__ = ["HeadHunterVacancy"]
 
 
-class HeadHunterVacancy(BaseVacancy):
-    __tablename__ = "head_hunter_vacancy"
+class HeadHunterVacancy(Vacancy):
+    __tablename__ = "head_hunter_vacancies"
+
+    id: Mapped[int] = mapped_column(ForeignKey("vacancies.id"), primary_key=True)
 
     vacancy_id: Mapped[int] = mapped_column(nullable=False)
 
-    def get_source(self) -> SourceEnum:  # noqa: PLR6301
-        return SourceEnum.HEAD_HUNTER
+    __mapper_args__ = {  # noqa: RUF012
+        "polymorphic_identity": "head_hunter",
+    }

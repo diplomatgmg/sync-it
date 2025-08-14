@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from database.models.enums import SourceEnum
 from pydantic import BaseModel, ConfigDict, computed_field
 from utils import generate_hash
 
@@ -20,6 +21,11 @@ class BaseVacancy(BaseModel):
     link: str
     published_at: datetime
 
+    @property
+    @computed_field
+    def source(self) -> SourceEnum:
+        raise NotImplementedError("Define source in child class")
+
 
 class BaseVacancyCreate(BaseVacancy):
     pass
@@ -28,7 +34,6 @@ class BaseVacancyCreate(BaseVacancy):
 class BaseVacancyRead(BaseVacancy):
     id: int
     hash: str
-    source_id: int
     deleted_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
@@ -40,6 +45,11 @@ class VacancyRead(BaseVacancyRead, BaseVacancy):
 
 class BaseHeadHunterVacancy(BaseVacancy):
     vacancy_id: int
+
+    @property
+    @computed_field
+    def source(self) -> SourceEnum:
+        return SourceEnum.HEAD_HUNTER
 
 
 class HeadHunterVacancyCreate(BaseVacancyCreate, BaseHeadHunterVacancy):
@@ -87,6 +97,11 @@ class HeadHunterVacancyRead(BaseVacancyRead, BaseHeadHunterVacancy):
 class BaseTelegramVacancy(BaseVacancy):
     channel_username: str
     message_id: int
+
+    @property
+    @computed_field
+    def source(self) -> SourceEnum:
+        return SourceEnum.TELEGRAM
 
 
 class TelegramVacancyCreate(BaseVacancyCreate, BaseTelegramVacancy):
