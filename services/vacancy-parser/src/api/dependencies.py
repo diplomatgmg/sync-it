@@ -2,8 +2,9 @@ from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi import Depends
-from services.vacancy import VacancyService
 from unitofwork import UnitOfWork
+
+from services import VacancyService
 
 
 __all__ = ["get_vacancy_service"]

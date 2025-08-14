@@ -1,5 +1,6 @@
 from schemas.vacancy import VacancyRead
-from services.vacancy import BaseVacancyService
+
+from services import BaseVacancyService
 
 
 __all__ = ["VacancyService"]

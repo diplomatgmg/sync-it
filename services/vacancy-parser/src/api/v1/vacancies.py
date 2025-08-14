@@ -4,7 +4,8 @@ from api.dependencies import get_vacancy_service
 from api.v1.schemas import VacancyDeleteResponse, VacancyListResponse
 from common.logger import get_logger
 from fastapi import APIRouter, Depends
-from services.vacancy import VacancyService
+
+from services import VacancyService
 
 
 __all__ = ["router"]

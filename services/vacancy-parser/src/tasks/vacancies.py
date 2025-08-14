@@ -4,8 +4,9 @@ from celery_app import app, loop
 from common.logger import get_logger
 from constants.telegram import channel_links
 from parsers import HeadHunterParser, TelegramParser
-from services.vacancy import HeadHunterVacancyService, TelegramVacancyService
 from unitofwork import UnitOfWork
+
+from services import HeadHunterVacancyService, TelegramVacancyService
 
 
 __all__ = ["parse_vacancies"]

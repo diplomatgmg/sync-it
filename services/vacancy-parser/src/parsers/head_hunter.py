@@ -10,7 +10,7 @@ from utils import clear_html, generate_fingerprint, generate_hash
 __all__ = ["HeadHunterParser"]
 
 if TYPE_CHECKING:
-    from services.vacancy import HeadHunterVacancyService
+    from services import HeadHunterVacancyService
 
 
 logger = get_logger(__name__)

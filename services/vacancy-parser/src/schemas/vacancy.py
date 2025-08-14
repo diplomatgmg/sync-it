@@ -21,8 +21,8 @@ class BaseVacancy(BaseModel):
     link: str
     published_at: datetime
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def source(self) -> SourceEnum:
         raise NotImplementedError("Define source in child class")
 
@@ -46,8 +46,8 @@ class VacancyRead(BaseVacancyRead, BaseVacancy):
 class BaseHeadHunterVacancy(BaseVacancy):
     vacancy_id: int
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def source(self) -> SourceEnum:
         return SourceEnum.HEAD_HUNTER
 
@@ -63,13 +63,13 @@ class HeadHunterVacancyCreate(BaseVacancyCreate, BaseHeadHunterVacancy):
     work_formats: list[str]
     key_skills: list[str]
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def hash(self) -> str:
         return generate_hash(self.vacancy_id)
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def data(self) -> str:
         text_parts: list[str] = [f"Компания: {self.employer}", f"Вакансия: {self.name}"]
         if self.salary:
@@ -98,8 +98,8 @@ class BaseTelegramVacancy(BaseVacancy):
     channel_username: str
     message_id: int
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def source(self) -> SourceEnum:
         return SourceEnum.TELEGRAM
 
@@ -107,8 +107,8 @@ class BaseTelegramVacancy(BaseVacancy):
 class TelegramVacancyCreate(BaseVacancyCreate, BaseTelegramVacancy):
     data: str
 
+    @computed_field  # type: ignore[prop-decorator]
     @property
-    @computed_field
     def hash(self) -> str:
         return generate_hash(f"{self.link}:{self.message_id}")
 

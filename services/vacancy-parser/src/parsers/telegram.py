@@ -12,7 +12,7 @@ from utils import generate_fingerprint
 __all__ = ["TelegramParser"]
 
 if TYPE_CHECKING:
-    from services.vacancy import TelegramVacancyService
+    from services import TelegramVacancyService
 
 
 logger = get_logger(__name__)
