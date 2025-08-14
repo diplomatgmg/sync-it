@@ -55,7 +55,7 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
 
     async def update_published_at(self, vacancy_hash: str, published_at: datetime) -> bool:
         """Обновляет дату публикации вакансии."""
-        stmt = update(self._model).where(self._model.hash == vacancy_hash).values(published_at=published_at)
+        stmt = update(Vacancy).where(Vacancy.hash == vacancy_hash).values(published_at=published_at)
         result = await self._session.execute(stmt)
         return bool(result.rowcount)
 
@@ -67,9 +67,9 @@ class VacancyRepository[VacancyModelType: Vacancy](BaseRepository):
         False - вакансия не найдена
         """
         stmt = (
-            update(self._model)
-            .where(self._model.hash == vacancy_hash)
-            .where(self._model.deleted_at.is_(None))
+            update(Vacancy)
+            .where(Vacancy.hash == vacancy_hash)
+            .where(Vacancy.deleted_at.is_(None))
             .values(deleted_at=datetime.now(tz=UTC))
         )
         result = await self._session.execute(stmt)
