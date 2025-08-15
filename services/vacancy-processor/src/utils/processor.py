@@ -45,7 +45,7 @@ class VacancyProcessor:
 
     async def start(self) -> None:
         logger.debug("Start processing vacancies")
-        vacancies = (await vacancy_client.fetch())[:5]  # FIXME REMOVE
+        vacancies = await vacancy_client.fetch()
         logger.info("Got %s new vacancies", len(vacancies))
 
         prompts = [make_prompt(vacancy.data) for vacancy in vacancies]

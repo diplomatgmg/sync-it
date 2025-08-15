@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class AbstractVacancyService[
     VacancyReadType: VacancyRead,
     VacancyCreateType: VacancyCreate,
-    VacancyRepositoryType: AbstractVacancyRepository[Any], # Головная боль без Any
+    VacancyRepositoryType: AbstractVacancyRepository[Any],  # Головная боль без Any
 ](BaseUOWService[UnitOfWork], ABC):
     _read_schema: type[VacancyReadType]
     _create_schema: type[VacancyCreateType]

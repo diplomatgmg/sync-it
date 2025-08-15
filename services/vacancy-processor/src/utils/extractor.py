@@ -3,7 +3,7 @@ from typing import Self
 
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillCategoryEnum, SkillEnum, WorkFormatEnum
-from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill
+from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill_enum
 
 
 __all__ = ["VacancyExtractor"]
@@ -118,7 +118,7 @@ class VacancyExtractor:
         if salary_str == "Неизвестно":
             return None
         if "обсуждается" in salary_str.lower():
-            return "None"
+            return None
 
         return salary_str
 
@@ -140,7 +140,7 @@ class VacancyExtractor:
         for part in grade_parts:
             clean_part = part.strip()
 
-            grade = GradeEnum(clean_part)
+            grade = GradeEnum.get_safe(clean_part)
             if not grade:
                 logger.warning("Unknown grade part: %s (full: %s)", clean_part, grade_str)
                 continue
@@ -167,7 +167,7 @@ class VacancyExtractor:
         for part in work_format_parts:
             clean_part = part.strip()
 
-            work_format = WorkFormatEnum(clean_part)
+            work_format = WorkFormatEnum.get_safe(clean_part)
             if not work_format:
                 logger.warning("Unknown work format part: %s (full: %s)", clean_part, work_format_str)
                 continue
@@ -194,7 +194,7 @@ class VacancyExtractor:
         for part in skills_parts:
             clean_part = part.strip()
 
-            category, skill = map_to_skill_category_and_skill(clean_part)
+            category, skill = map_to_skill_category_and_skill_enum(clean_part)
             if not skill or not category:
                 logger.warning("Unknown skill part: %s (full: %s)", clean_part, skills_str)
                 continue

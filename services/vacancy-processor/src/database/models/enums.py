@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import Self
 
 
 __all__ = [
@@ -11,13 +12,23 @@ __all__ = [
 ]
 
 
-class WorkFormatEnum(StrEnum):
+class BaseStrEnum(StrEnum):
+    @classmethod
+    def get_safe(cls, label: str) -> Self | None:
+        """Возвращает элемент Enum по строковому значению, с игнорированием регистра."""
+        for member in cls:
+            if member.value.lower() == label.lower():
+                return member
+        return None
+
+
+class WorkFormatEnum(BaseStrEnum):
     REMOTE = "Удаленка"
     HYBRID = "Гибрид"
     OFFICE = "Офис"
 
 
-class ProfessionEnum(StrEnum):
+class ProfessionEnum(BaseStrEnum):
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
@@ -27,7 +38,7 @@ class ProfessionEnum(StrEnum):
     TECH_LEAD = "Tech Lead"
 
 
-class GradeEnum(StrEnum):
+class GradeEnum(BaseStrEnum):
     INTERN = "Стажер"
     JUNIOR = "Junior"
     MIDDLE = "Middle"
@@ -35,20 +46,20 @@ class GradeEnum(StrEnum):
     LEAD = "Lead"
 
 
-class CurrencyEnum(StrEnum):
+class CurrencyEnum(BaseStrEnum):
     RUB = "RUB"
     USD = "USD"
     EUR = "EUR"
 
 
-class SkillCategoryEnum(StrEnum):
+class SkillCategoryEnum(BaseStrEnum):
     LANGUAGES = "Языки программирования"
     BACKEND = "Backend"
     FRONTEND = "Frontend"
     DEVOPS = "DevOps"
 
 
-class SkillEnum(StrEnum):
+class SkillEnum(BaseStrEnum):
     # Languages
     PYTHON = "Python"
     JAVASCRIPT = "JavaScript"
