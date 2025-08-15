@@ -22,7 +22,7 @@ class ProfessionResponse(BaseModel):
 
 
 class TelegramNewestMessagesRequest(BaseModel):
-    last_message_id: int | None
+    after_message_id: int | None
 
 
 class TelegramChannelMessageSchema(BaseModel):

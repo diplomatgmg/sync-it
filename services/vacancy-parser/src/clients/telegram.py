@@ -11,10 +11,10 @@ class _TelegramClient(BaseClient):
     url = build_service_url(ServiceEnum.TELEGRAM_API, "/api/v1/channel")
 
     async def get_newest_messages(
-        self, channel_username: str, last_message_id: int | None = None
+        self, channel_username: str, after_message_id: int | None = None
     ) -> list[TelegramChannelMessageSchema]:
         url = f"{self.url}/{channel_username}/messages"
-        params = TelegramNewestMessagesRequest(last_message_id=last_message_id)
+        params = TelegramNewestMessagesRequest(after_message_id=after_message_id)
 
         response = await self.client.get(url, params=params.model_dump(exclude_none=True))
         response.raise_for_status()

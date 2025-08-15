@@ -3,6 +3,7 @@ import asyncio
 from clients.schemas import TelegramDetailedMessageParams, TelegramPingResponse
 from common.logger import get_logger
 from common.shared.clients import BaseClient
+from common.shared.decorators import limit_requests
 from httpx import URL
 from parsers import TelegramParser
 from schemas import ChannelMessageSchema
@@ -37,9 +38,11 @@ class _TelegramClient(BaseClient):
 
         return TelegramParser.parse_message_id(response.text)
 
+    @limit_requests(concurrency_limit=5, requests_per_second=5)
     async def get_detailed_message(self, channel_username: str, message_id: int) -> ChannelMessageSchema | None:
-        url = self.url.join(f"{channel_username}/{message_id}")
+        url = f"{self.url}/{channel_username}/{message_id}"
 
+        # +1 т.к. надо подгрузить до переданного message_id
         params_model = TelegramDetailedMessageParams(before=message_id + 1)
 
         response = await self.client.get(url, params=params_model.model_dump())
@@ -58,7 +61,7 @@ class _TelegramClient(BaseClient):
         messages: list[ChannelMessageSchema] = []
         for result in results:
             if isinstance(result, BaseException):
-                logger.error("Failed to get message: %s", result)
+                logger.error("Failed to get message", exc_info=result)
                 continue
 
             if result:
