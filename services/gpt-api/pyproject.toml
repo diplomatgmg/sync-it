@@ -8,6 +8,7 @@ dependencies = [
     "syncit-core",
     "logger-lib",
     "environment-lib",
+    "sentry-lib",
 ]
 
 [dependency-groups]
@@ -19,4 +20,5 @@ dev = [
 syncit-core = { workspace = true }
 logger-lib = { workspace = true }
 environment-lib = { workspace = true }
+sentry-lib = { workspace = true }
 

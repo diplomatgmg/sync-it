@@ -43,6 +43,7 @@ FROM builder AS source
 COPY ${SERVICE_PATH}/src ${SERVICE_PATH}/src
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/environment ./libs/common/environment
+COPY ./libs/common/sentry ./libs/common/sentry
 
 
 # ============================ #

@@ -157,6 +157,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "gateway-lib" },
     { name = "logger-lib" },
+    { name = "sentry-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -172,6 +173,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115.13" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
@@ -500,6 +502,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "g4f" },
     { name = "logger-lib" },
+    { name = "sentry-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -515,6 +518,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "g4f", specifier = ">=0.6.0.1" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
@@ -1042,11 +1046,15 @@ wheels = [
 name = "sentry-lib"
 source = { virtual = "libs/common/sentry" }
 dependencies = [
+    { name = "logger-lib" },
     { name = "sentry-sdk" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "sentry-sdk", specifier = ">=2.35.0" }]
+requires-dist = [
+    { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "sentry-sdk", specifier = ">=2.35.0" },
+]
 
 [[package]]
 name = "sentry-sdk"
@@ -1186,6 +1194,7 @@ dependencies = [
     { name = "environment-lib" },
     { name = "fastapi" },
     { name = "logger-lib" },
+    { name = "sentry-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -1201,6 +1210,7 @@ requires-dist = [
     { name = "environment-lib", virtual = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
@@ -1218,6 +1228,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "gateway-lib" },
     { name = "logger-lib" },
+    { name = "sentry-lib" },
     { name = "shared-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1237,6 +1248,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.35.0" },
@@ -1342,6 +1354,7 @@ dependencies = [
     { name = "gateway-lib" },
     { name = "logger-lib" },
     { name = "redis-lib" },
+    { name = "sentry-lib" },
     { name = "shared-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1360,6 +1373,7 @@ requires-dist = [
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "redis-lib", virtual = "libs/common/redis" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
@@ -1378,6 +1392,7 @@ dependencies = [
     { name = "gateway-lib" },
     { name = "logger-lib" },
     { name = "redis-lib" },
+    { name = "sentry-lib" },
     { name = "shared-lib" },
     { name = "syncit-core" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1396,6 +1411,7 @@ requires-dist = [
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
     { name = "redis-lib", virtual = "libs/common/redis" },
+    { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },

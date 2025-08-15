@@ -25,12 +25,6 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
-COPY ${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
-COPY ./libs/common/environment/pyproject.toml ./libs/common/environment/pyproject.toml
-COPY ./libs/common/shared/pyproject.toml ./libs/common/shared/pyproject.toml
-COPY ./libs/common/logger/pyproject.toml ./libs/common/logger/pyproject.toml
-COPY ./libs/common/database/pyproject.toml ./libs/common/database/pyproject.toml
-COPY ./libs/common/redis/pyproject.toml ./libs/common/redis/pyproject.toml
 
 FROM deps-base AS deps-dev
 
@@ -54,6 +48,7 @@ COPY ./libs/common/shared ./libs/common/shared
 COPY ./libs/common/logger ./libs/common/logger
 COPY ./libs/common/redis ./libs/common/redis
 COPY ./libs/common/gateway ./libs/common/gateway
+COPY ./libs/common/sentry ./libs/common/sentry
 
 
 # ============================ #

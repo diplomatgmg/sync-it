@@ -3,6 +3,8 @@ from common.gateway.config import gateway_config
 from common.gateway.enums import ServiceEnum
 from common.logger import get_logger
 from common.logger.config import log_config
+from common.sentry.enums import IntegrationImportsEnum
+from common.sentry.initialize import init_sentry
 from dependencies import validate_api_key
 from fastapi import Depends, FastAPI, Request, Response
 from httpx import AsyncClient
@@ -64,6 +66,14 @@ async def healthcheck() -> HealthResponse:
 
 
 def main() -> None:
+    init_sentry(
+        [
+            IntegrationImportsEnum.FASTAPI,
+            IntegrationImportsEnum.HTTPX,
+            IntegrationImportsEnum.LOGGING,
+        ]
+    )
+
     uvicorn.run(
         "main:app",
         host=gateway_config.host,
