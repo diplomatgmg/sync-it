@@ -8,15 +8,15 @@ __all__ = [
 
 
 class SalaryCurrency(StrEnum):
-    RUR = "RUR" # российский рубль
-    EUR = "EUR" # евро
-    USD = "USD" # доллар
-    KZT = "KZT" # тенге
-    BYR = "BYR" # белорусский рубль
-    GEL = "GEL" # грузинский лари
-    UZS = "UZS" # узбекский сум
-    KGS = "KGS" # киргизский сом
-    AZN = "AZN" # азербайджанский манат
+    RUR = "RUR"  # российский рубль
+    EUR = "EUR"  # евро
+    USD = "USD"  # доллар
+    KZT = "KZT"  # тенге
+    BYR = "BYR"  # белорусский рубль
+    GEL = "GEL"  # грузинский лари
+    UZS = "UZS"  # узбекский сум
+    KGS = "KGS"  # киргизский сом
+    AZN = "AZN"  # азербайджанский манат
 
     def humanize(self) -> str:
         match self:
