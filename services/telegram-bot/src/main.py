@@ -18,7 +18,6 @@ async def main() -> None:
             IntegrationImportsEnum.FASTAPI,
             IntegrationImportsEnum.HTTPX,
             IntegrationImportsEnum.LOGGING,
-            IntegrationImportsEnum.REDIS,
             IntegrationImportsEnum.SQLALCHEMY,
         ]
     )
