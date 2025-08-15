@@ -10,6 +10,9 @@ __all__ = ["telegram_client"]
 class _TelegramClient(BaseClient):
     url = build_service_url(ServiceEnum.TELEGRAM_API, "/api/v1/channel")
 
+    def configure_client(self) -> None:
+        self.client.timeout = 30
+
     async def get_newest_messages(
         self, channel_username: str, after_message_id: int | None = None
     ) -> list[TelegramChannelMessageSchema]:

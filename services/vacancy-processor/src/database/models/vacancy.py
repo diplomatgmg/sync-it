@@ -21,7 +21,7 @@ class Vacancy(Base):
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
 
-    company_name: Mapped[str | None] = mapped_column(String(64))
+    company_name: Mapped[str | None] = mapped_column(String(128))
     salary: Mapped[str | None] = mapped_column(String(32))
     workplace_description: Mapped[str | None] = mapped_column(Text)
     responsibilities: Mapped[str | None] = mapped_column(Text)
