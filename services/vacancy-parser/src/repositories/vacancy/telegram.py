@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from database.models import TelegramVacancy
-from repositories import VacancyRepository
+from repositories import AbstractVacancyRepository
 from sqlalchemy import func, select
 
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from parsers.schemas import TelegramChannelUrl
 
 
-class TelegramVacancyRepository(VacancyRepository[TelegramVacancy]):
+class TelegramVacancyRepository(AbstractVacancyRepository[TelegramVacancy]):
     _model = TelegramVacancy
 
     async def get_last_message_id(self, link: "TelegramChannelUrl") -> int | None:

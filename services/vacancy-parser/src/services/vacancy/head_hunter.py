@@ -2,22 +2,22 @@ from database.models import HeadHunterVacancy
 from repositories import HeadHunterVacancyRepository
 from schemas.vacancy import HeadHunterVacancyCreate, HeadHunterVacancyRead
 
-from services import VacancyService
+from services import AbstractVacancyService
 
 
 __all__ = ["HeadHunterVacancyService"]
 
 
 class HeadHunterVacancyService(
-    VacancyService[HeadHunterVacancyRead, HeadHunterVacancyCreate, HeadHunterVacancyRepository]
+    AbstractVacancyService[HeadHunterVacancyRead, HeadHunterVacancyCreate, HeadHunterVacancyRepository]
 ):
     """Сервис для бизнес-логики, связанной с вакансиями из HeadHunter."""
 
     _read_schema = HeadHunterVacancyRead
     _create_schema = HeadHunterVacancyCreate
-    _repo: "HeadHunterVacancyRepository"  # type: ignore[assignment]
+    _repo: "HeadHunterVacancyRepository"
 
-    def _get_repo(self) -> "HeadHunterVacancyRepository":  # type: ignore[override]
+    def _get_repo(self) -> "HeadHunterVacancyRepository":
         return self._uow.hh_vacancies
 
     async def get_vacancy_by_id(self, vacancy_id: int) -> HeadHunterVacancyRead | None:

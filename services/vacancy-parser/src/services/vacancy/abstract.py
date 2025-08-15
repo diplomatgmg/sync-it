@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common.shared.services import BaseUOWService
 from schemas.vacancy import VacancyCreate, VacancyRead
@@ -11,20 +11,20 @@ from unitofwork import UnitOfWork
 __all__ = ["AbstractVacancyService"]
 
 if TYPE_CHECKING:
-    from repositories import VacancyRepository
+    from repositories import AbstractVacancyRepository
 
 
 class AbstractVacancyService[
     VacancyReadType: VacancyRead,
     VacancyCreateType: VacancyCreate,
-    VacancyRepositoryType: VacancyRepository,
+    VacancyRepositoryType: AbstractVacancyRepository[Any], # Головная боль без Any
 ](BaseUOWService[UnitOfWork], ABC):
     _read_schema: type[VacancyReadType]
     _create_schema: type[VacancyCreateType]
     _repo: "VacancyRepositoryType"
 
-    def __init__(self, uow: "UnitOfWork") -> None:
-        super().__init__(uow)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
         self._repo = self._get_repo()
 
     @abstractmethod

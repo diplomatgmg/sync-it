@@ -5,7 +5,7 @@ from repositories import AbstractVacancyRepository
 __all__ = ["VacancyRepository"]
 
 
-class VacancyRepository[VacancyType: Vacancy = Vacancy](AbstractVacancyRepository[VacancyType]):
+class VacancyRepository(AbstractVacancyRepository[Vacancy]):
     """Репозиторий для работы с моделями вакансий."""
 
-    _model = Vacancy  # type: ignore[assignment]
+    _model = Vacancy

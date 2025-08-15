@@ -10,7 +10,7 @@ from sqlalchemy import func, select, update
 __all__ = ["AbstractVacancyRepository"]
 
 
-class AbstractVacancyRepository[VacancyType: Vacancy = Vacancy](BaseRepository):
+class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
     """Абстрактный репозиторий для работы с моделями вакансий."""
 
     _model: type[VacancyType]
