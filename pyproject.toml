@@ -28,6 +28,7 @@ logger-lib = { workspace = true }
 redis-lib = { workspace = true }
 gateway-lib = { workspace = true }
 shared-lib = { workspace = true }
+sentry-lib = { workspace = true }
 
 [tool.uv.workspace]
 members = [
