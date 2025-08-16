@@ -39,14 +39,12 @@ async def run_all_parsers() -> None:
 async def parse_telegram_vacancies() -> None:
     async with UnitOfWork() as uow:
         service = TelegramVacancyService(uow)
-        parser = TelegramParser(service, channel_links)
+        parser = TelegramParser(uow, service, channel_links)
         await parser.parse()
-        await uow.commit()
 
 
 async def parse_head_hunter_vacancies() -> None:
     async with UnitOfWork() as uow:
         service = HeadHunterVacancyService(uow)
-        parser = HeadHunterParser(service)
+        parser = HeadHunterParser(uow, service)
         await parser.parse()
-        await uow.commit()

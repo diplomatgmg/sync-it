@@ -4,6 +4,7 @@ from clients.head_hunter import head_hunter_client
 from common.logger import get_logger
 from parsers.base import BaseParser
 from schemas.vacancy import HeadHunterVacancyCreate
+from unitofwork import UnitOfWork
 from utils import clear_html, generate_fingerprint, generate_hash
 
 
@@ -17,8 +18,8 @@ logger = get_logger(__name__)
 
 
 class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
-    def __init__(self, service: "HeadHunterVacancyService") -> None:
-        super().__init__(service)
+    def __init__(self, uow: UnitOfWork, service: "HeadHunterVacancyService") -> None:
+        super().__init__(uow, service)
         self.service = service
 
     async def parse(self) -> None:
@@ -82,4 +83,5 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
             )
 
             await self.service.add_vacancy(vacancy)
+            await self.uow.commit()
             logger.info("Added vacancy %s", vacancy.link)

@@ -5,6 +5,7 @@ from common.logger import get_logger
 from parsers.base import BaseParser
 from parsers.schemas import TelegramChannelUrl
 from schemas.vacancy import TelegramVacancyCreate
+from unitofwork import UnitOfWork
 from utils import generate_fingerprint
 
 from services import TelegramVacancyService
@@ -17,8 +18,10 @@ logger = get_logger(__name__)
 
 
 class TelegramParser(BaseParser[TelegramVacancyService]):
-    def __init__(self, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]) -> None:
-        super().__init__(service)
+    def __init__(
+        self, uow: UnitOfWork, service: TelegramVacancyService, channel_links: Iterable[TelegramChannelUrl]
+    ) -> None:
+        super().__init__(uow, service)
         self.channel_links = channel_links
 
     async def parse(self) -> None:
@@ -89,6 +92,7 @@ class TelegramParser(BaseParser[TelegramVacancyService]):
 
         for new_vacancy in new_vacancies:
             await self.service.add_vacancy(new_vacancy)
+            await self.uow.commit()
             logger.info("New vacancy: %s", new_vacancy.link)
 
     async def _get_new_vacancies(self, vacancies: list[TelegramVacancyCreate]) -> list[TelegramVacancyCreate]:

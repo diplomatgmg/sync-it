@@ -69,6 +69,7 @@ class VacancyProcessor:
             extracted_vacancy = self.vacancy_extractor.extract(completion)
 
             await self._save_vacancy_in_transaction(vacancy, extracted_vacancy)
+            await self.uow.commit()
             await vacancy_client.delete(vacancy)
         except Exception as e:
             logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
