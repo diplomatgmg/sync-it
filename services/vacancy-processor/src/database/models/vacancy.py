@@ -22,7 +22,7 @@ class Vacancy(Base):
     link: Mapped[str] = mapped_column(String(256), unique=True)
 
     company_name: Mapped[str | None] = mapped_column(String(128))
-    salary: Mapped[str | None] = mapped_column(String(32))
+    salary: Mapped[str | None] = mapped_column(String(64))
     workplace_description: Mapped[str | None] = mapped_column(Text)
     responsibilities: Mapped[str | None] = mapped_column(Text)
     requirements: Mapped[str | None] = mapped_column(Text)
