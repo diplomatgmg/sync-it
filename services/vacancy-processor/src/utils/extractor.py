@@ -119,6 +119,8 @@ class VacancyExtractor:
             return None
         if "обсуждается" in salary_str.lower():
             return None
+        if "собеседов" in salary_str.lower():
+            return None
 
         return salary_str
 
