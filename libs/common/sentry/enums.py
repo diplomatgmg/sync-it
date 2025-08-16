@@ -1,8 +1,13 @@
 from enum import StrEnum
 import importlib
+import logging
+from typing import TYPE_CHECKING
 
 from sentry_sdk.integrations import Integration
 
+
+if TYPE_CHECKING:
+    from sentry_sdk.integrations.logging import LoggingIntegration
 
 __all__ = [
     "IntegrationImportsEnum",
@@ -27,4 +32,9 @@ class IntegrationImportsEnum(StrEnum):
         module_name, class_name = self.rsplit(".", 1)
         module = importlib.import_module(module_name)
         integration_class: type[Integration] = getattr(module, class_name)
+
+        if self is IntegrationImportsEnum.LOGGING:
+            integration_class: type[LoggingIntegration]  # type: ignore[no-redef]
+            return integration_class(level=logging.DEBUG, event_level=logging.WARNING)  # type: ignore[call-arg]
+
         return integration_class()
