@@ -1,6 +1,7 @@
 from aiogram import Dispatcher
 from common.environment.config import env_config
 from common.logger import get_logger
+from middlewares.answer_callback import AnswerCallbackMiddleware
 from middlewares.auth import AuthMiddleware
 from middlewares.database import DatabaseMiddleware
 from middlewares.logging import LoggingMiddleware
@@ -26,3 +27,5 @@ def register_middlewares(dp: Dispatcher) -> None:
     dp.update.outer_middleware(DatabaseMiddleware())
     dp.update.outer_middleware(ServiceMiddleware())
     dp.message.middleware(AuthMiddleware())
+
+    dp.callback_query.middleware(AnswerCallbackMiddleware())
