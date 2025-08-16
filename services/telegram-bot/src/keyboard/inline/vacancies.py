@@ -22,7 +22,7 @@ def vacancies_keyboard(
     if previous_vacancy_id:
         row.append(
             InlineKeyboardButton(
-                text="← Предыдущая",
+                text="⬅️",
                 callback_data=VacancyCallback(
                     action=VacancyActionEnum.SHOW_VACANCY,
                     vacancy_id=previous_vacancy_id,
@@ -32,7 +32,7 @@ def vacancies_keyboard(
     else:
         row.append(
             InlineKeyboardButton(
-                text="← Предыдущая",
+                text="❌",
                 callback_data=NoopCallback(action=NoopActionEnum.DO_NOTHING).pack(),
             )
         )
@@ -45,7 +45,7 @@ def vacancies_keyboard(
     if next_vacancy_id:
         row.append(
             InlineKeyboardButton(
-                text="Следующая →",
+                text="➡️",
                 callback_data=VacancyCallback(
                     action=VacancyActionEnum.SHOW_VACANCY,
                     vacancy_id=next_vacancy_id,
@@ -55,7 +55,7 @@ def vacancies_keyboard(
     else:
         row.append(
             InlineKeyboardButton(
-                text="Следующая →",
+                text="❌",
                 callback_data=NoopCallback(action=NoopActionEnum.DO_NOTHING).pack(),
             )
         )
