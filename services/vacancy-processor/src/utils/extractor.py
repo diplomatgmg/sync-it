@@ -144,7 +144,7 @@ class VacancyExtractor:
 
             grade = GradeEnum.get_safe(clean_part)
             if not grade:
-                logger.warning("Unknown grade part: %s (full: %s)", clean_part, grade_str)
+                logger.warning("Unknown grade part: %s", clean_part)
                 continue
 
             grades.append(grade)
@@ -171,7 +171,7 @@ class VacancyExtractor:
 
             work_format = WorkFormatEnum.get_safe(clean_part)
             if not work_format:
-                logger.warning("Unknown work format part: %s (full: %s)", clean_part, work_format_str)
+                logger.warning("Unknown work format part: %s", clean_part)
                 continue
 
             work_formats.append(work_format)
@@ -198,7 +198,7 @@ class VacancyExtractor:
 
             category, skill = map_to_skill_category_and_skill_enum(clean_part)
             if not skill or not category:
-                logger.warning("Unknown skill part: %s (full: %s)", clean_part, skills_str)
+                logger.warning("Unknown skill part: %s", clean_part)
                 continue
 
             skills.append((category, skill))
