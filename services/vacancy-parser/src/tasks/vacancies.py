@@ -1,7 +1,9 @@
 import asyncio
+from datetime import timedelta
 
 from celery_app import app, loop
 from common.logger import get_logger
+from common.shared.decorators.singleton import singleton
 from constants.telegram import channel_links
 from parsers import HeadHunterParser, TelegramParser
 from unitofwork import UnitOfWork
@@ -16,6 +18,7 @@ logger = get_logger(__name__)
 
 
 @app.task(name="parse_vacancies")
+@singleton(timedelta(minutes=30))
 def parse_vacancies() -> None:
     """Основная задача Celery для запуска всех парсеров."""
     loop.run_until_complete(run_all_parsers())

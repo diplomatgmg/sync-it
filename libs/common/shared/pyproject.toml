@@ -4,6 +4,8 @@ dynamic = ["version"]
 dependencies = [
     "async-lru>=2.0.5",
     "database-lib",
+    "redis-lib",
+    "logger-lib",
 ]
 
 [tool.setuptools.packages.find]

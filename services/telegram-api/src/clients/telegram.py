@@ -3,7 +3,7 @@ import asyncio
 from clients.schemas import TelegramDetailedMessageParams, TelegramPingResponse
 from common.logger import get_logger
 from common.shared.clients import BaseClient
-from common.shared.decorators import limit_requests
+from common.shared.decorators.concurency import limit_requests
 from httpx import URL
 from parsers import TelegramParser
 from schemas import ChannelMessageSchema

@@ -8,7 +8,7 @@ from clients.head_hunter.schemas import (
 from clients.profession import profession_client
 from common.logger import get_logger
 from common.shared.clients import BaseClient
-from common.shared.decorators import limit_requests
+from common.shared.decorators.concurency import limit_requests
 from core import service_config
 from httpx import URL, QueryParams, codes
 

@@ -11,10 +11,15 @@ class RedisConfig(BaseSettings):
     host: str
     port: int = Field(ge=1, le=65535)
 
+    cache_db: int
     celery_broker_db: int
     celery_result_db: int
 
     model_config = SettingsConfigDict(env_prefix="REDIS_")
+
+    @property
+    def cache_dsn(self) -> RedisDsn:
+        return self._dsn(db=self.cache_db)
 
     @property
     def celery_broker_dsn(self) -> RedisDsn:
