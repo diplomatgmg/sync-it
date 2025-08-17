@@ -45,36 +45,38 @@ class VacancyProcessor:
 
     async def start(self) -> None:
         logger.debug("Start processing vacancies")
-        vacancies = await vacancy_client.fetch()
+        vacancies = await vacancy_client.get_vacancies()
+        vacancy_hashes = [vacancy.hash for vacancy in vacancies]
+        existing_hashes = await self.vacancy_service.get_existing_hashes(vacancy_hashes)
+        new_vacancies = [v for v in vacancies if v.hash not in existing_hashes]
         logger.info("Got %s new vacancies", len(vacancies))
 
-        prompts = [make_prompt(vacancy.data) for vacancy in vacancies]
+        prompts = [make_prompt(vacancy.data) for vacancy in new_vacancies]
 
-        for prompt, vacancy in zip(prompts, vacancies, strict=True):
-            await self.process_prompt(prompt, vacancy)
-
-    async def process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
-        try:
-            completion = await gpt_client.get_completion(prompt)
-
-            bad_completions = (
-                "Не вакансия",
-                "It seems that this video doesn't have a transcript, please try another video",
-            )
-            if any(bad_completion in completion for bad_completion in bad_completions):
-                logger.debug("Not a vacancy: %s", vacancy.link)
-                await vacancy_client.delete(vacancy)
+        for prompt, vacancy in zip(prompts, new_vacancies, strict=True):
+            try:
+                await self._process_prompt(prompt, vacancy)
+            except Exception as e:
+                logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
                 return
 
-            extracted_vacancy = self.vacancy_extractor.extract(completion)
+    async def _process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
+        completion = await gpt_client.get_completion(prompt)
 
-            await self._save_vacancy_in_transaction(vacancy, extracted_vacancy)
-            await self.uow.commit()
+        bad_completions = (
+            "Не вакансия",
+            "It seems that this video doesn't have a transcript, please try another video",
+        )
+        if any(bad_completion in completion for bad_completion in bad_completions):
+            logger.debug("Not a vacancy: %s", vacancy.link)
             await vacancy_client.delete(vacancy)
-        except Exception as e:
-            logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
-            # Rollback произойдет автоматически при выходе из `get_async_session`
             return
+
+        extracted_vacancy = self.vacancy_extractor.extract(completion)
+
+        await self._save_vacancy_in_transaction(vacancy, extracted_vacancy)
+        await self.uow.commit()
+        await vacancy_client.delete(vacancy)
 
     async def _save_vacancy_in_transaction(self, vacancy: VacancySchema, extracted_vacancy: VacancyExtractor) -> None:
         """Собирает и сохраняет модель вакансии в рамках переданной сессии."""

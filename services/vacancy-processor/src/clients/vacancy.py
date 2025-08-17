@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 class _VacancyClient(BaseClient):
     url = build_service_url(ServiceEnum.VACANCY_PARSER, "/api/v1/vacancies")
 
-    async def fetch(self) -> list[VacancySchema]:
+    async def get_vacancies(self) -> list[VacancySchema]:
         response = await self.client.get(self.url)
         response.raise_for_status()
 

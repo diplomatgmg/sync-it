@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from datetime import datetime
 from typing import Any, TypeVar
 
@@ -24,6 +24,13 @@ class VacancyRepository(BaseRepository):
         await self._session.refresh(vacancy, attribute_names=["profession", "skills", "grades", "work_formats"])
 
         return vacancy
+
+    async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
+        """Получить set уже существующих хешей в БД."""
+        stmt = select(Vacancy.hash).where(Vacancy.hash.in_(hashes))
+        result = await self._session.execute(stmt)
+
+        return set(result.scalars().all())
 
     async def get_by_id(self, vacancy_id: int) -> Vacancy | None:
         """Получает вакансию по ее id."""

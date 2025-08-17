@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 from common.shared.services import BaseUOWService
 from database.models import Vacancy
@@ -37,6 +37,9 @@ class VacancyService(BaseUOWService[UnitOfWork]):
         created_vacancy = await self._uow.vacancies.add(vacancy_model)
 
         return VacancyRead.model_validate(created_vacancy)
+
+    async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
+        return await self._uow.vacancies.get_existing_hashes(hashes)
 
     async def get_vacancies(
         self,
