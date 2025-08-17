@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 
 class _TelegramClient(BaseClient):
-    url = URL("https://t.me/s")
+    url = URL("https://t.me")
     _parser = TelegramParser
 
     async def ping(self) -> TelegramPingResponse:
@@ -27,7 +27,7 @@ class _TelegramClient(BaseClient):
         return TelegramPingResponse()
 
     async def get_newest_message_id(self, channel_username: str) -> int | None:
-        url = f"{self.url}/{channel_username}"
+        url = f"{self.url}/s/{channel_username}"
         response = await self.client.get(url)
 
         if response.is_redirect:
@@ -40,7 +40,7 @@ class _TelegramClient(BaseClient):
 
     @limit_requests(concurrency_limit=25, requests_per_second=25)
     async def get_detailed_message(self, channel_username: str, message_id: int) -> ChannelMessageSchema | None:
-        url = f"{self.url}/{channel_username}/{message_id}"
+        url = f"{self.url}/s/{channel_username}/{message_id}"
 
         # +1 т.к. надо подгрузить до переданного message_id
         params_model = TelegramDetailedMessageParams(before=message_id + 1)
