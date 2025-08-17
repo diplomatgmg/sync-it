@@ -31,3 +31,4 @@ async def async_process_vacancies() -> None:
             uow, extractor, vacancy_service, grade_service, profession_service, work_format_service, skill_service
         )
         await processor.start()
+        await uow.commit()

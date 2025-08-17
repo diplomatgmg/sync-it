@@ -50,29 +50,16 @@ class TelegramParser(BaseParser[TelegramVacancyService]):
         vacancies: list[TelegramVacancyCreate] = []
         for message in newest_messages:
             fingerprint = generate_fingerprint(message.text)
-            if fingerprint in self._processed_fingerprints:
-                logger.debug(
-                    "Skipping vacancy %s/%s because fingerprint already processed in this run",
-                    channel_link,
-                    message.id,
-                )
-                continue
-
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(
-                    "Found duplicate vacancy with similarity %s%%. "
-                    "New vacancy link: %s/%s, "
-                    "Existing vacancy link: %s, ",
-                    await self.service.get_similarity_score(fingerprint, duplicate.fingerprint),
+                    "Found duplicate vacancy. New vacancy link: %s/%s, Existing vacancy link: %s",
                     channel_link,
                     message.id,
                     duplicate.link,
                 )
                 await self.service.update_vacancy_published_at(duplicate.hash, message.datetime)
                 continue
-
-            self._processed_fingerprints.add(fingerprint)
 
             vacancy_create = TelegramVacancyCreate(
                 fingerprint=fingerprint,
@@ -92,8 +79,7 @@ class TelegramParser(BaseParser[TelegramVacancyService]):
 
         for new_vacancy in new_vacancies:
             await self.service.add_vacancy(new_vacancy)
-            await self.uow.commit()
-            logger.info("New vacancy: %s", new_vacancy.link)
+            logger.info("Added vacancy: %s", new_vacancy.link)
 
     async def _get_new_vacancies(self, vacancies: list[TelegramVacancyCreate]) -> list[TelegramVacancyCreate]:
         vacancy_hashes = [v.hash for v in vacancies]

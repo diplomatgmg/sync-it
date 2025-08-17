@@ -46,13 +46,6 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
             vacancy_description = clear_html(vacancy_detail.description)
 
             fingerprint = generate_fingerprint(vacancy_description)
-            if fingerprint in self._processed_fingerprints:
-                logger.info(
-                    "Skipping vacancy %s because fingerprint already processed in this run",
-                    vacancy_detail.alternate_url,
-                )
-                continue
-
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(
@@ -63,8 +56,6 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
                 )
                 await self.service.update_vacancy_published_at(duplicate.hash, vacancy_detail.published_at)
                 continue
-
-            self._processed_fingerprints.add(fingerprint)
 
             vacancy = HeadHunterVacancyCreate(
                 fingerprint=fingerprint,

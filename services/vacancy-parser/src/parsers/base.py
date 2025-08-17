@@ -14,7 +14,6 @@ class BaseParser[ServiceType](ABC):
     def __init__(self, uow: UnitOfWork, service: ServiceType) -> None:
         self.uow = uow
         self.service = service
-        self._processed_fingerprints: set[str] = set()
 
     @abstractmethod
     async def parse(self) -> None:

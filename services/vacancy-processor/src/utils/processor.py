@@ -46,14 +46,11 @@ class VacancyProcessor:
     async def start(self) -> None:
         logger.debug("Start processing vacancies")
         vacancies = await vacancy_client.get_vacancies()
-        vacancy_hashes = [vacancy.hash for vacancy in vacancies]
-        existing_hashes = await self.vacancy_service.get_existing_hashes(vacancy_hashes)
-        new_vacancies = [v for v in vacancies if v.hash not in existing_hashes]
         logger.info("Got %s new vacancies", len(vacancies))
 
-        prompts = [make_prompt(vacancy.data) for vacancy in new_vacancies]
+        prompts = [make_prompt(vacancy.data) for vacancy in vacancies]
 
-        for prompt, vacancy in zip(prompts, new_vacancies, strict=True):
+        for prompt, vacancy in zip(prompts, vacancies, strict=True):
             try:
                 await self._process_prompt(prompt, vacancy)
             except Exception as e:
@@ -75,7 +72,6 @@ class VacancyProcessor:
         extracted_vacancy = self.vacancy_extractor.extract(completion)
 
         await self._save_vacancy_in_transaction(vacancy, extracted_vacancy)
-        await self.uow.commit()
         await vacancy_client.delete(vacancy)
 
     async def _save_vacancy_in_transaction(self, vacancy: VacancySchema, extracted_vacancy: VacancyExtractor) -> None:
