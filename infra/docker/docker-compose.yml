@@ -141,6 +141,8 @@ services:
         condition: service_healthy
       pgbouncer:
         condition: service_healthy
+      vacancy-parser:
+        condition: service_healthy
 
   vacancy-parser-beat:
     extends:
@@ -180,6 +182,8 @@ services:
       redis:
         condition: service_healthy
       pgbouncer:
+        condition: service_healthy
+      vacancy-processor:
         condition: service_healthy
 
   vacancy-processor-beat:
