@@ -1,10 +1,10 @@
 from enum import StrEnum
 
 
-__all__ = ["LogLevel"]
+__all__ = ["LogLevelEnum"]
 
 
-class LogLevel(StrEnum):
+class LogLevelEnum(StrEnum):
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"

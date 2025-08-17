@@ -1,5 +1,4 @@
 from common.logger import get_logger
-from common.sentry.enums import IntegrationImportsEnum
 from common.sentry.initialize import init_sentry
 from core import service_config
 from setup import start_polling, start_webhook
@@ -13,14 +12,7 @@ logger = get_logger(__name__)
 
 
 async def main() -> None:
-    init_sentry(
-        [
-            IntegrationImportsEnum.FASTAPI,
-            IntegrationImportsEnum.HTTPX,
-            IntegrationImportsEnum.LOGGING,
-            IntegrationImportsEnum.SQLALCHEMY,
-        ]
-    )
+    init_sentry()
 
     if service_config.use_webhook:
         await start_webhook()

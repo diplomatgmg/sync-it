@@ -3,7 +3,6 @@ import asyncio
 from celery import Celery
 from celery_app.beat import beat_schedule
 from common.redis.config import redis_config
-from common.sentry.enums import IntegrationImportsEnum
 from common.sentry.initialize import init_sentry
 
 
@@ -13,7 +12,8 @@ __all__ = [
 ]
 
 
-init_sentry([IntegrationImportsEnum.CELERY])
+init_sentry()
+
 
 loop = asyncio.new_event_loop()
 app = Celery(

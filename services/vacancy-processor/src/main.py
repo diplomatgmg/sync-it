@@ -5,7 +5,6 @@ from api import router as api_router
 from api.v1 import router as v1_router
 from common.environment.config import env_config
 from common.logger.config import log_config
-from common.sentry.enums import IntegrationImportsEnum
 from common.sentry.initialize import init_sentry
 from fastapi import FastAPI
 from seeds import seed_models
@@ -24,15 +23,7 @@ app.include_router(v1_router, prefix="/api/v1")
 
 
 def main() -> None:
-    init_sentry(
-        [
-            IntegrationImportsEnum.FASTAPI,
-            IntegrationImportsEnum.HTTPX,
-            IntegrationImportsEnum.LOGGING,
-            IntegrationImportsEnum.REDIS,
-            IntegrationImportsEnum.SQLALCHEMY,
-        ]
-    )
+    init_sentry()
 
     uvicorn.run(
         "main:app",
