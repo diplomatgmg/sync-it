@@ -5,6 +5,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 from clients.vacancy import vacancy_client
+from common.logger import get_logger
 from database.models.enums import PreferenceCategoryCodeEnum
 from exceptions import MessageNotModifiedError
 from keyboard.inline.main import main_menu_keyboard
@@ -17,6 +18,8 @@ from services import UserService
 
 __all__ = ["router"]
 
+
+logger = get_logger(__name__)
 
 router = Router(name=VacancyCallback.__prefix__)
 
@@ -78,7 +81,11 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
         vacancy_text += f"\n<b>Условия:</b>\n{vacancy.conditions}\n"
 
     vacancy_text += f"\n<b>Дата публикации:</b> {format_publication_time(vacancy.published_at)}\n"
-    vacancy_text += f"<b>Ссылка:</b> <a href='{vacancy.link}'>{vacancy.link}</a>"
+
+    max_text_length = 4096
+    if len(vacancy_text) > max_text_length:
+        vacancy_text = vacancy_text[:max_text_length]
+        logger.error("Vacancy text is too long. %s, %s", vacancy.id, vacancy.link)
 
     with suppress(MessageNotModifiedError):
         await safe_edit_message(
