@@ -12,12 +12,12 @@ __all__ = ["WorkFormatRepository"]
 class WorkFormatRepository(BaseRepository):
     """Репозиторий для управления форматами работы."""
 
-    async def get_by_name(self, name: WorkFormatEnum) -> WorkFormat | None:
+    async def get_by_name(self, name: WorkFormatEnum) -> WorkFormat:
         """Находит формат работы по имени."""
         stmt = select(WorkFormat).where(WorkFormat.name == name)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def get_all(self) -> Sequence[WorkFormat]:
         """Возвращает все форматы работы."""

@@ -1,27 +1,23 @@
-from common.logger import get_logger
 from database.models.enums import ProfessionEnum
 
 
 __all__ = ["map_to_profession_enum"]
 
 
-logger = get_logger(__name__)
-
-
-def map_to_profession_enum(profession: str) -> ProfessionEnum | None:
+def map_to_profession_enum(profession: str) -> ProfessionEnum:
     profession = profession.lower().strip()
 
     if profession in ignore_professions:
-        return None
+        return ProfessionEnum.UNKNOWN
 
     for profession_enum, aliases in professions_map.items():
         if profession in aliases:
             return profession_enum
 
-    return None
+    return ProfessionEnum.UNKNOWN
 
 
-professions_map = {
+professions_map: dict[ProfessionEnum, tuple[str, ...]] = {
     ProfessionEnum.BACKEND: ("backend developer",),
     ProfessionEnum.FRONTEND: ("frontend developer",),
     ProfessionEnum.FULLSTACK: ("fullstack developer",),

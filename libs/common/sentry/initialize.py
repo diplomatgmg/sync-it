@@ -21,7 +21,7 @@ def init_sentry() -> None:
 
     sentry_sdk.init(
         dsn=str(sentry_config.dsn_url),
-        integrations=[LoggingIntegration(level=logging.DEBUG, event_level=logging.WARNING)],
+        integrations=[LoggingIntegration(event_level=logging.WARNING)],
         environment=env_config.mode,
         traces_sample_rate=sentry_config.traces_sample_rate,
         profile_lifecycle=sentry_config.profile_lifecycle.value,

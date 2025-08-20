@@ -1,10 +1,11 @@
+import asyncio
+from itertools import starmap
+
 from clients import gpt_client, vacancy_client
 from clients.schemas import VacancySchema
 from common.logger import get_logger
-from schemas.grade import GradeRead
-from schemas.skill import SkillRead
 from schemas.vacancy import VacancyCreate
-from schemas.work_format import WorkFormatRead
+from sqlalchemy.exc import IntegrityError
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
 from utils.prompter import make_prompt
@@ -46,18 +47,41 @@ class VacancyProcessor:
     async def start(self) -> None:
         logger.debug("Start processing vacancies")
         vacancies = await vacancy_client.get_vacancies()
-        logger.info("Got %s new vacancies", len(vacancies))
+        existing_vacancies = await self.uow.vacancies.get_existing_hashes([v.hash for v in vacancies])
+        vacancies_to_process = [v for v in vacancies if v.hash not in existing_vacancies]
+        logger.info("Got %s new vacancies", len(vacancies_to_process))
 
-        prompts = [make_prompt(vacancy.data) for vacancy in vacancies]
+        prompts = [make_prompt(vacancy.data) for vacancy in vacancies_to_process]
+        process_prompts_task = list(starmap(self._process_prompt, zip(prompts, vacancies_to_process, strict=True)))
 
-        for prompt, vacancy in zip(prompts, vacancies, strict=True):
+        vacancies_to_delete: list[VacancySchema] = []
+
+        results = await asyncio.gather(*process_prompts_task, return_exceptions=True)
+        for processed_vacancy, result in zip(vacancies_to_process, results, strict=False):
+            if isinstance(result, BaseException):
+                logger.error("Failed to process vacancy %s", processed_vacancy.link, exc_info=result)
+                continue
+            if result is None:
+                logger.debug("Not a vacancy: %s", processed_vacancy.link)
+                vacancies_to_delete.append(processed_vacancy)
+                continue
+
+            extracted_vacancy, vacancy = result
             try:
-                await self._process_prompt(prompt, vacancy)
-            except Exception as e:
-                logger.exception("Failed to process vacancy %s", vacancy.link, exc_info=e)
-                return
+                await self._process_vacancy(extracted_vacancy, vacancy)
+                vacancies_to_delete.append(processed_vacancy)
+            except IntegrityError as e:
+                logger.warning("Duplicate vacancy: %s", processed_vacancy.link, exc_info=e)
+                vacancies_to_delete.append(processed_vacancy)
 
-    async def _process_prompt(self, prompt: str, vacancy: VacancySchema) -> None:
+        if vacancies_to_delete:
+            logger.info("Deleting %s vacancies", len(vacancies_to_delete))
+            delete_vacancies_tasks = [vacancy_client.delete(vacancy) for vacancy in vacancies_to_delete]
+            await asyncio.gather(*delete_vacancies_tasks)
+
+    async def _process_prompt(
+        self, prompt: str, vacancy: VacancySchema
+    ) -> tuple[VacancyExtractor, VacancySchema] | None:
         completion = await gpt_client.get_completion(prompt)
 
         bad_completions = (
@@ -67,29 +91,31 @@ class VacancyProcessor:
         if any(bad_completion in completion for bad_completion in bad_completions):
             logger.debug("Not a vacancy: %s", vacancy.link)
             await vacancy_client.delete(vacancy)
-            return
+            return None
 
         extracted_vacancy = self.vacancy_extractor.extract(completion)
+        return extracted_vacancy, vacancy
 
-        await self._save_vacancy_in_transaction(vacancy, extracted_vacancy)
-        await vacancy_client.delete(vacancy)
+    async def _process_vacancy(self, extracted_vacancy: VacancyExtractor, vacancy: VacancySchema) -> None:
+        logger.debug("Processing vacancy: %s", vacancy.link)
 
-    async def _save_vacancy_in_transaction(self, vacancy: VacancySchema, extracted_vacancy: VacancyExtractor) -> None:
-        """Собирает и сохраняет модель вакансии в рамках переданной сессии."""
-        logger.debug("Saving vacancy to session: %s", vacancy.link)
+        profession_task = self.profession_service.get_profession_by_name(extracted_vacancy.profession)
+        grades_tasks = [self.grade_service.get_grade_by_name(name) for name in extracted_vacancy.grades]
+        skills_tasks = [self.skill_service.get_skill_by_name(name) for _, name in extracted_vacancy.skills]
+        wf_tasks = [self.work_format_service.get_work_format_by_name(name) for name in extracted_vacancy.work_formats]
 
-        profession_id = await self._resolve_profession_id(extracted_vacancy)
-        grades = await self._resolve_grades(extracted_vacancy)
-        work_formats = await self._resolve_work_formats(extracted_vacancy)
-        skills = await self._resolve_skills(extracted_vacancy)
+        profession = await profession_task
+        grades = [g for g in await asyncio.gather(*grades_tasks) if g]
+        skills = [s for s in await asyncio.gather(*skills_tasks) if s]
+        work_formats = [w for w in await asyncio.gather(*wf_tasks) if w]
 
-        vacancy_data = VacancyCreate(
+        vacancy_create = VacancyCreate(
             source=vacancy.source,
             published_at=vacancy.published_at,
             hash=vacancy.hash,
             link=vacancy.link,
             company_name=extracted_vacancy.company_name,
-            profession_id=profession_id,
+            profession_id=profession.id if profession else None,
             salary=extracted_vacancy.salary,
             workplace_description=extracted_vacancy.workplace_description,
             responsibilities=extracted_vacancy.responsibilities,
@@ -97,39 +123,5 @@ class VacancyProcessor:
             conditions=extracted_vacancy.conditions,
         )
 
-        await self.vacancy_service.add_vacancy(vacancy_data, grades, work_formats, skills)
-
-    async def _resolve_profession_id(self, extracted_vacancy: VacancyExtractor) -> int | None:
-        profession_name = extracted_vacancy.profession
-        if profession_name is None:
-            return None
-
-        profession = await self.profession_service.get_profession_by_name(profession_name)
-        return profession.id if profession else None
-
-    async def _resolve_grades(self, extracted_vacancy: VacancyExtractor) -> list[GradeRead]:
-        grade_names = extracted_vacancy.grades
-        grades: list[GradeRead] = []
-        for name in grade_names:
-            grade = await self.grade_service.get_grade_by_name(name)
-            if grade:
-                grades.append(grade)
-        return grades
-
-    async def _resolve_work_formats(self, extracted_vacancy: VacancyExtractor) -> list[WorkFormatRead]:
-        work_format_names = extracted_vacancy.work_formats
-        work_formats: list[WorkFormatRead] = []
-        for name in work_format_names:
-            work_format = await self.work_format_service.get_work_format_by_name(name)
-            if work_format:
-                work_formats.append(work_format)
-        return work_formats
-
-    async def _resolve_skills(self, extracted_vacancy: VacancyExtractor) -> list[SkillRead]:
-        skill_names = [skill for _, skill in extracted_vacancy.skills]
-        skills: list[SkillRead] = []
-        for name in skill_names:
-            skill = await self.skill_service.get_skill_by_name(name)
-            if skill:
-                skills.append(skill)
-        return skills
+        await self.vacancy_service.add_vacancy(vacancy_create, grades, work_formats, skills)
+        await self.uow.commit()

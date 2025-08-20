@@ -1,5 +1,3 @@
-from typing import cast
-
 from common.logger import get_logger
 from schemas.skill import SkillCategoryCreate, SkillCategoryRead, SkillCreate
 from unitofwork import UnitOfWork
@@ -36,9 +34,7 @@ async def seed_skills() -> None:
 
             if not skill_category_read:
                 # Категорию получаем из enum, поэтому всегда будет
-                skill_category_read = cast(
-                    "SkillCategoryRead", await skill_category_service.get_category_by_name(skill_category_enum)
-                )
+                skill_category_read = await skill_category_service.get_category_by_name(skill_category_enum)
 
             for skill_enum in skills:
                 if skill_enum not in existing_skill_names:

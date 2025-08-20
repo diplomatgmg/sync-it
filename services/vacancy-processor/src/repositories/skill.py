@@ -12,11 +12,11 @@ __all__ = ["SkillCategoryRepository", "SkillRepository"]
 class SkillCategoryRepository(BaseRepository):
     """Репозиторий для управления категориями навыков."""
 
-    async def get_by_name(self, name: SkillCategoryEnum) -> SkillCategory | None:
+    async def get_by_name(self, name: SkillCategoryEnum) -> SkillCategory:
         stmt = select(SkillCategory).where(SkillCategory.name == name)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def get_all(self) -> Sequence[SkillCategory]:
         stmt = select(SkillCategory)
@@ -39,7 +39,7 @@ class SkillRepository(BaseRepository):
         stmt = select(Skill).where(Skill.name == name)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def get_all(self) -> Sequence[Skill]:
         stmt = select(Skill)

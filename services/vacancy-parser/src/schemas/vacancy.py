@@ -2,7 +2,8 @@ from datetime import datetime
 
 from common.shared.schemas import HttpsUrl
 from database.models.enums import SourceEnum
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
+from pydantic_core.core_schema import SerializationInfo
 from utils import generate_hash
 
 
@@ -28,6 +29,10 @@ class VacancyCreate(BaseVacancy):
     @property
     def hash(self) -> str:
         raise NotImplementedError("Define hash in child class")
+
+    @field_serializer("link")
+    def serialize_link(self, value: HttpsUrl, _info: SerializationInfo) -> str:  # noqa: PLR6301
+        return str(value)
 
 
 class VacancyRead(BaseVacancy):

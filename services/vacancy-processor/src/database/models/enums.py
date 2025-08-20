@@ -3,7 +3,6 @@ from typing import Self
 
 
 __all__ = [
-    "CurrencyEnum",
     "GradeEnum",
     "ProfessionEnum",
     "SkillCategoryEnum",
@@ -29,12 +28,14 @@ class SourceEnum(BaseStrEnum):
 
 
 class WorkFormatEnum(BaseStrEnum):
+    UNKNOWN = "Неизвестно"
     REMOTE = "Удаленка"
     HYBRID = "Гибрид"
     OFFICE = "Офис"
 
 
 class ProfessionEnum(BaseStrEnum):
+    UNKNOWN = "Неизвестно"
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
     FRONTEND = "Frontend developer"
@@ -45,6 +46,7 @@ class ProfessionEnum(BaseStrEnum):
 
 
 class GradeEnum(BaseStrEnum):
+    UNKNOWN = "Неизвестно"
     INTERN = "Стажер"
     JUNIOR = "Junior"
     MIDDLE = "Middle"
@@ -52,39 +54,9 @@ class GradeEnum(BaseStrEnum):
     LEAD = "Lead"
 
 
-class CurrencyEnum(BaseStrEnum):
-    RUB = "RUB"
-    USD = "USD"
-    EUR = "EUR"
-
-
 class SkillCategoryEnum(BaseStrEnum):
-    LANGUAGES = "Языки программирования"
-    BACKEND = "Backend"
-    FRONTEND = "Frontend"
-    DEVOPS = "DevOps"
+    pass
 
 
 class SkillEnum(BaseStrEnum):
-    # Languages
-    PYTHON = "Python"
-    JAVASCRIPT = "JavaScript"
-    TYPESCRIPT = "TypeScript"
-    HTML = "HTML"
-    CSS = "CSS"
-    SQL = "SQL"
-
-    # Backend
-    DJANGO = "Django"
-    FLASK = "Flask"
-    FASTAPI = "FastAPI"
-
-    # Frontend
-    REACT = "React"
-    VUE = "Vue"
-    ANGULAR = "Angular"
-    SVELTE = "Svelte"
-
-    # DevOps
-    DOCKER = "Docker"
-    KUBERNETES = "Kubernetes"
+    pass

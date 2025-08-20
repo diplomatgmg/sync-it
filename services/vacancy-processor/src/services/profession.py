@@ -1,3 +1,4 @@
+from async_lru import alru_cache
 from common.shared.services import BaseUOWService
 from database.models import Profession
 from database.models.enums import ProfessionEnum
@@ -11,10 +12,11 @@ __all__ = ["ProfessionService"]
 class ProfessionService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций, связанных с профессиями."""
 
-    async def get_profession_by_name(self, name: ProfessionEnum) -> ProfessionRead | None:
+    @alru_cache
+    async def get_profession_by_name(self, name: ProfessionEnum) -> ProfessionRead:
         profession = await self._uow.professions.get_by_name(name)
 
-        return ProfessionRead.model_validate(profession) if profession else None
+        return ProfessionRead.model_validate(profession)
 
     async def get_professions(self) -> list[ProfessionRead]:
         professions = await self._uow.professions.get_all()
@@ -24,5 +26,7 @@ class ProfessionService(BaseUOWService[UnitOfWork]):
     async def add_profession(self, profession: ProfessionCreate) -> ProfessionRead:
         profession_model = Profession(**profession.model_dump())
         created_profession = await self._uow.professions.add(profession_model)
+
+        self.get_profession_by_name.cache_clear()
 
         return ProfessionRead.model_validate(created_profession)

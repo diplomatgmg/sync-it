@@ -4,6 +4,8 @@ from typing import Self
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillCategoryEnum, SkillEnum, WorkFormatEnum
 from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill_enum
+from utils.mappers.grade import map_to_grade_enum
+from utils.mappers.work_format import map_to_work_format_enum
 
 
 __all__ = ["VacancyExtractor"]
@@ -26,7 +28,7 @@ class VacancyExtractor:
         self._paragraphs: list[str] | None = None
 
         self.company_name: str | None = None
-        self.profession: ProfessionEnum | None = None
+        self.profession: ProfessionEnum = ProfessionEnum.UNKNOWN
         self.salary: str | None = None
         self.grades: list[GradeEnum] = []
         self.work_formats: list[WorkFormatEnum] = []
@@ -57,17 +59,6 @@ class VacancyExtractor:
         logger.debug("Extracted vacancy: %s", self)
         return self
 
-    def __repr__(self) -> str:
-        return (
-            "<VacancyExtractorService(\n"
-            f"\tprofession={self.profession!r},\n"
-            f"\tsalary={self.salary!r},\n"
-            f"\tgrades={self.grades!r},\n"
-            f"\twork_formats={self.work_formats!r},\n"
-            f"\tskills={self.skills!r}\n"
-            ")>"
-        )
-
     @staticmethod
     def _clean_vacancy(vacancy: str) -> str:
         return (
@@ -91,13 +82,13 @@ class VacancyExtractor:
         return match.group(1).strip()
 
     @staticmethod
-    def _parse_profession(message: str) -> ProfessionEnum | None:
+    def _parse_profession(message: str) -> ProfessionEnum:
         """Извлекает профессию из сообщения."""
         pattern = r"Профессия:\s(.*)"
         match = re.search(pattern, message)
         if not match:
             logger.warning("Profession pattern not found in message: %s", message)
-            return None
+            return ProfessionEnum.UNKNOWN
 
         profession_str = match.group(1).strip()
 
@@ -131,7 +122,7 @@ class VacancyExtractor:
         match = re.search(pattern, message)
         if not match:
             logger.warning("Grade pattern not found in message: %s", message)
-            return []
+            return [GradeEnum.UNKNOWN]
 
         grades: list[GradeEnum] = []
 
@@ -142,12 +133,15 @@ class VacancyExtractor:
         for part in grade_parts:
             clean_part = part.strip()
 
-            grade = GradeEnum.get_safe(clean_part)
+            grade = map_to_grade_enum(clean_part)
             if not grade:
                 logger.warning("Unknown grade part: %s", clean_part)
                 continue
 
             grades.append(grade)
+
+        if not grades:
+            grades = [GradeEnum.UNKNOWN]
 
         return grades
 
@@ -158,7 +152,7 @@ class VacancyExtractor:
         match = re.search(pattern, message)
         if not match:
             logger.warning("Work format pattern not found in message: %s", message)
-            return []
+            return [WorkFormatEnum.UNKNOWN]
 
         work_formats: list[WorkFormatEnum] = []
 
@@ -169,12 +163,15 @@ class VacancyExtractor:
         for part in work_format_parts:
             clean_part = part.strip()
 
-            work_format = WorkFormatEnum.get_safe(clean_part)
+            work_format = map_to_work_format_enum(clean_part)
             if not work_format:
                 logger.warning("Unknown work format part: %s", clean_part)
                 continue
 
             work_formats.append(work_format)
+
+        if not work_formats:
+            work_formats = [WorkFormatEnum.UNKNOWN]
 
         return work_formats
 

@@ -28,7 +28,12 @@ async def async_process_vacancies() -> None:
         work_format_service = WorkFormatService(uow)
         skill_service = SkillService(uow)
         processor = VacancyProcessor(
-            uow, extractor, vacancy_service, grade_service, profession_service, work_format_service, skill_service
+            uow,
+            extractor,
+            vacancy_service,
+            grade_service,
+            profession_service,
+            work_format_service,
+            skill_service,
         )
         await processor.start()
-        await uow.commit()

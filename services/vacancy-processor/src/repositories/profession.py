@@ -12,12 +12,12 @@ __all__ = ["ProfessionRepository"]
 class ProfessionRepository(BaseRepository):
     """Репозиторий для управления профессиями в базе данных."""
 
-    async def get_by_name(self, name: ProfessionEnum) -> Profession | None:
+    async def get_by_name(self, name: ProfessionEnum) -> Profession:
         """Находит профессию по имени."""
         stmt = select(Profession).where(Profession.name == name)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def get_all(self) -> Sequence[Profession]:
         """Возвращает все профессии."""

@@ -1,3 +1,4 @@
+from async_lru import alru_cache
 from common.shared.services import BaseUOWService
 from database.models import Skill, SkillCategory
 from database.models.enums import SkillCategoryEnum, SkillEnum
@@ -11,10 +12,11 @@ __all__ = ["SkillCategoryService", "SkillService"]
 class SkillCategoryService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций с категориями навыков."""
 
-    async def get_category_by_name(self, name: SkillCategoryEnum) -> SkillCategoryRead | None:
+    @alru_cache
+    async def get_category_by_name(self, name: SkillCategoryEnum) -> SkillCategoryRead:
         skill_category = await self._uow.skill_categories.get_by_name(name)
 
-        return SkillCategoryRead.model_validate(skill_category) if skill_category else None
+        return SkillCategoryRead.model_validate(skill_category)
 
     async def get_categories(self) -> list[SkillCategoryRead]:
         skill_categories = await self._uow.skill_categories.get_all()
@@ -25,16 +27,19 @@ class SkillCategoryService(BaseUOWService[UnitOfWork]):
         skill_category_model = SkillCategory(**category.model_dump())
         created_skill_category = await self._uow.skill_categories.add(skill_category_model)
 
+        self.get_category_by_name.cache_clear()
+
         return SkillCategoryRead.model_validate(created_skill_category)
 
 
 class SkillService(BaseUOWService[UnitOfWork]):
     """Сервис для бизнес-операций с навыками."""
 
-    async def get_skill_by_name(self, name: SkillEnum) -> SkillRead | None:
+    @alru_cache
+    async def get_skill_by_name(self, name: SkillEnum) -> SkillRead:
         skill = await self._uow.skills.get_by_name(name)
 
-        return SkillRead.model_validate(skill) if skill else None
+        return SkillRead.model_validate(skill)
 
     async def get_skills(self, category_id: int | None = None) -> list[SkillRead]:
         if category_id:
@@ -47,5 +52,7 @@ class SkillService(BaseUOWService[UnitOfWork]):
     async def add_skill(self, skill: SkillCreate) -> SkillRead:
         skill_model = Skill(**skill.model_dump())
         created_skill = await self._uow.skills.add(skill_model)
+
+        self.get_skill_by_name.cache_clear()
 
         return SkillRead.model_validate(created_skill)

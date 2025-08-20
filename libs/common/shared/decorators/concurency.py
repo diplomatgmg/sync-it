@@ -16,19 +16,16 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def limit_requests(
-    *, concurrency_limit: int = 1, requests_per_second: float = 1
-) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
+def limit_requests(limit: int = 1) -> Callable[[Callable[P, Awaitable[R]]], Callable[P, Awaitable[R]]]:
     """
     Декоратор для ограничения параллельного выполнения и частоты вызовов
     асинхронной функции.
 
-    :param concurrency_limit: Максимальное количество одновременных выполнений.
-    :param requests_per_second: Максимальное количество запросов в секунду.
+    :param limit: Максимальное количество одновременных выполнений.
     """
-    delay = 1 / requests_per_second
+    delay = 1 / limit
 
-    semaphore = asyncio.Semaphore(concurrency_limit)
+    semaphore = asyncio.Semaphore(limit)
     lock = asyncio.Lock()
     last_start_time = 0.0
 

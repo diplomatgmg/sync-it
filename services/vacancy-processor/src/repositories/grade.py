@@ -12,12 +12,12 @@ __all__ = ["GradeRepository"]
 class GradeRepository(BaseRepository):
     """Репозиторий для управления грейдами в базе данных."""
 
-    async def get_by_name(self, name: GradeEnum) -> Grade | None:
+    async def get_by_name(self, name: GradeEnum) -> Grade:
         """Находит грейд по его имени."""
         stmt = select(Grade).where(Grade.name == name)
         result = await self._session.execute(stmt)
 
-        return result.scalar_one_or_none()
+        return result.scalar_one()
 
     async def get_all(self) -> Sequence[Grade]:
         """Возвращает все существующие грейды."""

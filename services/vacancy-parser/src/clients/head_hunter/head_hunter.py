@@ -47,7 +47,7 @@ class _HeadHunterClient(BaseClient):
     # Где-то нашел инфу, что ограничение на 30 запросов в секунду,
     # но при постоянных долгих запросах выдается 403 как ddos.
     # Реальное долгосрочное ограничение 1 запрос в секунду.
-    @limit_requests(concurrency_limit=10, requests_per_second=10)
+    @limit_requests(10)
     async def _fetch_page(self, page: int, text_query: str) -> HeadHunterVacancyListResponse:
         """Загружает и валидирует одну страницу вакансий."""
         params = QueryParams(
@@ -86,7 +86,7 @@ class _HeadHunterClient(BaseClient):
 
         return all_vacancy_ids
 
-    @limit_requests(concurrency_limit=5, requests_per_second=5)
+    @limit_requests(5)
     async def get_vacancy_by_id(self, vacancy_id: int) -> HeadHunterVacancyDetailResponse | None:
         """Загружает и валидирует одну детальную вакансию по ее ID."""
         detailed_url = f"{self.url}/{vacancy_id}"
