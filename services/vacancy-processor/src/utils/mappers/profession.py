@@ -10,6 +10,10 @@ def map_to_profession_enum(profession: str) -> ProfessionEnum:
     if profession in ignore_professions:
         return ProfessionEnum.UNKNOWN
 
+    profession_enum = ProfessionEnum.get_safe(profession)
+    if profession_enum:
+        return profession_enum
+
     for profession_enum, aliases in professions_map.items():
         if profession in aliases:
             return profession_enum
@@ -17,14 +21,7 @@ def map_to_profession_enum(profession: str) -> ProfessionEnum:
     return ProfessionEnum.UNKNOWN
 
 
-professions_map: dict[ProfessionEnum, tuple[str, ...]] = {
-    ProfessionEnum.BACKEND: ("backend developer",),
-    ProfessionEnum.FRONTEND: ("frontend developer",),
-    ProfessionEnum.FULLSTACK: ("fullstack developer",),
-    ProfessionEnum.DATA_ENGINEER: ("data engineer",),
-    ProfessionEnum.DATA_SCIENCE: ("data science",),
-    ProfessionEnum.TECH_LEAD: ("it lead", "tech lead"),
-}
+professions_map: dict[ProfessionEnum, tuple[str, ...]] = {}
 
 ignore_professions: set[str] = {
     "iquantitative developer",

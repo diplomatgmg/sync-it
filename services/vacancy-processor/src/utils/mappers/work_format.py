@@ -12,12 +12,14 @@ def map_to_work_format_enum(work_format: str) -> WorkFormatEnum | None:
         return wf_enum
 
     for wf_enum, aliases in work_formats_map.items():
-        if work_format in aliases:
+        if any(alias in work_format for alias in aliases):
             return wf_enum
 
     return None
 
 
 work_formats_map: dict[WorkFormatEnum, tuple[str, ...]] = {
-    WorkFormatEnum.REMOTE: ("Удалённая работа", "Удаленная работа"),
+    WorkFormatEnum.REMOTE: ("удалённая", "удаленная"),
+    WorkFormatEnum.OFFICE: ("на месте работодателя", "офис"),
+    WorkFormatEnum.HYBRID: ("гибрид",),
 }

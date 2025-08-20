@@ -18,4 +18,7 @@ def map_to_grade_enum(grade: str) -> GradeEnum | None:
     return None
 
 
-grades_map: dict[GradeEnum, tuple[str, ...]] = {GradeEnum.INTERN: ("стажёр",)}
+grades_map: dict[GradeEnum, tuple[str, ...]] = {
+    GradeEnum.INTERN: ("стажёр", "intern"),
+    GradeEnum.MIDDLE: ("middle+",),
+}

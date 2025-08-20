@@ -128,7 +128,7 @@ class VacancyExtractor:
 
         grade_str = match.group(1).strip()
         # Junior/Middle/Senior
-        grade_parts = re.split(r"/", grade_str)  # noqa: RUF055 убрать noqa после добавления паттерна
+        grade_parts = re.split(r"[/\s]", grade_str)
 
         for part in grade_parts:
             clean_part = part.strip()
