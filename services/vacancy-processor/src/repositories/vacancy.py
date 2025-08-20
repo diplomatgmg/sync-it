@@ -5,7 +5,7 @@ from typing import Any, TypeVar
 from common.shared.repositories import BaseRepository
 from database.models import Grade, Profession, Skill, Vacancy, WorkFormat
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from sqlalchemy import Select, select
+from sqlalchemy import Select, select, tuple_
 from sqlalchemy.orm import joinedload
 
 
@@ -73,9 +73,7 @@ class VacancyRepository(BaseRepository):
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
     ) -> int | None:
-        stmt = select(Vacancy.id).where(
-            (Vacancy.published_at > published_at) | ((Vacancy.published_at == published_at) & (Vacancy.id > vacancy_id))
-        )
+        stmt = select(Vacancy.id).where(tuple_(Vacancy.published_at, Vacancy.id) > (published_at, vacancy_id))
 
         stmt = self._apply_filters_to_stmt(stmt, professions, grades, work_formats, skills)
 
@@ -92,11 +90,7 @@ class VacancyRepository(BaseRepository):
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
     ) -> int | None:
-        stmt = select(Vacancy.id).where(
-            (Vacancy.published_at < published_at) | ((Vacancy.published_at == published_at) & (Vacancy.id < vacancy_id))
-        )
-
-        # И здесь тоже применяем фильтры!
+        stmt = select(Vacancy.id).where(tuple_(Vacancy.published_at, Vacancy.id) < (published_at, vacancy_id))
         stmt = self._apply_filters_to_stmt(stmt, professions, grades, work_formats, skills)
 
         stmt = stmt.order_by(Vacancy.published_at.desc(), Vacancy.id.desc()).limit(1)
