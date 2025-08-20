@@ -23,7 +23,6 @@ async def healthcheck() -> HealthResponse:
         validate_health_response(response_text)
         return HealthResponse(status=response_text)
     except Exception as e:
-        logger.exception("Healthcheck failed", exc_info=e)
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
