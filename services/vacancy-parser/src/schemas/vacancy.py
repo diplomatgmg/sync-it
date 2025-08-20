@@ -33,7 +33,7 @@ class VacancyRead(BaseVacancy):
     id: int
     hash: str
     data: str
-    deleted_at: datetime | None
+    processed_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -18,6 +18,7 @@ class Vacancy(Base):
     __tablename__ = "vacancy"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    source: Mapped[str] = mapped_column(String(16), index=True)
     hash: Mapped[str] = mapped_column(String(32), unique=True)
     link: Mapped[str] = mapped_column(String(256), unique=True)
 

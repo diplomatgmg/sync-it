@@ -84,6 +84,7 @@ class VacancyProcessor:
         skills = await self._resolve_skills(extracted_vacancy)
 
         vacancy_data = VacancyCreate(
+            source=vacancy.source,
             published_at=vacancy.published_at,
             hash=vacancy.hash,
             link=vacancy.link,

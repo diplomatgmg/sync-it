@@ -8,6 +8,7 @@ __all__ = [
     "ProfessionEnum",
     "SkillCategoryEnum",
     "SkillEnum",
+    "SourceEnum",
     "WorkFormatEnum",
 ]
 
@@ -20,6 +21,11 @@ class BaseStrEnum(StrEnum):
             if member.value.lower() == label.lower():
                 return member
         return None
+
+
+class SourceEnum(BaseStrEnum):
+    TELEGRAM = "telegram"
+    HEAD_HUNTER = "head_hunter"
 
 
 class WorkFormatEnum(BaseStrEnum):

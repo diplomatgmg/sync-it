@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from database.models.enums import SourceEnum
 from pydantic import BaseModel, ConfigDict
 from schemas.grade import GradeRead
 from schemas.profession import ProfessionRead
@@ -14,6 +15,7 @@ __all__ = [
 
 
 class BaseVacancy(BaseModel):
+    source: SourceEnum
     hash: str
     link: str
 

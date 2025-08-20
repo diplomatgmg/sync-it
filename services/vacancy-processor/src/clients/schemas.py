@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from common.shared.schemas import HttpsUrl
+from database.models.enums import SourceEnum
 from pydantic import BaseModel
 
 
@@ -17,9 +19,9 @@ class CompletionResponse(BaseModel):
 
 class VacancySchema(BaseModel):
     id: int
-    source: str
+    source: SourceEnum
     hash: str
-    link: str
+    link: HttpsUrl
     data: str
     published_at: datetime
 

@@ -19,7 +19,7 @@ class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
         """Получить последние актуальные вакансии."""
         stmt = (
             select(self._model)
-            .where(self._model.deleted_at.is_(None))
+            .where(self._model.processed_at.is_(None))
             .order_by(self._model.published_at.desc())
             .limit(limit)
         )
@@ -74,8 +74,8 @@ class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
         stmt = (
             update(Vacancy)
             .where(Vacancy.hash == vacancy_hash)
-            .where(Vacancy.deleted_at.is_(None))
-            .values(deleted_at=datetime.now(tz=UTC))
+            .where(Vacancy.processed_at.is_(None))
+            .values(processed_at=datetime.now(tz=UTC))
         )
         result = await self._session.execute(stmt)
         return bool(result.rowcount)
