@@ -1,5 +1,8 @@
 from datetime import datetime
+from enum import StrEnum
 
+from common.logger import get_logger
+from common.shared.schemas import HttpsUrl
 from pydantic import BaseModel
 
 
@@ -18,6 +21,9 @@ __all__ = [
     "WorkFormatResponse",
     "WorkFormatSchema",
 ]
+
+
+logger = get_logger(__name__)
 
 
 class GradeSchema(BaseModel):
@@ -66,10 +72,25 @@ class SkillResponse(BaseModel):
     skills: list[SkillSchema]
 
 
+class SourceEnum(StrEnum):
+    TELEGRAM = "telegram"
+    HEAD_HUNTER = "head_hunter"
+
+    def humanize(self) -> str:
+        if self == SourceEnum.TELEGRAM:
+            return "Telegram"
+        if self == SourceEnum.HEAD_HUNTER:
+            return "HeadHunter"
+
+        logger.error("Unknown source: %s", self)
+        return "Неизвестно"
+
+
 class VacancySchema(BaseModel):
     id: int
+    source: SourceEnum
     hash: str
-    link: str
+    link: HttpsUrl
     company_name: str | None
     salary: str | None
     profession: ProfessionSchema | None

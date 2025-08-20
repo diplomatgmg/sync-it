@@ -3,13 +3,14 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.noop import NoopActionEnum, NoopCallback
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
+from common.shared.schemas import HttpsUrl
 
 
 __all__ = ["vacancies_keyboard"]
 
 
 def vacancies_keyboard(
-    vacancy_link: str,
+    vacancy_link: HttpsUrl,
     previous_vacancy_id: int | None,
     next_vacancy_id: int | None,
 ) -> InlineKeyboardMarkup:
@@ -39,7 +40,7 @@ def vacancies_keyboard(
     row.append(
         InlineKeyboardButton(
             text="Открыть",
-            url=vacancy_link,
+            url=str(vacancy_link),
         )
     )
     if next_vacancy_id:

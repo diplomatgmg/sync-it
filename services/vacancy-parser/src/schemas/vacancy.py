@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from common.shared.schemas import HttpsUrl
 from database.models.enums import SourceEnum
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from utils import generate_hash
@@ -18,7 +19,7 @@ __all__ = [
 class BaseVacancy(BaseModel):
     source: SourceEnum
     fingerprint: str
-    link: str
+    link: HttpsUrl
     published_at: datetime
 
 

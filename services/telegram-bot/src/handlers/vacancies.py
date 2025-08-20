@@ -81,6 +81,7 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
         vacancy_text += f"\n<b>Условия:</b>\n{vacancy.conditions}\n"
 
     vacancy_text += f"\n<b>Дата публикации:</b> {format_publication_time(vacancy.published_at)}\n"
+    vacancy_text += f"\n<b>Источник: </b>{vacancy.source.humanize()}\n"
 
     max_text_length = 4096
     if len(vacancy_text) > max_text_length:
