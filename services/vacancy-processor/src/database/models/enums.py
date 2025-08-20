@@ -55,8 +55,8 @@ class GradeEnum(BaseStrEnum):
 
 
 class SkillCategoryEnum(BaseStrEnum):
-    pass
+    BACKEND = "Backend"
 
 
 class SkillEnum(BaseStrEnum):
-    pass
+    NEVER_SKILL = "never_skill"

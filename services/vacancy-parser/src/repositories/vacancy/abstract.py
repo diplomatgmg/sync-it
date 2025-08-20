@@ -63,9 +63,9 @@ class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
         result = await self._session.execute(stmt)
         return bool(result.rowcount)
 
-    async def mark_as_deleted(self, vacancy_hash: str) -> bool:
+    async def mark_as_processed(self, vacancy_hash: str) -> bool:
         """
-        Удаляет вакансию из первой подходящей таблицы по хешу.
+        Помечает вакансию обработанной из первой подходящей таблицы по хешу.
 
         True - вакансия помечена как удаленная
         False - вакансия не найдена
@@ -74,8 +74,12 @@ class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
         stmt = (
             update(Vacancy)
             .where(Vacancy.hash == vacancy_hash)
-            .where(Vacancy.processed_at.is_(None))
             .values(processed_at=datetime.now(tz=UTC))
+            .returning(Vacancy.processed_at)
         )
         result = await self._session.execute(stmt)
-        return bool(result.rowcount)
+        processed_at = result.scalar_one_or_none()
+        if processed_at is None:
+            return False
+
+        return processed_at is not None

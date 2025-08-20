@@ -1,4 +1,4 @@
-from clients.schemas import VacancyDeleteResponse, VacancyResponse, VacancySchema
+from clients.schemas import VacancyProcessedResponse, VacancyResponse, VacancySchema
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
 from common.logger import get_logger
@@ -27,12 +27,12 @@ class _VacancyClient(BaseClient):
     async def delete(self, vacancy: VacancySchema) -> bool:
         detail_vacancy_url = f"{self.url}/{vacancy.hash}"
 
-        response = await self.client.delete(detail_vacancy_url)
+        response = await self.client.post(detail_vacancy_url)
         response.raise_for_status()
 
-        response_data = VacancyDeleteResponse(**response.json())
-        if not response_data.is_deleted:
-            logger.error("Failed to mark vacancy as deleted: %s", vacancy.link)
+        response_data = VacancyProcessedResponse(**response.json())
+        if not response_data.is_processed:
+            logger.error("Failed to mark vacancy as processed: %s", vacancy.link)
             return False
 
         return True

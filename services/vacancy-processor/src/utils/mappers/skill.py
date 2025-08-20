@@ -22,4 +22,8 @@ def map_to_skill_category_and_skill_enum(skill: str) -> tuple[SkillCategoryEnum,
     return None, None
 
 
-skills_map: dict[SkillCategoryEnum, dict[SkillEnum, tuple[str, ...]]] = {}
+skills_map: dict[SkillCategoryEnum, dict[SkillEnum, tuple[str, ...]]] = {
+    SkillCategoryEnum.BACKEND: {
+        SkillEnum.NEVER_SKILL: ("asdfasdfasfkja;ghrihaij",),
+    },
+}

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 __all__ = [
     "CompletionResponse",
-    "VacancyDeleteResponse",
+    "VacancyProcessedResponse",
     "VacancyResponse",
     "VacancySchema",
 ]
@@ -30,5 +30,5 @@ class VacancyResponse(BaseModel):
     vacancies: list[VacancySchema]
 
 
-class VacancyDeleteResponse(BaseModel):
-    is_deleted: bool
+class VacancyProcessedResponse(BaseModel):
+    is_processed: bool

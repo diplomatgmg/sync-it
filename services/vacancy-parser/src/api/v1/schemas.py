@@ -3,8 +3,8 @@ from schemas.vacancy import VacancyRead
 
 
 __all__ = [
-    "VacancyDeleteResponse",
     "VacancyListResponse",
+    "VacancyProcessedResponse",
 ]
 
 
@@ -16,5 +16,5 @@ class VacancyListResponse(BaseModel):
     vacancies: list[VacancySchema]
 
 
-class VacancyDeleteResponse(BaseModel):
-    is_deleted: bool
+class VacancyProcessedResponse(BaseModel):
+    is_processed: bool

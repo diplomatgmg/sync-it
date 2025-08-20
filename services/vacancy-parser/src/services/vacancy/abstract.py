@@ -53,6 +53,6 @@ class AbstractVacancyService[
         """Обновляет дату публикации вакансии по её хэшу."""
         return await self._repo.update_published_at(vacancy_hash, published_at)
 
-    async def mark_as_deleted(self, vacancy_hash: str) -> bool:
-        """Помечает вакансию как удаленную по её хешу."""
-        return await self._repo.mark_as_deleted(vacancy_hash=vacancy_hash)
+    async def mark_as_processed(self, vacancy_hash: str) -> bool:
+        """Помечает вакансию как обработанную по её хешу."""
+        return await self._repo.mark_as_processed(vacancy_hash=vacancy_hash)

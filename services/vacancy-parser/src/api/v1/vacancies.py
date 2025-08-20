@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from api.dependencies import get_vacancy_service
-from api.v1.schemas import VacancyDeleteResponse, VacancyListResponse
+from api.v1.schemas import VacancyListResponse, VacancyProcessedResponse
 from fastapi import APIRouter, Depends
 
 from services import VacancyService
@@ -23,13 +23,13 @@ async def get_vacancies(
     return VacancyListResponse(vacancies=vacancies)
 
 
-@router.delete("/vacancies/{vacancy_hash}")
-async def delete_vacancy(
+@router.post("/vacancies/{vacancy_hash}")
+async def mark_vacancy_as_processed(
     vacancy_hash: str,
     service: Annotated[VacancyService, Depends(get_vacancy_service)],
-) -> VacancyDeleteResponse:
-    is_deleted = await service.mark_as_deleted(vacancy_hash)
+) -> VacancyProcessedResponse:
+    is_processed = await service.mark_as_processed(vacancy_hash)
 
     await service.commit()
 
-    return VacancyDeleteResponse(is_deleted=is_deleted)
+    return VacancyProcessedResponse(is_processed=is_processed)
