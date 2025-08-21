@@ -7,6 +7,7 @@ from schemas.work_format import WorkFormatRead
 
 
 __all__ = [
+    "ExtractSkillsRequest",
     "GradeListResponse",
     "ProfessionListResponse",
     "SkillListResponse",
@@ -26,6 +27,10 @@ class GradeListResponse(BaseModel):
 
 class WorkFormatListResponse(BaseModel):
     work_formats: list[WorkFormatRead]
+
+
+class ExtractSkillsRequest(BaseModel):
+    text: str
 
 
 class SkillListResponse(BaseModel):

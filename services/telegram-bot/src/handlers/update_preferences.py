@@ -6,6 +6,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
+from clients import skill_client
 from commands import BotCommandEnum
 from common.logger import get_logger
 from core.loader import bot
@@ -56,6 +57,8 @@ async def update_preferences(entity: CallbackQuery | Message, state: FSMContext)
 
 @router.message(PreferencesState.waiting_for_data)
 async def handle_resume_input(message: Message, state: FSMContext) -> None:  # noqa: PLR0911
+    text_for_processing: str
+
     if text := message.text:
         if len(text) > MAX_MESSAGE_LENGTH:
             await message.reply(
@@ -63,7 +66,7 @@ async def handle_resume_input(message: Message, state: FSMContext) -> None:  # n
                 reply_markup=main_menu_keyboard(),
             )
             return
-        await message.reply("Текст успешно получен ✅")
+        text_for_processing = text
     elif document := message.document:
         file_suffix = Path(document.file_name or "").suffix
         if not file_suffix:
@@ -113,14 +116,30 @@ async def handle_resume_input(message: Message, state: FSMContext) -> None:  # n
         with NamedTemporaryFile(suffix=f".{file_suffix}") as tmp:
             await bot.download_file(file.file_path, destination=tmp.name)
             extractor = TextExtractor()
-            text = extractor.read(tmp.name)
-
-        await message.reply(text[:MAX_MESSAGE_LENGTH])
+            text_for_processing = extractor.read(tmp.name)
     else:
         await message.reply(
             f"Вы прислали что-то не понятное 😕\n\n{update_preferences_text}",
             reply_markup=main_menu_keyboard(),
         )
         return
+
+    await message.answer(
+        "Начинаю извлечение навыков из текста.\nПожалуйста, подождите, это может занять некоторое время.",
+    )
+
+    # FIXME!!! Переписать на celery, иначе уйду в таймаут
+    skills = await skill_client.extract_skills_from_text(text_for_processing)
+    if not skills:
+        await safe_edit_message(
+            message,
+            text=f"Не удалось извлечь навыки из текста.\n\n{update_preferences_text}",
+            reply_markup=main_menu_keyboard(),
+        )
+        return
+
+    skills_str = "\n".join(skill.name for skill in skills)
+
+    await message.reply(f"Извлечены следующие навыки:\n{skills_str}")
 
     await state.clear()

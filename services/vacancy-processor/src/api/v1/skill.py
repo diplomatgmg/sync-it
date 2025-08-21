@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from api.depedencies import get_skill_service
-from api.v1.schemas import SkillListResponse
+from api.v1.schemas import ExtractSkillsRequest, SkillListResponse
 from clients import gpt_client
 from fastapi import APIRouter, Depends
 from schemas.skill import SkillRead
@@ -27,10 +27,10 @@ async def get_skills(service: Annotated[SkillService, Depends(get_skill_service)
 
 @router.post("/extract")
 async def extract_skills(
-    text: str,
+    request: ExtractSkillsRequest,
     service: Annotated[SkillService, Depends(get_skill_service)],
 ) -> SkillListResponse:
-    prompt = make_resume_prompt(text)
+    prompt = make_resume_prompt(request.text)
     completion = await gpt_client.get_completion(prompt)
     extractor = VacancyExtractor()
     skill_enums = extractor.extract_skills(completion)
