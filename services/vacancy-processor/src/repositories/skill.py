@@ -34,6 +34,12 @@ class SkillRepository(BaseRepository):
 
         return result.scalars().all()
 
+    async def get_by_enums(self, enums: Sequence[SkillEnum]) -> Sequence[Skill]:
+        stmt = select(Skill).where(Skill.name.in_(enums))
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
     async def add(self, skill: Skill) -> Skill:
         self._session.add(skill)
         await self._session.flush()

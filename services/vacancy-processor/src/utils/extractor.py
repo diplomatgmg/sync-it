@@ -39,52 +39,39 @@ class VacancyExtractor:
     def extract(self, vacancy: str) -> "Self":
         """Извлекает данные из текстового представления вакансии."""
         cleaned_vacancy = self._clean_vacancy(vacancy)
-        logger.debug("Start extracting vacancy: \n%s", cleaned_vacancy)
 
-        self.company_name = self._parse_company_name(cleaned_vacancy)
-        self.profession = self._parse_profession(cleaned_vacancy)
-        self.salary = self._parse_salary(cleaned_vacancy)
-        self.grades = self._parse_grades(cleaned_vacancy)
-        self.work_formats = self._parse_work_formats(cleaned_vacancy)
-        self.skills = self._parse_skills(cleaned_vacancy)
+        self.company_name = self.extract_company_name(cleaned_vacancy)
+        self.profession = self.extract_profession(cleaned_vacancy)
+        self.salary = self.extract_salary(cleaned_vacancy)
+        self.grades = self.extract_grades(cleaned_vacancy)
+        self.work_formats = self.extract_work_formats(cleaned_vacancy)
+        self.skills = self.extract_skills(cleaned_vacancy)
 
-        self.workplace_description = self._parse_multiline_field(cleaned_vacancy, "О месте работы")
-        self.responsibilities = self._parse_multiline_field(cleaned_vacancy, "Обязанности")
-        self.requirements = self._parse_multiline_field(cleaned_vacancy, "Требования")
-        self.conditions = self._parse_multiline_field(cleaned_vacancy, "Условия")
+        self.workplace_description = self.extract_multiline_field(cleaned_vacancy, "О месте работы")
+        self.responsibilities = self.extract_multiline_field(cleaned_vacancy, "Обязанности")
+        self.requirements = self.extract_multiline_field(cleaned_vacancy, "Требования")
+        self.conditions = self.extract_multiline_field(cleaned_vacancy, "Условия")
 
-        logger.debug("Extracted vacancy: %s", self)
         return self
 
     @staticmethod
-    def _clean_vacancy(vacancy: str) -> str:
-        return (
-            vacancy.replace("*", "")
-            .replace("⸺", "-")  # Двойное тире
-            .replace("—", "-")  # Длинное тире
-            .replace("–", "-")  # Короткое тире
-            .replace("―", "-")  # Горизонтальная черта
-            .strip()
-        )
-
-    @staticmethod
-    def _parse_company_name(message: str) -> str | None:
+    def extract_company_name(text: str) -> str | None:
         """Извлекает название компании из сообщения."""
         pattern = r"Компания:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Company pattern not found in message: %s", message)
+            logger.warning("Company pattern not found in text: %s", text)
             return None
 
         return match.group(1).strip()
 
     @staticmethod
-    def _parse_profession(message: str) -> ProfessionEnum:
+    def extract_profession(text: str) -> ProfessionEnum:
         """Извлекает профессию из сообщения."""
         pattern = r"Профессия:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Profession pattern not found in message: %s", message)
+            logger.warning("Profession pattern not found in text: %s", text)
             return ProfessionEnum.UNKNOWN
 
         profession_str = match.group(1).strip()
@@ -92,12 +79,12 @@ class VacancyExtractor:
         return ProfessionEnum.get_safe(profession_str)
 
     @staticmethod
-    def _parse_salary(message: str) -> str | None:
+    def extract_salary(text: str) -> str | None:
         """Извлекает зарплату из сообщения."""
         pattern = r"Зарплата:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Salary pattern not found in message: %s", message)
+            logger.warning("Salary pattern not found in text: %s", text)
             return None
 
         salary_str = match.group(1).strip()
@@ -113,12 +100,12 @@ class VacancyExtractor:
         return salary_str
 
     @staticmethod
-    def _parse_grades(message: str) -> list[GradeEnum]:
+    def extract_grades(text: str) -> list[GradeEnum]:
         """Извлекает значение грейда из сообщения."""
         pattern = r"Позиция:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Grade pattern not found in message: %s", message)
+            logger.warning("Grade pattern not found in text: %s", text)
             return [GradeEnum.UNKNOWN]
 
         grades: list[GradeEnum] = []
@@ -143,12 +130,12 @@ class VacancyExtractor:
         return grades
 
     @staticmethod
-    def _parse_work_formats(message: str) -> list[WorkFormatEnum]:
+    def extract_work_formats(text: str) -> list[WorkFormatEnum]:
         """Извлекает значение формата работы из сообщения."""
         pattern = r"Тип занятости:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Work format pattern not found in message: %s", message)
+            logger.warning("Work format pattern not found in text: %s", text)
             return [WorkFormatEnum.UNKNOWN]
 
         work_formats: list[WorkFormatEnum] = []
@@ -173,12 +160,12 @@ class VacancyExtractor:
         return work_formats
 
     @staticmethod
-    def _parse_skills(message: str) -> list[SkillEnum]:
+    def extract_skills(text: str) -> list[SkillEnum]:
         """Извлекает навыки из сообщения."""
         pattern = r"Навыки:\s(.*)"
-        match = re.search(pattern, message)
+        match = re.search(pattern, text)
         if not match:
-            logger.warning("Skills pattern not found in message: %s", message)
+            logger.warning("Skills pattern not found in text: %s", text)
             return []
 
         skills: list[SkillEnum] = []
@@ -199,7 +186,7 @@ class VacancyExtractor:
 
         return skills
 
-    def _parse_multiline_field(self, message: str, field_name: str) -> str | None:
+    def extract_multiline_field(self, message: str, field_name: str) -> str | None:
         """
         Извлекает многострочное текстовое поле из вакансии.
 
@@ -217,3 +204,14 @@ class VacancyExtractor:
 
         content = match.group(1).strip()
         return content or None
+
+    @staticmethod
+    def _clean_vacancy(vacancy: str) -> str:
+        return (
+            vacancy.replace("*", "")
+            .replace("⸺", "-")  # Двойное тире
+            .replace("—", "-")  # Длинное тире
+            .replace("–", "-")  # Короткое тире
+            .replace("―", "-")  # Горизонтальная черта
+            .strip()
+        )

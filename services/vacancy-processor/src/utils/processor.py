@@ -9,7 +9,7 @@ from schemas.vacancy import VacancyCreate
 from sqlalchemy.exc import IntegrityError
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
-from utils.prompter import make_prompt
+from utils.prompter import make_vacancy_prompt
 
 from services import (
     GradeService,
@@ -52,7 +52,7 @@ class VacancyProcessor:
         vacancies_to_process = [v for v in vacancies if v.hash not in existing_vacancies]
         logger.info("Got %s new vacancies", len(vacancies_to_process))
 
-        prompts = [make_prompt(vacancy.data) for vacancy in vacancies_to_process]
+        prompts = [make_vacancy_prompt(vacancy.data) for vacancy in vacancies_to_process]
         process_prompts_task = list(starmap(self._process_prompt, zip(prompts, vacancies_to_process, strict=True)))
 
         vacancies_to_delete: list[VacancySchema] = []

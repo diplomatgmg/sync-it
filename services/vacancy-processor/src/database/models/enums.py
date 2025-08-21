@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Any, Self
+from typing import Any, Self, cast
 
 
 __all__ = [
@@ -12,8 +12,6 @@ __all__ = [
 
 
 class BaseAliasEnum(StrEnum):
-    __require_unknown__: bool
-
     aliases: tuple[str, ...]
 
     def __new__(cls, normalized: str, aliases: tuple[str, ...] = ()) -> Self:
@@ -25,7 +23,7 @@ class BaseAliasEnum(StrEnum):
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Проверяем, что у наследников есть UNKNOWN"""
         super().__init_subclass__(**kwargs)
-        if getattr(cls, "__require_unknown__", True) and "UNKNOWN" not in cls.__members__:
+        if "UNKNOWN" not in cls.__members__:
             raise ValueError(f"{cls.__name__} must define UNKNOWN member")
 
     def __bool__(self) -> bool:
@@ -38,7 +36,8 @@ class BaseAliasEnum(StrEnum):
         for member in cls:
             if label.lower() in member.aliases:
                 return member
-        return cls.UNKNOWN  # type: ignore[attr-defined, no-any-return]
+
+        return cast("Self", cls.UNKNOWN)  # type: ignore[attr-defined]
 
 
 class SourceEnum(StrEnum):
@@ -74,6 +73,7 @@ class GradeEnum(BaseAliasEnum):
 
 
 class SkillEnum(BaseAliasEnum):
-    __require_unknown__ = False
+    UNKNOWN = "Неизвестно"
 
     # <Enum name> = "normalized name", ("alias1", alias 2")
+    PYTHON = "Python"

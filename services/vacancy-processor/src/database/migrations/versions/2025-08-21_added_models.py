@@ -1,8 +1,8 @@
 """added models
 
-Revision ID: c2f4cc1a2bba
+Revision ID: 943ca8ad0139
 Revises: 2843301e18c5
-Create Date: 2025-08-14 22:40:27.481934
+Create Date: 2025-08-21 17:41:23.856790
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c2f4cc1a2bba'
+revision: str = '943ca8ad0139'
 down_revision: Union[str, Sequence[str], None] = '2843301e18c5'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -42,7 +42,7 @@ def upgrade() -> None:
     sa.UniqueConstraint('name'),
     schema='vacancy_processor'
     )
-    op.create_table('skill_category',
+    op.create_table('skill',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=32), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -56,21 +56,13 @@ def upgrade() -> None:
     sa.UniqueConstraint('name'),
     schema='vacancy_processor'
     )
-    op.create_table('skill',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=32), nullable=False),
-    sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['category_id'], ['vacancy_processor.skill_category.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name'),
-    schema='vacancy_processor'
-    )
     op.create_table('vacancy',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('source', sa.String(length=16), nullable=False),
     sa.Column('hash', sa.String(length=32), nullable=False),
     sa.Column('link', sa.String(length=256), nullable=False),
-    sa.Column('company_name', sa.String(length=64), nullable=True),
-    sa.Column('salary', sa.String(length=32), nullable=True),
+    sa.Column('company_name', sa.String(length=128), nullable=True),
+    sa.Column('salary', sa.String(length=96), nullable=True),
     sa.Column('workplace_description', sa.Text(), nullable=True),
     sa.Column('responsibilities', sa.Text(), nullable=True),
     sa.Column('requirements', sa.Text(), nullable=True),
@@ -80,9 +72,12 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['profession_id'], ['vacancy_processor.profession.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('hash'),
-    sa.UniqueConstraint('link'),
     schema='vacancy_processor'
     )
+    op.create_index('idx_vacancy_published_at_id', 'vacancy', ['published_at', 'id'], unique=False, schema='vacancy_processor')
+    op.create_index('idx_vacancy_source_link', 'vacancy', ['source', 'link'], unique=True, schema='vacancy_processor')
+    op.create_index(op.f('ix_vacancy_processor_vacancy_published_at'), 'vacancy', ['published_at'], unique=False, schema='vacancy_processor')
+    op.create_index(op.f('ix_vacancy_processor_vacancy_source'), 'vacancy', ['source'], unique=False, schema='vacancy_processor')
     op.create_table('vacancy_grade',
     sa.Column('vacancy_id', sa.Integer(), nullable=False),
     sa.Column('grade_id', sa.Integer(), nullable=False),
@@ -116,10 +111,13 @@ def downgrade() -> None:
     op.drop_table('vacancy_work_format', schema='vacancy_processor')
     op.drop_table('vacancy_skill', schema='vacancy_processor')
     op.drop_table('vacancy_grade', schema='vacancy_processor')
+    op.drop_index(op.f('ix_vacancy_processor_vacancy_source'), table_name='vacancy', schema='vacancy_processor')
+    op.drop_index(op.f('ix_vacancy_processor_vacancy_published_at'), table_name='vacancy', schema='vacancy_processor')
+    op.drop_index('idx_vacancy_source_link', table_name='vacancy', schema='vacancy_processor')
+    op.drop_index('idx_vacancy_published_at_id', table_name='vacancy', schema='vacancy_processor')
     op.drop_table('vacancy', schema='vacancy_processor')
-    op.drop_table('skill', schema='vacancy_processor')
     op.drop_table('work_format', schema='vacancy_processor')
-    op.drop_table('skill_category', schema='vacancy_processor')
+    op.drop_table('skill', schema='vacancy_processor')
     op.drop_table('profession', schema='vacancy_processor')
     op.drop_table('grade', schema='vacancy_processor')
     op.drop_table('currency', schema='vacancy_processor')

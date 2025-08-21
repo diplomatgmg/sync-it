@@ -23,6 +23,11 @@ class SkillService(BaseUOWService[UnitOfWork]):
 
         return [SkillRead.model_validate(s) for s in skills]
 
+    async def get_skills_by_enums(self, enums: list[SkillEnum]) -> list[SkillRead]:
+        skills = await self._uow.skills.get_by_enums(enums)
+
+        return [SkillRead.model_validate(s) for s in skills]
+
     async def add_skill(self, skill: SkillCreate) -> SkillRead:
         skill_model = Skill(**skill.model_dump())
         created_skill = await self._uow.skills.add(skill_model)

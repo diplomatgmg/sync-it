@@ -1,8 +1,8 @@
 """added models
 
-Revision ID: c29635cbd78c
+Revision ID: a6a3981b800a
 Revises: b040edb2dcb1
-Create Date: 2025-08-14 22:40:33.589812
+Create Date: 2025-08-21 17:41:17.549082
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c29635cbd78c'
+revision: str = 'a6a3981b800a'
 down_revision: Union[str, Sequence[str], None] = 'b040edb2dcb1'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,19 +24,20 @@ def upgrade() -> None:
     op.create_table('vacancies',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('source', sa.String(length=16), nullable=False),
-    sa.Column('hash', sa.String(length=32), nullable=False),
+    sa.Column('hash', sa.String(length=64), nullable=False),
     sa.Column('fingerprint', sa.Text(), nullable=False),
     sa.Column('link', sa.String(length=256), nullable=False),
     sa.Column('data', sa.Text(), nullable=False),
     sa.Column('published_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('processed_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('fingerprint'),
     sa.UniqueConstraint('hash'),
     sa.UniqueConstraint('link'),
     schema='vacancy_parser'
     )
-    op.create_index(op.f('ix_vacancy_parser_vacancies_deleted_at'), 'vacancies', ['deleted_at'], unique=False, schema='vacancy_parser')
+    op.create_index('idx_vacancies_not_processed', 'vacancies', ['processed_at'], unique=False, schema='vacancy_parser', postgresql_where='processed_at IS NULL')
+    op.create_index(op.f('ix_vacancy_parser_vacancies_processed_at'), 'vacancies', ['processed_at'], unique=False, schema='vacancy_parser')
+    op.create_index(op.f('ix_vacancy_parser_vacancies_published_at'), 'vacancies', ['published_at'], unique=False, schema='vacancy_parser')
     op.create_index(op.f('ix_vacancy_parser_vacancies_source'), 'vacancies', ['source'], unique=False, schema='vacancy_parser')
     op.create_table('head_hunter_vacancies',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -62,6 +63,8 @@ def downgrade() -> None:
     op.drop_table('telegram_vacancies', schema='vacancy_parser')
     op.drop_table('head_hunter_vacancies', schema='vacancy_parser')
     op.drop_index(op.f('ix_vacancy_parser_vacancies_source'), table_name='vacancies', schema='vacancy_parser')
-    op.drop_index(op.f('ix_vacancy_parser_vacancies_deleted_at'), table_name='vacancies', schema='vacancy_parser')
+    op.drop_index(op.f('ix_vacancy_parser_vacancies_published_at'), table_name='vacancies', schema='vacancy_parser')
+    op.drop_index(op.f('ix_vacancy_parser_vacancies_processed_at'), table_name='vacancies', schema='vacancy_parser')
+    op.drop_index('idx_vacancies_not_processed', table_name='vacancies', schema='vacancy_parser', postgresql_where='processed_at IS NULL')
     op.drop_table('vacancies', schema='vacancy_parser')
     # ### end Alembic commands ###
