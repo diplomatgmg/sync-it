@@ -30,7 +30,7 @@ async def send_welcome_message(target: Message | CallbackQuery, user: UserRead) 
 
 
 @router.message(Command(BotCommandEnum.START))
-async def handle_start(message: Message, user: UserRead) -> None:
+async def handle_start_command(message: Message, user: UserRead) -> None:
     await send_welcome_message(message, user)
 
 

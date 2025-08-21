@@ -31,7 +31,7 @@ wheels = [
 
 [[package]]
 name = "aiogram"
-version = "3.21.0"
+version = "3.22.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -41,9 +41,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/11/414c49e31ac353b12dba4f89e66141e4504d359c453dfdd5d259cefb97a4/aiogram-3.21.0.tar.gz", hash = "sha256:24cd0015ed73471fa3028b47788e57b43a475c66d176a857de2b6b67bd37e1dd", size = 1500486, upload-time = "2025-07-05T00:20:03.203Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/2c/fe0845a97f6126357d20163ede8f76bc161f73122123c6548ca19d9a12c7/aiogram-3.22.0.tar.gz", hash = "sha256:c483f81e37aeea8e7f592c9bd14f6acc80d9b7a2698e296a45bf47ff60a98510", size = 1520414, upload-time = "2025-08-17T16:20:45.471Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c7/0b/606c9cdff82f5a5e004d72a14368d46ed00298c94a8d83b6faf8fb70499f/aiogram-3.21.0-py3-none-any.whl", hash = "sha256:0995e11be66bba46c0aab4ac8a41587fb2749b72399aff46a20e6610ccebe3ae", size = 677316, upload-time = "2025-07-05T00:20:01.322Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/e5/9f9fae7b50ed502e33121dd62a7e9b076d00630eaafe1dd7fda64f7e8625/aiogram-3.22.0-py3-none-any.whl", hash = "sha256:1c6eceb078ff62cf0556a5466cf3e7e8119678c26cc56803b7ac5f73633934a8", size = 698216, upload-time = "2025-08-17T16:20:43.354Z" },
 ]
 
 [[package]]
@@ -476,7 +476,7 @@ wheels = [
 
 [[package]]
 name = "g4f"
-version = "0.6.0.1"
+version = "0.6.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -485,9 +485,9 @@ dependencies = [
     { name = "pycryptodome" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c6/fb/7e521721712d93677068dc96df8cedbd43806461071c2cc60e124df8b0b3/g4f-0.6.0.1.tar.gz", hash = "sha256:f4b5968311dfa70ee0ffcb42cee3901f41273942847e865b77d963f0d7cdd7a8", size = 422420, upload-time = "2025-08-11T15:30:21.644Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/37/81411658bd7a70d2a9b35b31bb59e4306a0f85014c824e8bf5275ccea8d9/g4f-0.6.0.3.tar.gz", hash = "sha256:7a9defdf7607c2207278cc3fdfdf3ba285da3038eecbb02f9a47074deaf7bf61", size = 418594, upload-time = "2025-08-21T10:31:20.28Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/d3/fa12eed1a838c62bd9b1cd82cf5ed010d87778a9486def7b3329d4d1eb19/g4f-0.6.0.1-py3-none-any.whl", hash = "sha256:926424e48512cd0bdca8548ec41568c9027d47ed6546d6c5a403802477097bce", size = 518403, upload-time = "2025-08-11T15:30:19.628Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/65/6f856ec2ce130b9a9d4976e478c3c66207f909f24d52bfead56dbb4e02e4/g4f-0.6.0.3-py3-none-any.whl", hash = "sha256:eecc23152d54bd87c9fdfe8952bfb1a77465d7b8a8514202a67c0c7bbe63f07d", size = 515994, upload-time = "2025-08-21T10:31:17.933Z" },
 ]
 
 [[package]]
@@ -945,6 +945,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pypdf"
+version = "6.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/20/ac/a300a03c3b34967c050677ccb16e7a4b65607ee5df9d51e8b6d713de4098/pypdf-6.0.0.tar.gz", hash = "sha256:282a99d2cc94a84a3a3159f0d9358c0af53f85b4d28d76ea38b96e9e5ac2a08d", size = 5033827, upload-time = "2025-08-11T14:22:02.352Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2c/83/2cacc506eb322bb31b747bc06ccb82cc9aa03e19ee9c1245e538e49d52be/pypdf-6.0.0-py3-none-any.whl", hash = "sha256:56ea60100ce9f11fc3eec4f359da15e9aec3821b036c1f06d2b660d35683abb8", size = 310465, upload-time = "2025-08-11T14:22:00.481Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1003,7 +1012,7 @@ requires-dist = [{ name = "redis", specifier = ">=6.2.0" }]
 
 [[package]]
 name = "requests"
-version = "2.32.4"
+version = "2.32.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
@@ -1011,9 +1020,9 @@ dependencies = [
     { name = "idna" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e1/0a/929373653770d8a0d7ea76c37de6e41f11eb07559b103b1c02cafb3f7cf8/requests-2.32.4.tar.gz", hash = "sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422", size = 135258, upload-time = "2025-06-09T16:43:07.34Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/74/b3ff8e6c8446842c3f5c837e9c3dfcfe2018ea6ecef224c710c85ef728f4/requests-2.32.5.tar.gz", hash = "sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf", size = 134517, upload-time = "2025-08-18T20:46:02.573Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/e4/56027c4a6b4ae70ca9de302488c5ca95ad4a39e190093d6c1a8ace08341b/requests-2.32.4-py3-none-any.whl", hash = "sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c", size = 64847, upload-time = "2025-06-09T16:43:05.728Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl", hash = "sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6", size = 64738, upload-time = "2025-08-18T20:46:00.542Z" },
 ]
 
 [[package]]
@@ -1232,6 +1241,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "gateway-lib" },
     { name = "logger-lib" },
+    { name = "pypdf" },
     { name = "sentry-lib" },
     { name = "shared-lib" },
     { name = "syncit-core" },
@@ -1252,6 +1262,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.116.1" },
     { name = "gateway-lib", virtual = "libs/common/gateway" },
     { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "pypdf", specifier = ">=6.0.0" },
     { name = "sentry-lib", virtual = "libs/common/sentry" },
     { name = "shared-lib", virtual = "libs/common/shared" },
     { name = "syncit-core", virtual = "." },

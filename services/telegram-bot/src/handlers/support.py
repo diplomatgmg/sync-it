@@ -1,13 +1,14 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
+from commands import BotCommandEnum
 from core import service_config
 
 
 __all__ = ()
 
 
-router = Router(name="support")
+router = Router(name=BotCommandEnum.SUPPORT)
 
 
 @router.message(Command("support"))
