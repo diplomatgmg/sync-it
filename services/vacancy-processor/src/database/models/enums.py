@@ -1,40 +1,59 @@
 from enum import StrEnum
-from typing import Self
+from typing import Any, Self
 
 
 __all__ = [
     "GradeEnum",
     "ProfessionEnum",
-    "SkillCategoryEnum",
     "SkillEnum",
     "SourceEnum",
     "WorkFormatEnum",
 ]
 
 
-class BaseStrEnum(StrEnum):
+class BaseAliasEnum(StrEnum):
+    __require_unknown__: bool
+
+    aliases: tuple[str, ...]
+
+    def __new__(cls, normalized: str, aliases: tuple[str, ...] = ()) -> Self:
+        obj = str.__new__(cls, normalized)
+        obj._value_ = normalized
+        obj.aliases = (normalized.lower(), *(a.lower() for a in aliases))
+        return obj
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        """Проверяем, что у наследников есть UNKNOWN"""
+        super().__init_subclass__(**kwargs)
+        if getattr(cls, "__require_unknown__", True) and "UNKNOWN" not in cls.__members__:
+            raise ValueError(f"{cls.__name__} must define UNKNOWN member")
+
+    def __bool__(self) -> bool:
+        """Возвращает True, если элемент не UNKNOWN"""
+        return self is not self.UNKNOWN  # type: ignore[attr-defined]
+
     @classmethod
-    def get_safe(cls, label: str) -> Self | None:
-        """Возвращает элемент Enum по строковому значению, с игнорированием регистра."""
+    def get_safe(cls, label: str) -> Self:
+        """Возвращает элемент Enum по строковому значению или алиасу."""
         for member in cls:
-            if member.value.lower() == label.lower():
+            if label.lower() in member.aliases:
                 return member
-        return None
+        return cls.UNKNOWN  # type: ignore[attr-defined, no-any-return]
 
 
-class SourceEnum(BaseStrEnum):
+class SourceEnum(StrEnum):
     TELEGRAM = "telegram"
     HEAD_HUNTER = "head_hunter"
 
 
-class WorkFormatEnum(BaseStrEnum):
+class WorkFormatEnum(BaseAliasEnum):
     UNKNOWN = "Неизвестно"
-    REMOTE = "Удаленка"
+    REMOTE = "Удаленка", ("удалённая", "удаленная")
     HYBRID = "Гибрид"
-    OFFICE = "Офис"
+    OFFICE = "Офис", ("на месте работодателя", "офис")
 
 
-class ProfessionEnum(BaseStrEnum):
+class ProfessionEnum(BaseAliasEnum):
     UNKNOWN = "Неизвестно"
     DEVOPS = "DevOps"
     BACKEND = "Backend developer"
@@ -45,18 +64,16 @@ class ProfessionEnum(BaseStrEnum):
     TECH_LEAD = "Tech Lead"
 
 
-class GradeEnum(BaseStrEnum):
+class GradeEnum(BaseAliasEnum):
     UNKNOWN = "Неизвестно"
-    INTERN = "Стажер"
+    INTERN = "Стажер", ("стажёр", "intern")
     JUNIOR = "Junior"
     MIDDLE = "Middle"
     SENIOR = "Senior"
     LEAD = "Lead"
 
 
-class SkillCategoryEnum(BaseStrEnum):
-    BACKEND = "Backend"
+class SkillEnum(BaseAliasEnum):
+    __require_unknown__ = False
 
-
-class SkillEnum(BaseStrEnum):
-    NEVER_SKILL = "never_skill"
+    # <Enum name> = "normalized name", ("alias1", alias 2")

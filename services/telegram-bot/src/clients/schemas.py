@@ -11,8 +11,6 @@ __all__ = [
     "GradeSchema",
     "ProfessionResponse",
     "ProfessionSchema",
-    "SkillCategoryResponse",
-    "SkillCategorySchema",
     "SkillResponse",
     "SkillSchema",
     "VacancyWithNeighborsRequest",
@@ -53,18 +51,8 @@ class WorkFormatResponse(BaseModel):
     work_formats: list[WorkFormatSchema]
 
 
-class SkillCategorySchema(BaseModel):
-    id: int
-    name: str
-
-
-class SkillCategoryResponse(BaseModel):
-    skill_categories: list[SkillCategorySchema]
-
-
 class SkillSchema(BaseModel):
     id: int
-    category_id: int
     name: str
 
 

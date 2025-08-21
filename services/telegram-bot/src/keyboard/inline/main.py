@@ -33,12 +33,6 @@ def main_keyboard() -> InlineKeyboardMarkup:
                 callback_data=VacancyCallback(action=VacancyActionEnum.SHOW_VACANCY).pack(),
             ),
         ],
-        [
-            InlineKeyboardButton(
-                text="⚙️Предпочтения",
-                callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
-            ),
-        ],
     ]
 
     return InlineKeyboardBuilder(markup=buttons).as_markup()

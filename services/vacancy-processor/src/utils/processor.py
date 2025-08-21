@@ -107,7 +107,7 @@ class VacancyProcessor:
 
         profession_task = self.profession_service.get_profession_by_name(extracted_vacancy.profession)
         grades_tasks = [self.grade_service.get_grade_by_name(name) for name in extracted_vacancy.grades]
-        skills_tasks = [self.skill_service.get_skill_by_name(name) for _, name in extracted_vacancy.skills]
+        skills_tasks = [self.skill_service.get_skill_by_name(name) for name in extracted_vacancy.skills]
         wf_tasks = [self.work_format_service.get_work_format_by_name(name) for name in extracted_vacancy.work_formats]
 
         profession = await profession_task

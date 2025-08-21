@@ -2,10 +2,7 @@ import re
 from typing import Self
 
 from common.logger import get_logger
-from database.models.enums import GradeEnum, ProfessionEnum, SkillCategoryEnum, SkillEnum, WorkFormatEnum
-from utils.mappers import map_to_profession_enum, map_to_skill_category_and_skill_enum
-from utils.mappers.grade import map_to_grade_enum
-from utils.mappers.work_format import map_to_work_format_enum
+from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 
 
 __all__ = ["VacancyExtractor"]
@@ -32,7 +29,7 @@ class VacancyExtractor:
         self.salary: str | None = None
         self.grades: list[GradeEnum] = []
         self.work_formats: list[WorkFormatEnum] = []
-        self.skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
+        self.skills: list[SkillEnum] = []
 
         self.workplace_description: str | None = None
         self.responsibilities: str | None = None
@@ -92,7 +89,7 @@ class VacancyExtractor:
 
         profession_str = match.group(1).strip()
 
-        return map_to_profession_enum(profession_str)
+        return ProfessionEnum.get_safe(profession_str)
 
     @staticmethod
     def _parse_salary(message: str) -> str | None:
@@ -133,7 +130,7 @@ class VacancyExtractor:
         for part in grade_parts:
             clean_part = part.strip()
 
-            grade = map_to_grade_enum(clean_part)
+            grade = GradeEnum.get_safe(clean_part)
             if not grade:
                 logger.warning("Unknown grade part: %s", clean_part)
                 continue
@@ -163,7 +160,7 @@ class VacancyExtractor:
         for part in work_format_parts:
             clean_part = part.strip()
 
-            work_format = map_to_work_format_enum(clean_part)
+            work_format = WorkFormatEnum.get_safe(clean_part)
             if not work_format:
                 logger.warning("Unknown work format part: %s", clean_part)
                 continue
@@ -176,7 +173,7 @@ class VacancyExtractor:
         return work_formats
 
     @staticmethod
-    def _parse_skills(message: str) -> list[tuple[SkillCategoryEnum, SkillEnum]]:
+    def _parse_skills(message: str) -> list[SkillEnum]:
         """Извлекает навыки из сообщения."""
         pattern = r"Навыки:\s(.*)"
         match = re.search(pattern, message)
@@ -184,7 +181,7 @@ class VacancyExtractor:
             logger.warning("Skills pattern not found in message: %s", message)
             return []
 
-        skills: list[tuple[SkillCategoryEnum, SkillEnum]] = []
+        skills: list[SkillEnum] = []
 
         skills_str = match.group(1).strip()
         # Python, Git
@@ -193,12 +190,12 @@ class VacancyExtractor:
         for part in skills_parts:
             clean_part = part.strip()
 
-            category, skill = map_to_skill_category_and_skill_enum(clean_part)
-            if not skill or not category:
+            skill = SkillEnum.get_safe(clean_part)
+            if not skill:
                 logger.warning("Unknown skill part: %s", clean_part)
                 continue
 
-            skills.append((category, skill))
+            skills.append(skill)
 
         return skills
 
