@@ -38,7 +38,7 @@ class BaseAliasEnum(StrEnum):
     def _check_members_order(cls) -> None:
         """Проверяет, что элементы перечисления отсортированы по значению."""
         original_members = [item[0] for item in cls.__members__.items() if item[1] != cls.UNKNOWN]  # type: ignore[attr-defined]
-        sorted_members = sorted(original_members, key=lambda item: item[0].casefold())
+        sorted_members = sorted(original_members, key=lambda item: item.casefold())
 
         if original_members != sorted_members:
             # Находим первый элемент, который нарушает порядок

@@ -110,6 +110,15 @@ class VacancyProcessor:
         skills = [s for s in await asyncio.gather(*skills_tasks) if s]
         work_formats = [w for w in await asyncio.gather(*wf_tasks) if w]
 
+        max_salary_length = 96
+        if extracted_vacancy.salary and len(extracted_vacancy.salary) > max_salary_length:
+            logger.warning(
+                "Salary length >%s",
+                max_salary_length,
+                extra={"salary": extracted_vacancy.salary},
+            )
+            return
+
         vacancy_create = VacancyCreate(
             source=vacancy.source,
             published_at=vacancy.published_at,
