@@ -4,7 +4,7 @@ from database.models import TelegramVacancy
 from repositories import TelegramVacancyRepository
 from schemas.vacancy import TelegramVacancyCreate, TelegramVacancyRead
 
-from services import AbstractVacancyService
+from services import BaseVacancyService
 
 
 __all__ = ["TelegramVacancyService"]
@@ -14,9 +14,7 @@ if TYPE_CHECKING:
     from parsers.schemas import TelegramChannelUrl
 
 
-class TelegramVacancyService(
-    AbstractVacancyService[TelegramVacancyRead, TelegramVacancyCreate, TelegramVacancyRepository]
-):
+class TelegramVacancyService(BaseVacancyService[TelegramVacancyRead, TelegramVacancyCreate, TelegramVacancyRepository]):
     """Сервис для бизнес-логики, связанной с вакансиями из Телеграма."""
 
     _read_schema = TelegramVacancyRead

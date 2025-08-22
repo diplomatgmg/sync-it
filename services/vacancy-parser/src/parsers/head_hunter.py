@@ -49,8 +49,7 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
             duplicate = await self.service.find_duplicate_vacancy_by_fingerprint(fingerprint)
             if duplicate:
                 logger.info(
-                    "Found duplicate vacancy with similarity %s%%. New vacancy link: %s, Existing vacancy link: %s, ",
-                    await self.service.get_similarity_score(fingerprint, duplicate.fingerprint),
+                    "Found duplicate vacancy. New vacancy link: %s, Existing vacancy link: %s",
                     vacancy_detail.alternate_url,
                     duplicate.link,
                 )
@@ -67,7 +66,6 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
                 salary=vacancy_detail.salary.humanize() if vacancy_detail.salary else None,
                 experience=vacancy_detail.experience.name,
                 schedule=vacancy_detail.schedule.name,
-                employment=vacancy_detail.employment.name,
                 work_formats=[wf.name for wf in vacancy_detail.work_format],
                 key_skills=[ks.name for ks in vacancy_detail.key_skills],
                 published_at=vacancy_detail.published_at,

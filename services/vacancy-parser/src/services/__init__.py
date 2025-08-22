@@ -1,5 +1,5 @@
 # isort: off
-from services.vacancy.abstract import AbstractVacancyService
+from services.vacancy.base import BaseVacancyService
 from services.vacancy.vacancy import VacancyService
 # isort: on
 
@@ -8,7 +8,7 @@ from services.vacancy.telegram import TelegramVacancyService
 
 
 __all__ = [
-    "AbstractVacancyService",
+    "BaseVacancyService",
     "HeadHunterVacancyService",
     "TelegramVacancyService",
     "VacancyService",

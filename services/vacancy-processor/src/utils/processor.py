@@ -48,7 +48,7 @@ class VacancyProcessor:
         logger.debug("Start processing vacancies")
         vacancies = await vacancy_client.get_vacancies()
         existing_vacancies = await self.uow.vacancies.get_existing_hashes([v.hash for v in vacancies])
-        vacancies_to_process = [v for v in vacancies if v.hash not in existing_vacancies]
+        vacancies_to_process = [v for v in vacancies if v.hash not in existing_vacancies][:3]
         logger.info("Got %s new vacancies", len(vacancies_to_process))
 
         prompts = [make_vacancy_prompt(vacancy.data) for vacancy in vacancies_to_process]
@@ -125,4 +125,3 @@ class VacancyProcessor:
         )
 
         await self.vacancy_service.add_vacancy(vacancy_create, grades, work_formats, skills)
-        await self.uow.commit()

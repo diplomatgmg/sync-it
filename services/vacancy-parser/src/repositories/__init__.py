@@ -1,5 +1,5 @@
 # isort: off
-from repositories.vacancy.abstract import AbstractVacancyRepository
+from repositories.vacancy.base import BaseVacancyRepository
 from repositories.vacancy.vacancy import VacancyRepository
 # isort: on
 
@@ -8,7 +8,7 @@ from repositories.vacancy.telegram import TelegramVacancyRepository
 
 
 __all__ = [
-    "AbstractVacancyRepository",
+    "BaseVacancyRepository",
     "HeadHunterVacancyRepository",
     "TelegramVacancyRepository",
     "VacancyRepository",

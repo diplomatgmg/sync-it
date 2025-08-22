@@ -7,11 +7,11 @@ from database.models import Vacancy
 from sqlalchemy import func, select, update
 
 
-__all__ = ["AbstractVacancyRepository"]
+__all__ = ["BaseVacancyRepository"]
 
 
-class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
-    """Абстрактный репозиторий для работы с моделями вакансий."""
+class BaseVacancyRepository[VacancyType: Vacancy](BaseRepository):
+    """Базовый репозиторий для работы с моделями вакансий."""
 
     _model: type[VacancyType]
 
@@ -42,12 +42,6 @@ class AbstractVacancyRepository[VacancyType: Vacancy](BaseRepository):
         )
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
-
-    async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
-        """Получить % схожести между двумя fingerprint."""
-        result = await self._session.execute(select(func.similarity(fingerprint1, fingerprint2)))
-        similarity = result.scalar() or 0.0
-        return round(similarity * 100, 2)
 
     async def add(self, vacancy: VacancyType) -> VacancyType:
         self._session.add(vacancy)

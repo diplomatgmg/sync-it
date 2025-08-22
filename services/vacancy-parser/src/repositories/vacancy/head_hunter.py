@@ -1,12 +1,12 @@
 from database.models import HeadHunterVacancy
-from repositories import AbstractVacancyRepository
+from repositories import BaseVacancyRepository
 from sqlalchemy import select
 
 
 __all__ = ["HeadHunterVacancyRepository"]
 
 
-class HeadHunterVacancyRepository(AbstractVacancyRepository[HeadHunterVacancy]):
+class HeadHunterVacancyRepository(BaseVacancyRepository[HeadHunterVacancy]):
     _model = HeadHunterVacancy
 
     async def get_vacancy_by_id(self, vacancy_id: int) -> HeadHunterVacancy | None:

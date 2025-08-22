@@ -75,7 +75,6 @@ class HeadHunterVacancyCreate(BaseHeadHunterVacancy, VacancyCreate):
     description: str = Field(exclude=True)
     salary: str | None = Field(exclude=True)
     experience: str = Field(exclude=True)
-    employment: str = Field(exclude=True)
     schedule: str = Field(exclude=True)
     work_formats: list[str] = Field(exclude=True)
     key_skills: list[str] = Field(exclude=True)
@@ -94,7 +93,6 @@ class HeadHunterVacancyCreate(BaseHeadHunterVacancy, VacancyCreate):
         text_parts.extend(
             (
                 f"Опыт: {self.experience}",
-                f"Занятость: {self.employment}",
                 f"График работы: {self.schedule}",
             )
         )

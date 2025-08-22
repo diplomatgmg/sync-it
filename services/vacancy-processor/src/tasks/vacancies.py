@@ -39,3 +39,4 @@ async def async_process_vacancies() -> None:
             skill_service,
         )
         await processor.start()
+        await uow.commit()

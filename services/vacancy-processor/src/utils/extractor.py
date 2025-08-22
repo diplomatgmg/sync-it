@@ -36,23 +36,36 @@ class VacancyExtractor:
         self.requirements: str | None = None
         self.conditions: str | None = None
 
-    def extract(self, vacancy: str) -> "Self":
+    def __repr__(self) -> str:
+        return f"""VacancyExtractor(
+    company_name={self.company_name},
+    profession={self.profession},
+    salary={self.salary},
+    grades={self.grades},
+    work_formats={self.work_formats},
+    skills={self.skills},
+)"""
+
+    @classmethod
+    def extract(cls, vacancy: str) -> "Self":
         """Извлекает данные из текстового представления вакансии."""
-        cleaned_vacancy = self._clean_vacancy(vacancy)
+        instance = cls()
 
-        self.company_name = self.extract_company_name(cleaned_vacancy)
-        self.profession = self.extract_profession(cleaned_vacancy)
-        self.salary = self.extract_salary(cleaned_vacancy)
-        self.grades = self.extract_grades(cleaned_vacancy)
-        self.work_formats = self.extract_work_formats(cleaned_vacancy)
-        self.skills = self.extract_skills(cleaned_vacancy)
+        cleaned_vacancy = instance._clean_vacancy(vacancy)
 
-        self.workplace_description = self.extract_multiline_field(cleaned_vacancy, "О месте работы")
-        self.responsibilities = self.extract_multiline_field(cleaned_vacancy, "Обязанности")
-        self.requirements = self.extract_multiline_field(cleaned_vacancy, "Требования")
-        self.conditions = self.extract_multiline_field(cleaned_vacancy, "Условия")
+        instance.company_name = instance.extract_company_name(cleaned_vacancy)
+        instance.profession = instance.extract_profession(cleaned_vacancy)
+        instance.salary = instance.extract_salary(cleaned_vacancy)
+        instance.grades = instance.extract_grades(cleaned_vacancy)
+        instance.work_formats = instance.extract_work_formats(cleaned_vacancy)
+        instance.skills = instance.extract_skills(cleaned_vacancy)
 
-        return self
+        instance.workplace_description = instance.extract_multiline_field(cleaned_vacancy, "О месте работы")
+        instance.responsibilities = instance.extract_multiline_field(cleaned_vacancy, "Обязанности")
+        instance.requirements = instance.extract_multiline_field(cleaned_vacancy, "Требования")
+        instance.conditions = instance.extract_multiline_field(cleaned_vacancy, "Условия")
+
+        return instance
 
     @staticmethod
     def extract_company_name(text: str) -> str | None:
@@ -136,7 +149,7 @@ class VacancyExtractor:
     @staticmethod
     def extract_work_formats(text: str) -> set[WorkFormatEnum]:
         """Извлекает значение формата работы из сообщения."""
-        pattern = r"Тип занятости:\s(.*)"
+        pattern = r"Формат работы:\s(.*)"
         match = re.search(pattern, text)
         if not match:
             logger.warning("Work format pattern not found in text: %s", text)

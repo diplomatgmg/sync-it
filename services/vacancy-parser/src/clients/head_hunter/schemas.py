@@ -68,11 +68,6 @@ class HeadHunterVacancyScheduleSchema(BaseModel):
     name: str
 
 
-class HeadHunterVacancyEmploymentSchema(BaseModel):
-    id: str
-    name: str
-
-
 class HeadHunterVacancyWorkFormatSchema(BaseModel):
     id: str
     name: str
@@ -95,7 +90,6 @@ class HeadHunterVacancyDetailResponse(HeadHunterVacancySchema):
     salary: HeadHunterVacancySalarySchema | None = Field(alias="salary_range")  # salary - deprecated.
     experience: HeadHunterVacancyExperienceSchema
     schedule: HeadHunterVacancyScheduleSchema
-    employment: HeadHunterVacancyEmploymentSchema
     work_format: list[HeadHunterVacancyWorkFormatSchema]
     key_skills: list[HeadHunterVacancyKeySkillSchema]
     published_at: datetime

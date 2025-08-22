@@ -2,14 +2,14 @@ from database.models import HeadHunterVacancy
 from repositories import HeadHunterVacancyRepository
 from schemas.vacancy import HeadHunterVacancyCreate, HeadHunterVacancyRead
 
-from services import AbstractVacancyService
+from services import BaseVacancyService
 
 
 __all__ = ["HeadHunterVacancyService"]
 
 
 class HeadHunterVacancyService(
-    AbstractVacancyService[HeadHunterVacancyRead, HeadHunterVacancyCreate, HeadHunterVacancyRepository]
+    BaseVacancyService[HeadHunterVacancyRead, HeadHunterVacancyCreate, HeadHunterVacancyRepository]
 ):
     """Сервис для бизнес-логики, связанной с вакансиями из HeadHunter."""
 

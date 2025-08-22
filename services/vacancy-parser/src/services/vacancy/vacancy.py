@@ -1,13 +1,13 @@
 from repositories import VacancyRepository
 from schemas.vacancy import VacancyCreate, VacancyRead
 
-from services import AbstractVacancyService
+from services import BaseVacancyService
 
 
 __all__ = ["VacancyService"]
 
 
-class VacancyService(AbstractVacancyService[VacancyRead, VacancyCreate, VacancyRepository]):
+class VacancyService(BaseVacancyService[VacancyRead, VacancyCreate, VacancyRepository]):
     _read_schema = VacancyRead
     _create_schema = VacancyCreate
     _repo: "VacancyRepository"

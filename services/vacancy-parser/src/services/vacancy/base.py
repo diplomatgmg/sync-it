@@ -8,16 +8,16 @@ from schemas.vacancy import VacancyCreate, VacancyRead
 from unitofwork import UnitOfWork
 
 
-__all__ = ["AbstractVacancyService"]
+__all__ = ["BaseVacancyService"]
 
 if TYPE_CHECKING:
-    from repositories import AbstractVacancyRepository
+    from repositories import BaseVacancyRepository
 
 
-class AbstractVacancyService[
+class BaseVacancyService[
     VacancyReadType: VacancyRead,
     VacancyCreateType: VacancyCreate,
-    VacancyRepositoryType: AbstractVacancyRepository[Any],  # Головная боль без Any
+    VacancyRepositoryType: BaseVacancyRepository[Any],  # Головная боль без Any
 ](BaseUOWService[UnitOfWork], ABC):
     _read_schema: type[VacancyReadType]
     _create_schema: type[VacancyCreateType]
@@ -37,9 +37,6 @@ class AbstractVacancyService[
             return None
 
         return self._read_schema.model_validate(duplicate)
-
-    async def get_similarity_score(self, fingerprint1: str, fingerprint2: str) -> float:
-        return await self._repo.get_similarity_score(fingerprint1, fingerprint2)
 
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         return await self._repo.get_existing_hashes(hashes)
