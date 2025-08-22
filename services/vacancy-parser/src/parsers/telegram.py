@@ -2,6 +2,7 @@ from collections.abc import Iterable
 
 from clients.telegram import telegram_client
 from common.logger import get_logger
+from common.shared.schemas import HttpsUrl
 from parsers.base import BaseParser
 from parsers.schemas import TelegramChannelUrl
 from schemas.vacancy import TelegramVacancyCreate
@@ -63,7 +64,7 @@ class TelegramParser(BaseParser[TelegramVacancyService]):
 
             vacancy_create = TelegramVacancyCreate(
                 fingerprint=fingerprint,
-                link=f"{channel_link}/{message.id}",
+                link=HttpsUrl(f"{channel_link}/{message.id}"),
                 channel_username=channel_link.channel_username,
                 message_id=message.id,
                 published_at=message.datetime,

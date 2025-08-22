@@ -91,6 +91,7 @@ class VacancyExtractor:
 
         profession = ProfessionEnum.get_safe(profession_str)
         if not profession:
+            logger.warning("Unknown profession part: %s", profession_str)
             return ProfessionEnum.UNKNOWN
 
         return profession
@@ -129,7 +130,7 @@ class VacancyExtractor:
 
         grade_str = match.group(1).strip()
         # Junior/Middle/Senior
-        grade_parts = re.split(r"[/\s]", grade_str)
+        grade_parts = re.split(r"[/,\s]+", grade_str.strip())
 
         for part in grade_parts:
             clean_part = part.strip()
@@ -159,7 +160,7 @@ class VacancyExtractor:
 
         work_format_str = match.group(1).strip()
         # Удаленка/Гибрид | Удаленка, Гибрид
-        work_format_parts = re.split(r"[/,]", work_format_str)
+        work_format_parts = re.split(r"[/,\S]+", work_format_str)
 
         for part in work_format_parts:
             clean_part = part.strip()
@@ -216,7 +217,7 @@ class VacancyExtractor:
         pattern = rf"{field_name}:[\s\n]*(.*?)(?=\n\n\w+:|$)"  # на эльфийском
         match = re.search(pattern, message, re.DOTALL)
         if not match:
-            logger.warning('Not found multiline field: "%s" for message:\n%s', field_name, message)
+            logger.debug('Not found multiline field: "%s" for message:\n%s', field_name, message)
             return None
 
         content = match.group(1).strip()

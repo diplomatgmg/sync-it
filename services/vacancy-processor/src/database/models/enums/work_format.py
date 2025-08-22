@@ -6,6 +6,6 @@ __all__ = ["WorkFormatEnum"]
 
 class WorkFormatEnum(BaseAliasEnum):
     UNKNOWN = "Неизвестно"
-    REMOTE = "Удаленка"
+    REMOTE = "Удалёнка", ("удалённо", "удаленная работа", "удалённая работа", "удалено", "удаленка", "удаленна")
     HYBRID = "Гибрид"
-    OFFICE = "Офис"
+    OFFICE = "Офис", ("на месте работодателя",)
