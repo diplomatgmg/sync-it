@@ -72,6 +72,9 @@ services:
     command: [ "celery", "flower", "--port=${FLOWER_PORT}", "-l", "${LOG_LEVEL}" ]
     networks:
       - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
 
   api-gateway:
     extends:
@@ -103,9 +106,21 @@ services:
       service: telegram-bot
       file: telegram-bot/docker-compose.yml
     depends_on:
+      api-gateway:
+        condition: service_healthy
       pgbouncer:
         condition: service_healthy
-      api-gateway:
+      telegram-bot-worker:
+        condition: service_healthy
+
+  telegram-bot-worker:
+    extends:
+      service: telegram-bot-worker
+      file: telegram-bot/docker-compose.yml
+    depends_on:
+      redis:
+        condition: service_healthy
+      pgbouncer:
         condition: service_healthy
       vacancy-processor:
         condition: service_healthy
@@ -125,11 +140,11 @@ services:
       service: vacancy-parser
       file: vacancy-parser/docker-compose.yml
     depends_on:
-      pgbouncer:
+      api-gateway:
         condition: service_healthy
       telegram-api:
         condition: service_healthy
-      api-gateway:
+      vacancy-parser-worker:
         condition: service_healthy
 
   vacancy-parser-worker:
@@ -140,8 +155,6 @@ services:
       redis:
         condition: service_healthy
       pgbouncer:
-        condition: service_healthy
-      vacancy-parser:
         condition: service_healthy
 
   vacancy-parser-beat:
@@ -167,11 +180,11 @@ services:
       service: vacancy-processor
       file: vacancy-processor/docker-compose.yml
     depends_on:
-      pgbouncer:
+      api-gateway:
         condition: service_healthy
       gpt-api:
         condition: service_healthy
-      api-gateway:
+      vacancy-processor-worker:
         condition: service_healthy
 
   vacancy-processor-worker:
@@ -183,7 +196,7 @@ services:
         condition: service_healthy
       pgbouncer:
         condition: service_healthy
-      vacancy-processor:
+      gpt-api:
         condition: service_healthy
 
   vacancy-processor-beat:

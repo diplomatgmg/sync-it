@@ -1,14 +1,29 @@
+x-service-common: &service-common
+  image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-telegram-bot:latest
+  env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
+  networks:
+    - app-network
+
+x-healthcheck-common: &healthcheck-common
+  interval: 30s
+  timeout: 3s
+  retries: 3
+  start_period: 5s
+  start_interval: 1s
+
 services:
   telegram-bot:
+    <<: *service-common
     container_name: telegram-bot
-    image: ${ENV_DOCKER_USERNAME}/${ENV_PROJECT_NAME}-telegram-bot:latest
-    env_file: ${SERVICE_PROJECT_ROOT}/infra/.env
-    networks:
-      - app-network
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://telegram-bot:${ENV_SERVICE_INTERNAL_PORT}/health" ]
-      interval: 15s
-      timeout: 1s
-      retries: 3
-      start_period: 30s
-      start_interval: 1s
+      <<: *healthcheck-common
+
+  telegram-bot-worker:
+    <<: *service-common
+    container_name: telegram-bot-worker
+    command: [ "celery", "-A", "celery_app.app", "worker", "-n", "telegram_bot", "-l", "${LOG_LEVEL}" ]
+    cpus: 1
+    healthcheck:
+      test: [ "CMD-SHELL", "celery -A celery_app.app inspect ping -d celery@telegram_bot" ]
+      <<: *healthcheck-common

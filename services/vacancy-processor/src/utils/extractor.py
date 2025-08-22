@@ -27,9 +27,9 @@ class VacancyExtractor:
         self.company_name: str | None = None
         self.profession: ProfessionEnum = ProfessionEnum.UNKNOWN
         self.salary: str | None = None
-        self.grades: list[GradeEnum] = []
-        self.work_formats: list[WorkFormatEnum] = []
-        self.skills: list[SkillEnum] = []
+        self.grades: set[GradeEnum] = set()
+        self.work_formats: set[WorkFormatEnum] = set()
+        self.skills: set[SkillEnum] = set()
 
         self.workplace_description: str | None = None
         self.responsibilities: str | None = None
@@ -100,15 +100,15 @@ class VacancyExtractor:
         return salary_str
 
     @staticmethod
-    def extract_grades(text: str) -> list[GradeEnum]:
+    def extract_grades(text: str) -> set[GradeEnum]:
         """Извлекает значение грейда из сообщения."""
         pattern = r"Позиция:\s(.*)"
         match = re.search(pattern, text)
         if not match:
             logger.warning("Grade pattern not found in text: %s", text)
-            return [GradeEnum.UNKNOWN]
+            return {GradeEnum.UNKNOWN}
 
-        grades: list[GradeEnum] = []
+        grades: set[GradeEnum] = set()
 
         grade_str = match.group(1).strip()
         # Junior/Middle/Senior
@@ -122,23 +122,23 @@ class VacancyExtractor:
                 logger.warning("Unknown grade part: %s", clean_part)
                 continue
 
-            grades.append(grade)
+            grades.add(grade)
 
         if not grades:
-            grades = [GradeEnum.UNKNOWN]
+            grades = {GradeEnum.UNKNOWN}
 
         return grades
 
     @staticmethod
-    def extract_work_formats(text: str) -> list[WorkFormatEnum]:
+    def extract_work_formats(text: str) -> set[WorkFormatEnum]:
         """Извлекает значение формата работы из сообщения."""
         pattern = r"Тип занятости:\s(.*)"
         match = re.search(pattern, text)
         if not match:
             logger.warning("Work format pattern not found in text: %s", text)
-            return [WorkFormatEnum.UNKNOWN]
+            return {WorkFormatEnum.UNKNOWN}
 
-        work_formats: list[WorkFormatEnum] = []
+        work_formats: set[WorkFormatEnum] = set()
 
         work_format_str = match.group(1).strip()
         # Удаленка/Гибрид | Удаленка, Гибрид
@@ -152,23 +152,23 @@ class VacancyExtractor:
                 logger.warning("Unknown work format part: %s", clean_part)
                 continue
 
-            work_formats.append(work_format)
+            work_formats.add(work_format)
 
         if not work_formats:
-            work_formats = [WorkFormatEnum.UNKNOWN]
+            work_formats = {WorkFormatEnum.UNKNOWN}
 
         return work_formats
 
     @staticmethod
-    def extract_skills(text: str) -> list[SkillEnum]:
+    def extract_skills(text: str) -> set[SkillEnum]:
         """Извлекает навыки из сообщения."""
         pattern = r"Навыки:\s(.*)"
         match = re.search(pattern, text)
         if not match:
             logger.warning("Skills pattern not found in text: %s", text)
-            return []
+            return set()
 
-        skills: list[SkillEnum] = []
+        skills: set[SkillEnum] = set()
 
         skills_str = match.group(1).strip()
         # Python, Git
@@ -182,7 +182,7 @@ class VacancyExtractor:
                 logger.warning("Unknown skill part: %s", clean_part)
                 continue
 
-            skills.append(skill)
+            skills.add(skill)
 
         return skills
 

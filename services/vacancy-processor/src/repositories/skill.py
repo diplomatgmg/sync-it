@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 from common.shared.repositories import BaseRepository
 from database.models import Skill
@@ -24,7 +24,7 @@ class SkillRepository(BaseRepository):
 
         return result.scalars().all()
 
-    async def get_by_ids(self, ids: Sequence[int]) -> Sequence[Skill]:
+    async def get_by_ids(self, ids: Iterable[int]) -> Sequence[Skill]:
         """Возвращает форматы работы по списку ID."""
         if not ids:
             return []
@@ -34,7 +34,7 @@ class SkillRepository(BaseRepository):
 
         return result.scalars().all()
 
-    async def get_by_enums(self, enums: Sequence[SkillEnum]) -> Sequence[Skill]:
+    async def get_by_enums(self, enums: Iterable[SkillEnum]) -> Sequence[Skill]:
         stmt = select(Skill).where(Skill.name.in_(enums))
         result = await self._session.execute(stmt)
 

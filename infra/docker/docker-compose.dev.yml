@@ -95,6 +95,12 @@ services:
       test: [ "CMD", "true" ] # supress because webhook may be disabled
     <<: *service-common
 
+  telegram-bot-worker:
+    build:
+      dockerfile: infra/docker/telegram-bot/Dockerfile
+      <<: *build-common
+    <<: *service-common
+
   telegram-bot-migrator:
     build:
       dockerfile: infra/docker/telegram-bot/Dockerfile

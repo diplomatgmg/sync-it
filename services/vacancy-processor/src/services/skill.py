@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 from async_lru import alru_cache
 from common.shared.services import BaseUOWService
 from database.models import Skill
@@ -23,7 +25,7 @@ class SkillService(BaseUOWService[UnitOfWork]):
 
         return [SkillRead.model_validate(s) for s in skills]
 
-    async def get_skills_by_enums(self, enums: list[SkillEnum]) -> list[SkillRead]:
+    async def get_skills_by_enums(self, enums: Iterable[SkillEnum]) -> list[SkillRead]:
         skills = await self._uow.skills.get_by_enums(enums)
 
         return [SkillRead.model_validate(s) for s in skills]

@@ -1,18 +1,18 @@
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
-from clients import skill_client
 from commands import BotCommandEnum
 from common.logger import get_logger
 from core.loader import bot
 from keyboard.inline.main import main_menu_keyboard
+from schemas.user import UserRead
 from states import PreferencesState
-from utils.extractors.extractor import TextExtractor
+from tasks import process_resume
+from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
 from utils.message import safe_edit_message
 from utils.readers.enums import SupportedReaderExtensionsEnum
 
@@ -56,29 +56,29 @@ async def update_preferences(entity: CallbackQuery | Message, state: FSMContext)
 
 
 @router.message(PreferencesState.waiting_for_data)
-async def handle_resume_input(message: Message, state: FSMContext) -> None:  # noqa: PLR0911
-    text_for_processing: str
+async def handle_resume_input(message: Message, state: FSMContext, user: UserRead) -> None:  # noqa: PLR0911
+    resume_payload: TextResumePayloadSchema | FileResumePayloadSchema
 
     if text := message.text:
         if len(text) > MAX_MESSAGE_LENGTH:
             await message.reply(
-                f"Текст слишком длинный, попробуйте сократить его.\n\n{update_preferences_text}",
+                f"⚠️ Текст слишком длинный, попробуйте сократить его.\n\n{update_preferences_text}",
                 reply_markup=main_menu_keyboard(),
             )
             return
-        text_for_processing = text
+        resume_payload = TextResumePayloadSchema(text=text)
     elif document := message.document:
         file_suffix = Path(document.file_name or "").suffix
         if not file_suffix:
             await message.reply(
-                f"Не удалось определить формат файла.\n\n{update_preferences_text}",
+                f"⚠️ Не удалось определить формат файла.\n\n{update_preferences_text}",
                 reply_markup=main_menu_keyboard(),
             )
             return
 
         if file_suffix not in SupportedReaderExtensionsEnum:
             await message.reply(
-                f"Неподдерживаемый формат: {file_suffix}\n\n{update_preferences_text}",
+                f"⚠️ Неподдерживаемый формат: {file_suffix}\n\n{update_preferences_text}",
                 reply_markup=main_menu_keyboard(),
             )
             return
@@ -89,14 +89,14 @@ async def handle_resume_input(message: Message, state: FSMContext) -> None:  # n
                 message.model_dump(exclude_none=True),
             )
             await message.reply(
-                f"Не удалось определить размер файла.\n\n{update_preferences_text}",
+                f"❌ Произошла ошибка. Попробуйте позже.\n\n{update_preferences_text}",
                 reply_markup=main_menu_keyboard(),
             )
             return
 
         if document.file_size > MAX_FILE_SIZE:
             await message.reply(
-                f"Файл должен быть меньше {MAX_FILE_SIZE // 1024 // 1024} МБ.",
+                f"⚠️ Файл должен быть меньше {MAX_FILE_SIZE // 1024 // 1024} МБ.",
                 reply_markup=main_menu_keyboard(),
             )
             return
@@ -108,38 +108,22 @@ async def handle_resume_input(message: Message, state: FSMContext) -> None:  # n
                 message.model_dump(exclude_none=True),
             )
             await message.reply(
-                f"Не удалось получить путь к файлу.\n\n{update_preferences_text}",
+                f"❌ Произошла ошибка. Попробуйте позже.\n\n{update_preferences_text}",
                 reply_markup=main_menu_keyboard(),
             )
             return
 
-        with NamedTemporaryFile(suffix=f".{file_suffix}") as tmp:
-            await bot.download_file(file.file_path, destination=tmp.name)
-            extractor = TextExtractor()
-            text_for_processing = extractor.read(tmp.name)
+        resume_payload = FileResumePayloadSchema(file_path=file.file_path, suffix=file_suffix)
     else:
         await message.reply(
-            f"Вы прислали что-то не понятное 😕\n\n{update_preferences_text}",
+            f"🤔 Вы прислали что-то не понятное.\n\n{update_preferences_text}",
             reply_markup=main_menu_keyboard(),
         )
         return
 
     await message.answer(
-        "Начинаю извлечение навыков из текста.\nПожалуйста, подождите, это может занять некоторое время.",
+        "ℹ️ Начинаю извлечение навыков из текста.\nПожалуйста, подождите, это может занять некоторое время.",
     )
 
-    # FIXME!!! Переписать на celery, иначе уйду в таймаут
-    skills = await skill_client.extract_skills_from_text(text_for_processing)
-    if not skills:
-        await safe_edit_message(
-            message,
-            text=f"Не удалось извлечь навыки из текста.\n\n{update_preferences_text}",
-            reply_markup=main_menu_keyboard(),
-        )
-        return
-
-    skills_str = "\n".join(skill.name for skill in skills)
-
-    await message.reply(f"Извлечены следующие навыки:\n{skills_str}")
-
+    process_resume.delay(user.id, message.chat.id, resume_payload.model_dump())
     await state.clear()

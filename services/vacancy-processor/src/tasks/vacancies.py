@@ -1,6 +1,7 @@
+import asyncio
 from datetime import timedelta
 
-from celery_app import app, loop
+from celery_app import app
 from common.shared.decorators.singleton import singleton
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
@@ -15,6 +16,7 @@ __all__ = ["process_vacancies"]
 @app.task(name="process_vacancies")
 @singleton(timedelta(minutes=30))
 def process_vacancies() -> None:
+    loop = asyncio.get_event_loop()
     loop.run_until_complete(async_process_vacancies())
 
 

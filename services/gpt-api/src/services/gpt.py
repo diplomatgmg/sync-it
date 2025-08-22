@@ -32,6 +32,7 @@ async def get_gpt_response(prompt: str) -> str | None:
             content = cast("str", response.choices[0].message.content)
 
             if "502 Bad Gateway" not in content:
+                logger.debug("Received content: %s", content)
                 return content
 
             logger.warning("Got 502, retrying (%s/%s)...", attempt, MAX_RETRIES)
