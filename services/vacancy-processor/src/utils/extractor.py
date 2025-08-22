@@ -160,7 +160,7 @@ class VacancyExtractor:
 
         work_format_str = match.group(1).strip()
         # Удаленка/Гибрид | Удаленка, Гибрид
-        work_format_parts = re.split(r"[/,\S]+", work_format_str)
+        work_format_parts = re.split(r"[/,]+", work_format_str)
 
         for part in work_format_parts:
             clean_part = part.strip()
