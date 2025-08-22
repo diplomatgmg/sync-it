@@ -20,7 +20,7 @@ class SkillEnum(BaseAliasEnum):
     BPMN = "BPMN"
     CPP = "C++"
     CELERY = "Celery"
-    CI_CD = "CI/CD", ("gitlab ci",)
+    CI_CD = "CI/CD", ("gitlab ci", "gitlab ci/cd")
     CLICKHOUSE = "ClickHouse"
     CONFLUENCE = "Confluence"
     CSS = "CSS", ("css3",)
@@ -38,6 +38,7 @@ class SkillEnum(BaseAliasEnum):
     FLASK = "Flask"
     GIT = "Git"
     GITLAB = "GitLab"
+    GITHUB = "GitHub"
     GO = "Go", ("golang",)
     GRPC = "gRPC"
     GRAFANA = "Grafana"
