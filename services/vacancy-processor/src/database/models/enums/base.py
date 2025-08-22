@@ -6,12 +6,12 @@ __all__ = ["BaseAliasEnum"]
 
 
 class BaseAliasEnum(StrEnum):
-    aliases: tuple[str, ...]
+    aliases: tuple[str, ...]  # type: ignore[misc]
 
     def __new__(cls, normalized: str, aliases: tuple[str, ...] = ()) -> Self:
         obj = str.__new__(cls, normalized)
         obj._value_ = normalized
-        obj.aliases = (normalized.lower(), *(a.lower() for a in aliases))
+        obj.aliases = (normalized.lower(), *(a for a in aliases))  # type: ignore[misc]
         return obj
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -22,6 +22,8 @@ class BaseAliasEnum(StrEnum):
 
         if getattr(cls, "__validate_ordering__", False):
             cls._check_members_order()
+
+        cls._validate_register()
 
     @classmethod
     def get_safe(cls, label: str) -> Self | None:
@@ -35,19 +37,24 @@ class BaseAliasEnum(StrEnum):
     @classmethod
     def _check_members_order(cls) -> None:
         """Проверяет, что элементы перечисления отсортированы по значению."""
-        members = [item for item in cls.__members__.items() if item[1] != cls.UNKNOWN]  # type: ignore[attr-defined]
-        sorted_members = sorted(members, key=lambda item: item[1].value.casefold())
+        original_members = [item[0] for item in cls.__members__.items() if item[1] != cls.UNKNOWN]  # type: ignore[attr-defined]
+        sorted_members = sorted(original_members, key=lambda item: item[0].casefold())
 
-        if members != sorted_members:
+        if original_members != sorted_members:
             # Находим первый элемент, который нарушает порядок
-            for i, ((name_original, value_original), (name_sorted, value_sorted)) in enumerate(
-                zip(members, sorted_members, strict=True)
-            ):
-                if (name_original, value_original) != (name_sorted, value_sorted):
-                    original_list = [member[0] for member in members]
-                    sorted_list = [member[0] for member in sorted_members]
+            for i, (name_original, name_sorted) in enumerate(zip(original_members, sorted_members, strict=True)):
+                if name_original != name_sorted:
                     raise ValueError(
                         f"Ordering error in {cls.__name__}: member '{name_original}' is out of order."
-                        f"\nExpected order: ... {sorted_list[i - 1]}, {sorted_list[i]}, {sorted_list[i + 1]} ..."
-                        f"\nActual order: ... {original_list[i - 1]}, {original_list[i]}, {original_list[i + 1]} ..."
+                        f"\nExpected order: ... {sorted_members[i - 1]}, {sorted_members[i]}, {sorted_members[i + 1]} ..."  # noqa: E501
+                        f"\nActual order: ... {original_members[i - 1]}, {original_members[i]}, {original_members[i + 1]} ..."  # noqa: E501
                     )
+
+    @classmethod
+    def _validate_register(cls) -> None:
+        for key, value in cls.__members__.items():
+            if not key.isupper():
+                raise ValueError(f"{cls.__name__} has non-uppercase member: {key}.")
+            if not all(a == a.lower() for a in value.aliases):
+                aliases = value.aliases[1:]  # Пропускаем оригинальный алиас (значение)
+                raise ValueError(f"{cls.__name__} has non-lowercase alias: {aliases}.")

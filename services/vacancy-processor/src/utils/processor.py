@@ -4,7 +4,6 @@ from itertools import starmap
 from clients import gpt_client, vacancy_client
 from clients.schemas import VacancySchema
 from common.logger import get_logger
-from database.models.enums import ProfessionEnum
 from schemas.vacancy import VacancyCreate
 from sqlalchemy.exc import IntegrityError
 from unitofwork import UnitOfWork
@@ -68,10 +67,6 @@ class VacancyProcessor:
                 continue
 
             extracted_vacancy, vacancy = result
-
-            # FIXME ЧТОБЫ ОПРЕДЕЛИТЬ ПОПУЛЯРНЫЕ СКИЛЛЫ ДЛЯ BACKEND
-            if extracted_vacancy.profession != ProfessionEnum.BACKEND:
-                continue  # FIXME!!!!!!!!!!!!!!!!!!!!
 
             try:
                 await self._process_vacancy(extracted_vacancy, vacancy)

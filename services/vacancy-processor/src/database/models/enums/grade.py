@@ -6,8 +6,8 @@ __all__ = ["GradeEnum"]
 
 class GradeEnum(BaseAliasEnum):
     UNKNOWN = "Неизвестно"
-    INTERN = "Стажер"
-    JUNIOR = "Junior"
-    MIDDLE = "Middle"
+    INTERN = "Стажер", ("trainee",)
+    JUNIOR = "Junior", ("junior+",)
+    MIDDLE = "Middle", ("middle+", "mid", "средний")
     SENIOR = "Senior"
     LEAD = "Lead"
