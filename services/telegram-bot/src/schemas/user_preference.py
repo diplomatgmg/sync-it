@@ -1,4 +1,4 @@
-from database.models.enums import PreferenceCategoryCodeEnum
+from database.models.enums import PreferencesCategoryCodeEnum
 from pydantic import BaseModel, ConfigDict
 
 
@@ -10,7 +10,7 @@ __all__ = [
 
 class UserPreferenceBase(BaseModel):
     user_id: int
-    category_code: PreferenceCategoryCodeEnum
+    category_code: PreferencesCategoryCodeEnum
     item_id: int
     item_name: str
 

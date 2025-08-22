@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 from clients.vacancy import vacancy_client
 from common.logger import get_logger
-from database.models.enums import PreferenceCategoryCodeEnum
+from database.models.enums import PreferencesCategoryCodeEnum
 from exceptions import MessageNotModifiedError
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.vacancies import vacancies_keyboard
@@ -41,10 +41,10 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
 
     result = await vacancy_client.get_by_id_with_cursor_pagination(
         vacancy_id=vacancy_id,
-        professions=categorized_prefs[PreferenceCategoryCodeEnum.PROFESSION],
-        grades=categorized_prefs[PreferenceCategoryCodeEnum.GRADE],
-        work_formats=categorized_prefs[PreferenceCategoryCodeEnum.WORK_FORMAT],
-        skills=categorized_prefs[PreferenceCategoryCodeEnum.SKILL],
+        professions=categorized_prefs[PreferencesCategoryCodeEnum.PROFESSION],
+        grades=categorized_prefs[PreferencesCategoryCodeEnum.GRADE],
+        work_formats=categorized_prefs[PreferencesCategoryCodeEnum.WORK_FORMAT],
+        skills=categorized_prefs[PreferencesCategoryCodeEnum.SKILL],
     )
     vacancy, prev_id, next_id = result.vacancy, result.prev_id, result.next_id
 

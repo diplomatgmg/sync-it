@@ -22,7 +22,7 @@ __all__ = ()
 logger = get_logger(__name__)
 
 
-router = Router(name=BotCommandEnum.UPDATE_PREFERENCES)
+router = Router(name=PreferencesActionEnum.UPDATE_SKILLS)
 
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 1 MB
@@ -36,17 +36,17 @@ update_preferences_text = (
 )
 
 
-@router.message(Command(BotCommandEnum.UPDATE_PREFERENCES))
-async def handle_update_preferences_command(message: Message, state: FSMContext) -> None:
-    await update_preferences(message, state)
+@router.message(Command(BotCommandEnum.UPDATE_SKILLS))
+async def handle_update_skills_command(message: Message, state: FSMContext) -> None:
+    await update_skills(message, state)
 
 
-@router.callback_query(PreferencesCallback.filter(F.action == PreferencesActionEnum.UPDATE_PREFERENCES))
-async def handle_update_preferences_callback(callback: CallbackQuery, state: FSMContext) -> None:
-    await update_preferences(callback, state)
+@router.callback_query(PreferencesCallback.filter(F.action == PreferencesActionEnum.UPDATE_SKILLS))
+async def handle_update_skills_callback(callback: CallbackQuery, state: FSMContext) -> None:
+    await update_skills(callback, state)
 
 
-async def update_preferences(entity: CallbackQuery | Message, state: FSMContext) -> None:
+async def update_skills(entity: CallbackQuery | Message, state: FSMContext) -> None:
     await safe_edit_message(
         entity,
         text=update_preferences_text,

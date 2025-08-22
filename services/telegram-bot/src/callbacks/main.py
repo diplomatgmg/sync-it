@@ -11,6 +11,7 @@ __all__ = [
 
 class MenuActionEnum(StrEnum):
     MAIN = "main"
+    PREFERENCES = "preferences"
 
 
 class MenuCallback(CallbackData, prefix="menu"):

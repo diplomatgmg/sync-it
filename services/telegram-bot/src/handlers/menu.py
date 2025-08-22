@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery, Message
 from callbacks.main import MenuActionEnum, MenuCallback
 from commands import BotCommandEnum
 from keyboard.inline.main import main_keyboard
+from keyboard.inline.preferences import preferences_keyboard
 from schemas.user import UserRead
 from utils.message import make_linked, safe_edit_message
 
@@ -14,7 +15,7 @@ from services import UserService
 __all__ = ["router"]
 
 
-router = Router(name=BotCommandEnum.START)
+router = Router(name=MenuCallback.__prefix__)
 
 
 async def send_welcome_message(target: Message | CallbackQuery, user: UserRead) -> None:
@@ -39,3 +40,8 @@ async def handle_main_callback(callback: CallbackQuery, user_service: UserServic
     user = await user_service.get_by_telegram_id(callback.from_user.id)
 
     await send_welcome_message(callback, user)
+
+
+@router.callback_query(MenuCallback.filter(F.action == MenuActionEnum.PREFERENCES))
+async def handle_preferences(callback: CallbackQuery) -> None:
+    await safe_edit_message(callback, text="⚙️ Выберите предпочтения:", reply_markup=preferences_keyboard())

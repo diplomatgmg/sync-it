@@ -1,7 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
-from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 
 
@@ -30,14 +29,14 @@ def main_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
-                text="📋Вакансии",
+                text="📋 Вакансии",
                 callback_data=VacancyCallback(action=VacancyActionEnum.SHOW_VACANCY).pack(),
             ),
         ],
         [
             InlineKeyboardButton(
-                text="⚙️Обновить предпочтения",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.UPDATE_PREFERENCES).pack(),
+                text="⚙️ Обновить предпочтения",
+                callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
             ),
         ],
     ]

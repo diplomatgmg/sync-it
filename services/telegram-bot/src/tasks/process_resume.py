@@ -6,7 +6,7 @@ from celery_app import app
 from clients import skill_client
 from common.logger import get_logger
 from core.loader import bot
-from database.models.enums import PreferenceCategoryCodeEnum
+from database.models.enums import PreferencesCategoryCodeEnum
 from keyboard.inline.main import main_menu_keyboard
 from schemas.user_preference import UserPreferenceCreate
 from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
@@ -75,11 +75,11 @@ async def _extract_and_save_user_preferences(user_id: int, text: str, chat_id: i
         service = UserPreferenceService(uow)
         added_preferences = await service.replace_user_preferences(
             user_id=user_id,
-            category_code=PreferenceCategoryCodeEnum.SKILL,
+            category_code=PreferencesCategoryCodeEnum.SKILL,
             preferences=[
                 UserPreferenceCreate(
                     user_id=user_id,
-                    category_code=PreferenceCategoryCodeEnum.SKILL,
+                    category_code=PreferencesCategoryCodeEnum.SKILL,
                     item_id=s.id,
                     item_name=s.name,
                 )
