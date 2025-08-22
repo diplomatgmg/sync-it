@@ -76,7 +76,11 @@ class VacancyExtractor:
 
         profession_str = match.group(1).strip()
 
-        return ProfessionEnum.get_safe(profession_str)
+        profession = ProfessionEnum.get_safe(profession_str)
+        if not profession:
+            return ProfessionEnum.UNKNOWN
+
+        return profession
 
     @staticmethod
     def extract_salary(text: str) -> str | None:
