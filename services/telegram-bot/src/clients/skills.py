@@ -18,5 +18,8 @@ class _SkillClient(BaseClient):
 
         return model_response.skills
 
+    def configure_client(self) -> None:
+        self.client.timeout = 15
+
 
 skill_client = _SkillClient()

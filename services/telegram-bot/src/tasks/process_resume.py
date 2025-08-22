@@ -8,6 +8,7 @@ from common.logger import get_logger
 from core.loader import bot
 from database.models.enums import PreferencesCategoryCodeEnum
 from keyboard.inline.main import main_menu_keyboard
+from keyboard.inline.update_skills import update_skills_keyboard
 from schemas.user_preference import UserPreferenceCreate
 from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
 from unitofwork import UnitOfWork
@@ -94,4 +95,5 @@ async def _extract_and_save_user_preferences(user_id: int, text: str, chat_id: i
             f"✅ Ваши навыки успешно обновлены.\n\n"
             f"Теперь вы будете получать вакансии, релевантные под ваши навыки:\n"
             f"{added_skills_str}",
+            reply_markup=update_skills_keyboard(),
         )
