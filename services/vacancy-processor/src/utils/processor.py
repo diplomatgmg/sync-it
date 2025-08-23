@@ -95,6 +95,9 @@ class VacancyProcessor:
             return None
 
         extracted_vacancy = self.vacancy_extractor.extract(completion)
+        if not self.vacancy_extractor.is_valid_vacancy(extracted_vacancy):
+            return None
+
         return extracted_vacancy, vacancy
 
     async def _process_vacancy(self, extracted_vacancy: VacancyExtractor, vacancy: VacancySchema) -> None:

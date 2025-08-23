@@ -10,4 +10,4 @@ class GradeEnum(BaseAliasEnum):
     JUNIOR = "Junior", ("junior+", "младший")
     MIDDLE = "Middle", ("middle+", "mid", "средний")
     SENIOR = "Senior", ("старший",)
-    LEAD = "Lead"
+    LEAD = "Lead", ("руководитель", "ведущий", "главный")

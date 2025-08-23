@@ -11,12 +11,14 @@ class SkillEnum(BaseAliasEnum):
 
     ACTIVE_DIRECTORY = "Active Directory"
     AGILE = "Agile"
+    AIOHTTP = "aiohttp"
     AIRFLOW = "Airflow", ("apache airflow",)
     ALLURE = "Allure"
     ANGULAR = "Angular"
     ANSIBLE = "Ansible"
     ARGOCD = "ArgoCD"
     ASP_NET = "ASP.NET"
+    ASYNCIO = "asyncio"
     AWS = "AWS"
     AXIOS = "Axios"
     AZURE = "Azure"
@@ -26,7 +28,7 @@ class SkillEnum(BaseAliasEnum):
     C_SHARP = "C#"
     CASSANDRA = "Cassandra"
     CELERY = "Celery"
-    CI_CD = "CI/CD", ("gitlab ci", "gitlab ci/cd")
+    CI_CD = "CI/CD", ("gitlab ci", "gitlab ci/cd", "github actions")
     CLICKHOUSE = "ClickHouse"
     CMS = "CMS"
     CONFLUENCE = "Confluence", ("atlassian confluence",)
@@ -35,12 +37,13 @@ class SkillEnum(BaseAliasEnum):
     CYPRESS = "Cypress"
     DART = "DART"
     DEVOPS = "DevOps"
-    DJANGO = "Django", ("drf",)
+    DJANGO = "Django", ("drf", "django orm")
     DOCKER = "Docker"
     DOCKER_COMPOSE = "Docker Compose"
     ELASTICSEARCH = "Elasticsearch", ("elk", "elk stack")
     ENGLISH = "Английский язык"
     ETL = "ETL"
+    EXCEL = "Excel"
     FAST_API = "FastAPI"
     FIGMA = "Figma"
     FLASK = "Flask"
@@ -55,7 +58,7 @@ class SkillEnum(BaseAliasEnum):
     HADOOP = "Hadoop"
     HELM = "Helm"
     HTML = "HTML", ("html5",)
-    HTTP = "HTTP"
+    HTTP = "HTTP", ("https", "http/https")
     IOS = "iOS"
     JAVA = "Java"
     JAVASCRIPT = "JavaScript"
@@ -71,7 +74,7 @@ class SkillEnum(BaseAliasEnum):
     KOTLIN = "Kotlin"
     KUBERNETES = "Kubernetes"
     LARAVEL = "Laravel"
-    LINUX = "Linux"
+    LINUX = "Linux", ("ubuntu", "debian")
     LLM = "LLM"
     MAVEN = "Maven"
     MICROSERVICES = "Микросервисы"
@@ -86,16 +89,19 @@ class SkillEnum(BaseAliasEnum):
     NGINX = "Nginx"
     NODE_JS = "Node.js", ("nodejs",)
     NOSQL = "NoSQL"
-    ONE_C = "1С"
+    NUMPY = "Numpy"
+    ONE_C = "1С", ("1c",)
     OOP = "ООП", ("oop",)
     OPENSHIFT = "OpenShift"
     PANDAS = "pandas"
     PHP = "PHP"
     POSTGIS = "PostGIS"
-    POSTGRESQL = "PostgreSQL"
+    POSTGRESQL = "PostgreSQL", ("postgres",)
     POSTMAN = "Postman"
     POWER_BI = "Power BI"
     PROMETHEUS = "Prometheus"
+    PYDANTIC = "Pydantic"
+    PYTEST = "pytest"
     PYTHON = "Python"
     PYTORCH = "PyTorch"
     QA = "QA"
@@ -112,6 +118,7 @@ class SkillEnum(BaseAliasEnum):
     SCSS = "SCSS"
     SELENIUM = "Selenium"
     SENTRY = "Sentry"
+    SEO = "SEO"
     SOAP = "SOAP"
     SOLID = "SOLID"
     SPA = "SPA"
@@ -125,6 +132,7 @@ class SkillEnum(BaseAliasEnum):
     SYMFONY = "Symfony"
     TAILWIND = "Tailwind"
     TCP_IP = "TCP/IP"
+    TENSORFLOW = "TensorFlow"
     TERRAFORM = "Terraform"
     TYPESCRIPT = "TypeScript"
     UML = "UML"

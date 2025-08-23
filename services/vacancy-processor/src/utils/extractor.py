@@ -21,6 +21,9 @@ class VacancyExtractor:
     - описание (обязанности, требования и пр.)
     """
 
+    # Минимальное количество навыков, для определения, что вакансия относится к IT
+    NEED_SKILLS_COUNT = 5
+
     def __init__(self) -> None:
         self._paragraphs: list[str] | None = None
 
@@ -67,6 +70,10 @@ class VacancyExtractor:
 
         return instance
 
+    def is_valid_vacancy(self, extracted_vacancy: "VacancyExtractor") -> bool:
+        """Если в вакансии недостаточно навыков - скорее всего она не относиться к IT"""
+        return len(extracted_vacancy.skills) > self.NEED_SKILLS_COUNT
+
     @staticmethod
     def extract_company_name(text: str) -> str | None:
         """Извлекает название компании из сообщения."""
@@ -88,6 +95,8 @@ class VacancyExtractor:
             return ProfessionEnum.UNKNOWN
 
         profession_str = match.group(1).strip()
+        if any(part in profession_str.lower() for part in ProfessionEnum.__ignore_patterns__):
+            return ProfessionEnum.UNKNOWN
 
         profession = ProfessionEnum.get_safe(profession_str)
         if not profession:

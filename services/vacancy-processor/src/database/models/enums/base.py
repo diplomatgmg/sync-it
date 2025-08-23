@@ -7,6 +7,8 @@ __all__ = ["BaseAliasEnum"]
 
 class BaseAliasEnum(StrEnum):
     aliases: tuple[str, ...]  # type: ignore[misc]
+    __validate_ordering__: bool
+    __ignore_patterns__: tuple[str, ...]
 
     def __new__(cls, normalized: str, aliases: tuple[str, ...] = ()) -> Self:
         obj = str.__new__(cls, normalized)
