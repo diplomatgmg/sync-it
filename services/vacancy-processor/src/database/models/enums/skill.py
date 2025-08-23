@@ -23,7 +23,7 @@ class SkillEnum(BaseAliasEnum):
     AXIOS = "Axios"
     AZURE = "Azure"
     BASH = "Bash"
-    BIG_DATA = "Big Data"
+    BIG_DATA = "Big Data", ("работа с большим объемом информации",)
     BPMN = "BPMN"
     C_SHARP = "C#"
     CASSANDRA = "Cassandra"
@@ -33,6 +33,7 @@ class SkillEnum(BaseAliasEnum):
     CMS = "CMS"
     CONFLUENCE = "Confluence", ("atlassian confluence",)
     CPP = "C++"
+    CRM = "CRM"
     CSS = "CSS", ("css3",)
     CYPRESS = "Cypress"
     DART = "DART"
@@ -147,3 +148,22 @@ class SkillEnum(BaseAliasEnum):
     YANDEX_CLOUD = "Yandex Cloud"
     ZABBIX = "Zabbix"
     ZUSTAND = "Zustand"
+
+    # TODO: добавить проверку, что паттерны не совпадают с алиасами
+    __ignore_patterns__ = (
+        "аналитика",
+        "аналитическое",
+        "управление",
+        "деловая",
+        "развитие",
+        "организатор",
+        "деловое",
+        "продаж",
+        "переговор",
+        "переписка",
+        "продвижение",
+        "аналитика",
+        "привлечение",
+        "обучение",
+        "ответствен",
+    )

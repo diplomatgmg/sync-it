@@ -210,9 +210,10 @@ class VacancyExtractor:
         skills_str = match.group(1).strip()
         # Python, Git
         skills_parts = re.split(r",", skills_str)  # noqa: RUF055 убрать noqa после добавления паттерна
-
         for part in skills_parts:
             clean_part = part.strip()
+            if any(s in clean_part.lower() for s in SkillEnum.__ignore_patterns__):
+                continue
 
             skill = SkillEnum.get_safe(clean_part)
             if not skill:
