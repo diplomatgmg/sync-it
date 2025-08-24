@@ -61,7 +61,7 @@ class TelegramParser:
         message_datetime_str = str(message_time_block.attrs["datetime"])
 
         for br in message_text_block.find_all("br"):
-            br.replace_with("\n")  # type: ignore[arg-type]
+            br.replace_with("\n")
 
         return ChannelMessageSchema(
             id=message_id,
