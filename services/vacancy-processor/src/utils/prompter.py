@@ -15,10 +15,10 @@ def make_resume_prompt(resume_text: str) -> str:
     return resume_prompt % resume_text
 
 
-available_skills_str = ", ".join(filter(lambda x: x, SkillEnum))
-available_professions_str = ", ".join(p for p in ProfessionEnum)
-available_grades_str = ", ".join(g for g in GradeEnum)
-available_work_formats_str = ", ".join(wf for wf in WorkFormatEnum)
+available_skills_str = ", ".join(s for s in list(SkillEnum)[:15])
+available_professions_str = ", ".join(p for p in list(ProfessionEnum)[:15])
+available_grades_str = ", ".join(g for g in list(GradeEnum)[:15])
+available_work_formats_str = ", ".join(wf for wf in list(WorkFormatEnum)[:15])
 
 
 # TODO: добавить занятость
@@ -35,13 +35,13 @@ vacancy_prompt = f"""
 Компания: <Название компании-работодателя или "Неизвестно">
 
 Профессия: <Одна из предложенных профессий или максимально близкое по смыслу название>
-*Доступные варианты: {available_professions_str}, Неизвестно*
+*Доступные варианты: {available_professions_str}*
 
 Позиция: <Уровень позиции (грэйд). Если несколько — через запятую>
-*Доступные варианты: {available_grades_str}, Неизвестно*
+*Доступные варианты: {available_grades_str}*
 
 Формат работы: <Формат работы. Если несколько — через запятую>
-*Доступные варианты: {available_work_formats_str}, Неизвестно*
+*Доступные варианты: {available_work_formats_str}*
 
 Навыки: <Перечисление IT-навыков (хард-скиллов) через запятую>
 - Пример релевантных навыков: Python, TypeScript, SQLAlchemy, Spring Boot, PyTorch, MongoDB, Kubernetes
@@ -50,6 +50,7 @@ vacancy_prompt = f"""
 - ОБЯЗАТЕЛЬНО используй официальное название скилла из предопределенного списка.
 - НЕ используй версионность (например, Python вместо Python3)
 - НЕ используй сокращения (например, Kubernetes вместо k8s, py вместо Python)
+*Пример допустимых вариантов: {available_skills_str[:15]}*
 
 Зарплата: <Конкретная цифра или вилка из текста, до 96 символов>
 - Пример: "От 150 000 до 200 000 руб. на руки", "До 3500 $", "Не указана"
