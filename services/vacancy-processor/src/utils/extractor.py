@@ -72,7 +72,10 @@ class VacancyExtractor:
 
     def is_valid_vacancy(self, extracted_vacancy: "VacancyExtractor") -> bool:
         """Если в вакансии недостаточно навыков - скорее всего она не относиться к IT"""
-        return len(extracted_vacancy.skills) > self.NEED_SKILLS_COUNT
+        return (
+            len(extracted_vacancy.skills) > self.NEED_SKILLS_COUNT
+            and extracted_vacancy.profession != ProfessionEnum.UNKNOWN
+        )
 
     @staticmethod
     def extract_company_name(text: str) -> str | None:
