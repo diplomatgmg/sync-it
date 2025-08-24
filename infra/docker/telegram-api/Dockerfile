@@ -25,6 +25,8 @@ RUN apk update \
 FROM builder AS deps-base
 
 COPY ./pyproject.toml ./uv.lock ./
+COPY ./${SERVICE_PATH}/pyproject.toml ${SERVICE_PATH}/pyproject.toml
+COPY ./libs/common ./libs/common
 
 FROM deps-base AS deps-dev
 
