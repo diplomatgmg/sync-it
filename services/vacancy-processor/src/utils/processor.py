@@ -1,4 +1,5 @@
 import asyncio
+from itertools import starmap
 
 from clients import gpt_client, vacancy_client
 from clients.schemas import VacancySchema
@@ -50,28 +51,29 @@ class VacancyProcessor:
         vacancies_to_process = [v for v in vacancies if v.hash not in existing_vacancies]
         logger.info("Got %s new vacancies", len(vacancies_to_process))
 
-        tasks = [self._process_prompt(make_vacancy_prompt(vacancy.data), vacancy) for vacancy in vacancies_to_process]
+        prompts = [make_vacancy_prompt(vacancy.data) for vacancy in vacancies_to_process]
+        process_prompts_task = list(starmap(self._process_prompt, zip(prompts, vacancies_to_process, strict=True)))
 
         vacancies_to_delete: list[VacancySchema] = []
 
-        for future in asyncio.as_completed(tasks):
-            try:
-                extracted_vacancy, vacancy = await future
-            except Exception as e:
-                # Логирование исключения для отдельной задачи
-                logger.exception("Failed to process vacancy", exc_info=e)
+        results = await asyncio.gather(*process_prompts_task, return_exceptions=True)
+        for processed_vacancy, result in zip(vacancies_to_process, results, strict=True):
+            if isinstance(result, BaseException):
+                logger.error("Failed to process vacancy %s", processed_vacancy.link, exc_info=result)
+                continue
+            if result is None:
+                logger.debug("Not a vacancy: %s", processed_vacancy.link)
+                vacancies_to_delete.append(processed_vacancy)
                 continue
 
-            if not extracted_vacancy:
-                vacancies_to_delete.append(vacancy)
-                continue
+            extracted_vacancy, vacancy = result
 
             try:
                 await self._process_vacancy(extracted_vacancy, vacancy)
-                vacancies_to_delete.append(vacancy)
+                vacancies_to_delete.append(processed_vacancy)
             except IntegrityError as e:
-                logger.warning("Duplicate vacancy", exc_info=e)
-                vacancies_to_delete.append(vacancy)
+                logger.warning("Duplicate vacancy: %s", processed_vacancy.link, exc_info=e)
+                vacancies_to_delete.append(processed_vacancy)
 
         if vacancies_to_delete:
             logger.info("Deleting %s vacancies", len(vacancies_to_delete))
@@ -80,7 +82,7 @@ class VacancyProcessor:
 
     async def _process_prompt(
         self, prompt: str, vacancy: VacancySchema
-    ) -> tuple[VacancyExtractor | None, VacancySchema]:
+    ) -> tuple[VacancyExtractor, VacancySchema] | None:
         completion = await gpt_client.get_completion(prompt)
 
         bad_completions = (
@@ -88,12 +90,12 @@ class VacancyProcessor:
             "It seems that this video doesn't have a transcript, please try another video",
         )
         if any(bad_completion in completion for bad_completion in bad_completions):
-            logger.info("Not a vacancy: %s", vacancy.link)
-            return None, vacancy
+            logger.debug("Not a vacancy: %s", vacancy.link)
+            return None
 
         extracted_vacancy = self.vacancy_extractor.extract(completion)
         if not self.vacancy_extractor.is_valid_vacancy(extracted_vacancy):
-            return None, vacancy
+            return None
 
         return extracted_vacancy, vacancy
 
