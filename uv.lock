@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [manifest]
@@ -169,12 +169,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "environment-lib", virtual = "libs/common/environment" },
+    { name = "environment-lib", editable = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.13" },
-    { name = "gateway-lib", virtual = "libs/common/gateway" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "syncit-core", virtual = "." },
+    { name = "gateway-lib", editable = "libs/common/gateway" },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -397,7 +397,7 @@ wheels = [
 
 [[package]]
 name = "database-lib"
-source = { virtual = "libs/common/database" }
+source = { editable = "libs/common/database" }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
@@ -415,7 +415,7 @@ requires-dist = [
 
 [[package]]
 name = "environment-lib"
-source = { virtual = "libs/common/environment" }
+source = { editable = "libs/common/environment" }
 
 [[package]]
 name = "fastapi"
@@ -492,7 +492,7 @@ wheels = [
 
 [[package]]
 name = "gateway-lib"
-source = { virtual = "libs/common/gateway" }
+source = { editable = "libs/common/gateway" }
 
 [[package]]
 name = "gpt-api"
@@ -514,12 +514,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "environment-lib", virtual = "libs/common/environment" },
+    { name = "environment-lib", editable = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "g4f", specifier = ">=0.6.0.3" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "syncit-core", virtual = "." },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -646,7 +646,7 @@ wheels = [
 
 [[package]]
 name = "logger-lib"
-source = { virtual = "libs/common/logger" }
+source = { editable = "libs/common/logger" }
 
 [[package]]
 name = "magic-filter"
@@ -1002,7 +1002,7 @@ wheels = [
 
 [[package]]
 name = "redis-lib"
-source = { virtual = "libs/common/redis" }
+source = { editable = "libs/common/redis" }
 dependencies = [
     { name = "redis" },
 ]
@@ -1053,7 +1053,7 @@ wheels = [
 
 [[package]]
 name = "sentry-lib"
-source = { virtual = "libs/common/sentry" }
+source = { editable = "libs/common/sentry" }
 dependencies = [
     { name = "logger-lib" },
     { name = "sentry-sdk" },
@@ -1061,7 +1061,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "logger-lib", editable = "libs/common/logger" },
     { name = "sentry-sdk", specifier = ">=2.35.0" },
 ]
 
@@ -1080,7 +1080,7 @@ wheels = [
 
 [[package]]
 name = "shared-lib"
-source = { virtual = "libs/common/shared" }
+source = { editable = "libs/common/shared" }
 dependencies = [
     { name = "async-lru" },
     { name = "database-lib" },
@@ -1091,9 +1091,9 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "async-lru", specifier = ">=2.0.5" },
-    { name = "database-lib", virtual = "libs/common/database" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "redis-lib", virtual = "libs/common/redis" },
+    { name = "database-lib", editable = "libs/common/database" },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "redis-lib", editable = "libs/common/redis" },
 ]
 
 [[package]]
@@ -1167,7 +1167,7 @@ wheels = [
 
 [[package]]
 name = "syncit-core"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
@@ -1220,11 +1220,11 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
-    { name = "environment-lib", virtual = "libs/common/environment" },
+    { name = "environment-lib", editable = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "syncit-core", virtual = "." },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -1261,15 +1261,15 @@ requires-dist = [
     { name = "aiogram", specifier = ">=3.20.0.post0" },
     { name = "cachetools", specifier = ">=6.1.0" },
     { name = "celery", specifier = ">=5.5.3" },
-    { name = "database-lib", virtual = "libs/common/database" },
+    { name = "database-lib", editable = "libs/common/database" },
     { name = "fastapi", specifier = ">=0.116.1" },
-    { name = "gateway-lib", virtual = "libs/common/gateway" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
+    { name = "gateway-lib", editable = "libs/common/gateway" },
+    { name = "logger-lib", editable = "libs/common/logger" },
     { name = "pypdf", specifier = ">=6.0.0" },
-    { name = "redis-lib", virtual = "libs/common/redis" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "shared-lib", virtual = "libs/common/shared" },
-    { name = "syncit-core", virtual = "." },
+    { name = "redis-lib", editable = "libs/common/redis" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "shared-lib", editable = "libs/common/shared" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.35.0" },
     { name = "uvloop", specifier = ">=0.21.0" },
 ]
@@ -1387,14 +1387,14 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "celery", specifier = ">=5.5.3" },
-    { name = "database-lib", virtual = "libs/common/database" },
+    { name = "database-lib", editable = "libs/common/database" },
     { name = "fastapi", specifier = ">=0.115.13" },
-    { name = "gateway-lib", virtual = "libs/common/gateway" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "redis-lib", virtual = "libs/common/redis" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "shared-lib", virtual = "libs/common/shared" },
-    { name = "syncit-core", virtual = "." },
+    { name = "gateway-lib", editable = "libs/common/gateway" },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "redis-lib", editable = "libs/common/redis" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "shared-lib", editable = "libs/common/shared" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
@@ -1425,14 +1425,14 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "celery", specifier = ">=5.5.3" },
-    { name = "database-lib", virtual = "libs/common/database" },
+    { name = "database-lib", editable = "libs/common/database" },
     { name = "fastapi", specifier = ">=0.115.13" },
-    { name = "gateway-lib", virtual = "libs/common/gateway" },
-    { name = "logger-lib", virtual = "libs/common/logger" },
-    { name = "redis-lib", virtual = "libs/common/redis" },
-    { name = "sentry-lib", virtual = "libs/common/sentry" },
-    { name = "shared-lib", virtual = "libs/common/shared" },
-    { name = "syncit-core", virtual = "." },
+    { name = "gateway-lib", editable = "libs/common/gateway" },
+    { name = "logger-lib", editable = "libs/common/logger" },
+    { name = "redis-lib", editable = "libs/common/redis" },
+    { name = "sentry-lib", editable = "libs/common/sentry" },
+    { name = "shared-lib", editable = "libs/common/shared" },
+    { name = "syncit-core", editable = "." },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.3" },
 ]
 
