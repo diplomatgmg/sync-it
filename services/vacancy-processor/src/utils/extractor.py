@@ -56,17 +56,20 @@ class VacancyExtractor:
 
         cleaned_vacancy = instance._clean_vacancy(vacancy)
 
-        instance.company_name = instance.extract_company_name(cleaned_vacancy)
         instance.profession = instance.extract_profession(cleaned_vacancy)
-        instance.salary = instance.extract_salary(cleaned_vacancy)
-        instance.grades = instance.extract_grades(cleaned_vacancy)
-        instance.work_formats = instance.extract_work_formats(cleaned_vacancy)
-        instance.skills = instance.extract_skills(cleaned_vacancy)
 
-        instance.workplace_description = instance.extract_multiline_field(cleaned_vacancy, "О месте работы")
-        instance.responsibilities = instance.extract_multiline_field(cleaned_vacancy, "Обязанности")
-        instance.requirements = instance.extract_multiline_field(cleaned_vacancy, "Требования")
-        instance.conditions = instance.extract_multiline_field(cleaned_vacancy, "Условия")
+        # Нет смысла обрабатывать вакансию дальше, т.к. профессия обязательна
+        if instance.profession != ProfessionEnum.UNKNOWN:
+            instance.company_name = instance.extract_company_name(cleaned_vacancy)
+            instance.salary = instance.extract_salary(cleaned_vacancy)
+            instance.grades = instance.extract_grades(cleaned_vacancy)
+            instance.work_formats = instance.extract_work_formats(cleaned_vacancy)
+            instance.skills = instance.extract_skills(cleaned_vacancy)
+
+            instance.workplace_description = instance.extract_multiline_field(cleaned_vacancy, "О месте работы")
+            instance.responsibilities = instance.extract_multiline_field(cleaned_vacancy, "Обязанности")
+            instance.requirements = instance.extract_multiline_field(cleaned_vacancy, "Требования")
+            instance.conditions = instance.extract_multiline_field(cleaned_vacancy, "Условия")
 
         return instance
 
