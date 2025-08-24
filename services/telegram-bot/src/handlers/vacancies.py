@@ -29,9 +29,6 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
     callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService
 ) -> None:
     vacancy_id = callback_data.vacancy_id
-    if not vacancy_id:
-        # Самая актуальная вакансия используя предпочтения пользователя
-        vacancy_id = -1
 
     user = await user_service.get_by_telegram_id(callback.from_user.id, with_preferences=True)
 
@@ -101,5 +98,5 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
             disable_web_page_preview=True,
         )
 
-    if vacancy_id == -1:
+    if not vacancy_id:
         await callback.answer("Вакансии актуализированы")

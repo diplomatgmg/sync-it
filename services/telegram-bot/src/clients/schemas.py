@@ -99,6 +99,7 @@ class VacancyWithNeighborsSchema(BaseModel):
 
 
 class VacancyWithNeighborsRequest(BaseModel):
+    vacancy_id: int | None = None
     professions: list[str] | None = None
     grades: list[str] | None = None
     work_formats: list[str] | None = None

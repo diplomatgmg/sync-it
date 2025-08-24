@@ -1,11 +1,10 @@
 from collections.abc import Iterable, Sequence
-from datetime import datetime
 from typing import Any, TypeVar
 
 from common.shared.repositories import BaseRepository
 from database.models import Grade, Profession, Skill, Vacancy, WorkFormat
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from sqlalchemy import Select, select, tuple_
+from sqlalchemy import Select, func, select
 from sqlalchemy.orm import joinedload
 
 
@@ -40,62 +39,60 @@ class VacancyRepository(BaseRepository):
 
         return result.unique().scalar_one_or_none()
 
-    async def get_filtered(
-        self,
-        professions: Sequence[ProfessionEnum] | None = None,
-        grades: Sequence[GradeEnum] | None = None,
-        work_formats: Sequence[WorkFormatEnum] | None = None,
-        skills: Sequence[SkillEnum] | None = None,
-        limit: int | None = None,
-    ) -> Sequence[Vacancy]:
+    async def get_all(self, limit: int) -> Sequence[Vacancy]:
         """Получает отфильтрованный список вакансий."""
-        professions = professions or []
-        grades = grades or []
-        work_formats = work_formats or []
-        skills = skills or []
-        limit = limit or 10
-
         stmt = select(Vacancy)
         stmt = self._apply_vacancy_prefetch_details_to_stmt(stmt)
-        stmt = self._apply_filters_to_stmt(stmt, professions, grades, work_formats, skills)
         stmt = stmt.order_by(Vacancy.published_at.desc()).limit(limit)
 
         result = await self._session.execute(stmt)
 
         return result.scalars().unique().all()
 
-    async def get_prev_id(
+    async def get_with_neighbors(
         self,
-        published_at: datetime,
-        vacancy_id: int,
+        vacancy_id: int | None,
         professions: Sequence[ProfessionEnum],
         grades: Sequence[GradeEnum],
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
-    ) -> int | None:
-        stmt = select(Vacancy.id).where(tuple_(Vacancy.published_at, Vacancy.id) > (published_at, vacancy_id))
+    ) -> tuple[int | None, Vacancy | None, int | None]:
+        # Базовый запрос с фильтрацией
+        filtered_ids_stmt = select(Vacancy.id)
+        filtered_ids_stmt = self._apply_filters_to_stmt(filtered_ids_stmt, professions, grades, work_formats, skills)
 
-        stmt = self._apply_filters_to_stmt(stmt, professions, grades, work_formats, skills)
+        # Создаем CTE с оконными функциями
+        ranked_vacancies_cte = (
+            select(
+                Vacancy.id.label("vacancy_id"),
+                func.lag(Vacancy.id).over(order_by=Vacancy.published_at.desc()).label("prev_id"),
+                func.lead(Vacancy.id).over(order_by=Vacancy.published_at.desc()).label("next_id"),
+            )
+            .where(Vacancy.id.in_(filtered_ids_stmt))
+            .cte("ranked_vacancies")
+        )
 
-        stmt = stmt.order_by(Vacancy.published_at.asc(), Vacancy.id.asc()).limit(1)
+        # Основной запрос
+        stmt = select(
+            ranked_vacancies_cte.c.prev_id,
+            Vacancy,
+            ranked_vacancies_cte.c.next_id,
+        ).join(ranked_vacancies_cte, Vacancy.id == ranked_vacancies_cte.c.vacancy_id)
+
+        stmt = self._apply_vacancy_prefetch_details_to_stmt(stmt)
+
+        if vacancy_id:
+            stmt = stmt.where(Vacancy.id == vacancy_id)
+        else:
+            stmt = stmt.order_by(Vacancy.published_at.desc()).limit(1)
+
         result = await self._session.execute(stmt)
-        return result.scalar_one_or_none()
+        row = result.first()
 
-    async def get_next_id(
-        self,
-        published_at: datetime,
-        vacancy_id: int,
-        professions: Sequence[ProfessionEnum],
-        grades: Sequence[GradeEnum],
-        work_formats: Sequence[WorkFormatEnum],
-        skills: Sequence[SkillEnum],
-    ) -> int | None:
-        stmt = select(Vacancy.id).where(tuple_(Vacancy.published_at, Vacancy.id) < (published_at, vacancy_id))
-        stmt = self._apply_filters_to_stmt(stmt, professions, grades, work_formats, skills)
+        if not row:
+            return None, None, None
 
-        stmt = stmt.order_by(Vacancy.published_at.desc(), Vacancy.id.desc()).limit(1)
-        result = await self._session.execute(stmt)
-        return result.scalar_one_or_none()
+        return row.prev_id, row.Vacancy, row.next_id
 
     @staticmethod
     def _apply_vacancy_prefetch_details_to_stmt(stmt: TSelect) -> TSelect:

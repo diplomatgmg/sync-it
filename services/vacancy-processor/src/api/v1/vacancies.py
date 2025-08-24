@@ -4,7 +4,7 @@ from api.depedencies import get_vacancy_service
 from api.v1.schemas import VacancyListResponse, VacancyWithNeighborsResponse, VacancyWithNeighborsSchema
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, Query
 
 from services import VacancyService
 
@@ -19,38 +19,28 @@ router = APIRouter()
 @router.get("")
 async def get_vacancies(
     service: Annotated[VacancyService, Depends(get_vacancy_service)],
-    professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
-    grades: Annotated[list[GradeEnum] | None, Query()] = None,
-    work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
-    skills: Annotated[list[SkillEnum] | None, Query()] = None,
-    limit: int | None = None,
+    limit: int = 100,
 ) -> VacancyListResponse:
     """Получить список актуальных вакансий, подходящих под заданные фильтры."""
-    vacancies = await service.get_vacancies(
-        professions,
-        grades,
-        work_formats,
-        skills=skills,
-        limit=limit,
-    )
+    vacancies = await service.get_vacancies(limit=limit)
 
     return VacancyListResponse(vacancies=vacancies)
 
 
-@router.get("/{vacancy_id}")
+@router.get("/match")
 async def get_vacancy_with_neighbors(
     service: Annotated[VacancyService, Depends(get_vacancy_service)],
-    vacancy_id: Annotated[
-        int,
-        Path(
-            description="ID вакансии. Укажите -1, чтобы получить самую последнюю вакансию с заданными фильтрами.",
-        ),
-    ],
+    vacancy_id: int | None = None,
     professions: Annotated[list[ProfessionEnum] | None, Query()] = None,
     grades: Annotated[list[GradeEnum] | None, Query()] = None,
     work_formats: Annotated[list[WorkFormatEnum] | None, Query()] = None,
     skills: Annotated[list[SkillEnum] | None, Query()] = None,
 ) -> VacancyWithNeighborsResponse:
+    professions = professions or []
+    grades = grades or []
+    work_formats = work_formats or []
+    skills = skills or []
+
     prev_id, vacancy, next_id = await service.get_vacancy_with_neighbors(
         vacancy_id, professions, grades, work_formats, skills
     )

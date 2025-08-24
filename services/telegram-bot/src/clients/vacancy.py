@@ -16,19 +16,20 @@ class _VacancyClient(BaseClient):
 
     async def get_by_id_with_cursor_pagination(
         self,
-        vacancy_id: int,
+        vacancy_id: int | None = None,
         professions: list[str] | None = None,
         grades: list[str] | None = None,
         work_formats: list[str] | None = None,
         skills: list[str] | None = None,
     ) -> VacancyWithNeighborsSchema:
         params_model = VacancyWithNeighborsRequest(
+            vacancy_id=vacancy_id,
             professions=professions,
             grades=grades,
             work_formats=work_formats,
             skills=skills,
         )
-        url = f"{self.url}/{vacancy_id}"
+        url = f"{self.url}/match"
         response = await self.client.get(
             url,
             params=params_model.model_dump(exclude_none=True),

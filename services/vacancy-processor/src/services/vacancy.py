@@ -41,52 +41,29 @@ class VacancyService(BaseUOWService[UnitOfWork]):
     async def get_existing_hashes(self, hashes: Iterable[str]) -> set[str]:
         return await self._uow.vacancies.get_existing_hashes(hashes)
 
-    async def get_vacancies(
-        self,
-        professions: Sequence[ProfessionEnum] | None = None,
-        grades: Sequence[GradeEnum] | None = None,
-        work_formats: Sequence[WorkFormatEnum] | None = None,
-        skills: Sequence[SkillEnum] | None = None,
-        limit: int | None = None,
-    ) -> list[VacancyRead]:
+    async def get_vacancies(self, limit: int) -> list[VacancyRead]:
         """Получает вакансии с применением фильтров."""
-        vacancies = await self._uow.vacancies.get_filtered(
-            professions=professions,
-            grades=grades,
-            work_formats=work_formats,
-            skills=skills,
-            limit=limit,
-        )
+        vacancies = await self._uow.vacancies.get_all(limit=limit)
 
         return [VacancyRead.model_validate(v) for v in vacancies]
 
     async def get_vacancy_with_neighbors(
         self,
-        vacancy_id: int,
-        professions: Sequence[ProfessionEnum] | None = None,
-        grades: Sequence[GradeEnum] | None = None,
-        work_formats: Sequence[WorkFormatEnum] | None = None,
-        skills: Sequence[SkillEnum] | None = None,
+        vacancy_id: int | None,
+        professions: Sequence[ProfessionEnum],
+        grades: Sequence[GradeEnum],
+        work_formats: Sequence[WorkFormatEnum],
+        skills: Sequence[SkillEnum],
     ) -> tuple[int | None, VacancyRead | None, int | None]:
-        if vacancy_id == -1:
-            vacancies = await self._uow.vacancies.get_filtered(professions, grades, work_formats, skills, limit=1)
-            vacancy = vacancies[0] if vacancies else None
-        else:
-            vacancy = await self._uow.vacancies.get_by_id(vacancy_id)
+        prev_id, vacancy, next_id = await self._uow.vacancies.get_with_neighbors(
+            vacancy_id=vacancy_id,
+            professions=professions,
+            grades=grades,
+            work_formats=work_formats,
+            skills=skills,
+        )
 
         if not vacancy:
             return None, None, None
-
-        professions = professions or []
-        grades = grades or []
-        work_formats = work_formats or []
-        skills = skills or []
-
-        prev_id = await self._uow.vacancies.get_prev_id(
-            vacancy.published_at, vacancy.id, professions, grades, work_formats, skills
-        )
-        next_id = await self._uow.vacancies.get_next_id(
-            vacancy.published_at, vacancy.id, professions, grades, work_formats, skills
-        )
 
         return prev_id, VacancyRead.model_validate(vacancy), next_id

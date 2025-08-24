@@ -16,5 +16,4 @@ class VacancyActionEnum(StrEnum):
 class VacancyCallback(CallbackData, prefix="vacancy"):
     action: VacancyActionEnum
 
-    # -1 - самая актуальная на основе предпочтений
-    vacancy_id: int = -1
+    vacancy_id: int | None = None
