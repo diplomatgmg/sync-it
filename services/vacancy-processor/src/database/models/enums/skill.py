@@ -11,19 +11,23 @@ class SkillEnum(BaseAliasEnum):
 
     ACTIVE_DIRECTORY = "Active Directory"
     AGILE = "Agile"
+    AIOGRAM = "aiogram"
     AIOHTTP = "aiohttp"
     AIRFLOW = "Airflow", ("apache airflow",)
+    ALEMBIC = "Alembic"
     ALLURE = "Allure"
+    ANDROID = "Android"
     ANGULAR = "Angular"
     ANSIBLE = "Ansible"
     ARGOCD = "ArgoCD"
     ASP_NET = "ASP.NET"
     ASYNCIO = "asyncio"
-    AWS = "AWS"
     AXIOS = "Axios"
-    AZURE = "Azure"
+    AZURE = "Azure", ("azure devops",)
+    BAN = "Ban", ("banjs", "ban.js")
     BASH = "Bash"
     BIG_DATA = "Big Data", ("работа с большим объемом информации",)
+    BITRIX = "Bitrix", ("битрикс", "битрикс 24", "битрикс24")
     BPMN = "BPMN"
     C_SHARP = "C#"
     CASSANDRA = "Cassandra"
@@ -37,15 +41,20 @@ class SkillEnum(BaseAliasEnum):
     CSS = "CSS", ("css3",)
     CYPRESS = "Cypress"
     DART = "DART"
+    DAX = "DAX"
     DEVOPS = "DevOps"
-    DJANGO = "Django", ("drf", "django orm")
+    DHCP = "DHCP"
+    DJANGO = "Django", ("drf", "django orm", "django rest framework")
+    DNS = "DNS"
     DOCKER = "Docker"
-    DOCKER_COMPOSE = "Docker Compose"
+    DOCKER_COMPOSE = "Docker Compose", ("docker-compose",)
+    DOT_NET = ".NET"
     ELASTICSEARCH = "Elasticsearch", ("elk", "elk stack")
     ENGLISH = "Английский язык"
     ETL = "ETL"
     EXCEL = "Excel"
     FAST_API = "FastAPI"
+    FIDDLER = "Fiddler"
     FIGMA = "Figma"
     FLASK = "Flask"
     FLUTTER = "Flutter"
@@ -56,11 +65,13 @@ class SkillEnum(BaseAliasEnum):
     GRAFANA = "Grafana"
     GRAPHQL = "GraphQL"
     GRPC = "gRPC"
+    GULP = "Gulp"
     GUNICORN = "Gunicorn"
     HADOOP = "Hadoop"
     HELM = "Helm"
     HTML = "HTML", ("html5",)
     HTTP = "HTTP", ("https", "http/https")
+    HYPER_V = "Hyper-V"
     IOS = "iOS"
     JAVA = "Java"
     JAVASCRIPT = "JavaScript"
@@ -70,41 +81,49 @@ class SkillEnum(BaseAliasEnum):
     JQUERY = "jQuery"
     JSON = "JSON"
     JUNIT = "JUnit"
+    JWT = "JWT"
     KAFKA = "Kafka", ("apache kafka",)
     KANBAN = "Kanban"
     KIBANA = "Kibana"
     KOTLIN = "Kotlin"
     KUBERNETES = "Kubernetes"
+    LANGCHAIN = "LangChain"
     LARAVEL = "Laravel"
-    LINUX = "Linux", ("ubuntu", "debian")
+    LINUX = "Linux", ("ubuntu", "debian", "centos")
     LLM = "LLM"
     MAVEN = "Maven"
     MICROSERVICES = "Микросервисы"
+    MIKROTIK = "MikroTik"
     ML = "ML"
     MLFLOW = "MLflow"
     MOBX = "MobX"
     MONGODB = "MongoDB"
     MS_EXCEL = "MS Excel"
-    MS_SQL = "MS SQL"
+    MS_SQL = "MS SQL", ("ms sql server", "mssql")
     MYSQL = "MySQL"
+    NESTJS = "NestJS"
     NEXT_JS = "Next.js"
     NGINX = "Nginx"
     NODE_JS = "Node.js", ("nodejs",)
     NOSQL = "NoSQL"
     NUMPY = "Numpy"
+    OFFICE = "MS Office", ("ms powerpoint", "word", "microsoft excel")
     ONE_C = "1С", ("1c",)
     OOP = "ООП", ("oop",)
+    OPENAI = "OpenAI", ("openai api",)
     OPENSHIFT = "OpenShift"
+    OPENSTACK = "OpenStack"
     PANDAS = "pandas"
     PHP = "PHP"
     POSTGIS = "PostGIS"
     POSTGRESQL = "PostgreSQL", ("postgres",)
     POSTMAN = "Postman"
     POWER_BI = "Power BI"
+    POWERSHELL = "PowerShell"
     PROMETHEUS = "Prometheus"
     PYDANTIC = "Pydantic"
     PYTEST = "pytest"
-    PYTHON = "Python", ("python 3.x",)
+    PYTHON = "Python", ("python 3.x", "python 3")
     PYTORCH = "PyTorch"
     QA = "QA"
     RABBITMQ = "RabbitMQ"
@@ -113,11 +132,13 @@ class SkillEnum(BaseAliasEnum):
     REDUX = "Redux"
     REQUESTS = "requests"
     REST_API = "REST API", ("rest", "api", "restful api", "restful")
+    RPC = "RPC", ("grpc",)
     RUBY = "Ruby"
     RXJS = "RxJS"
+    S3 = "S3", ("aws s3", "aws")
     SCALA = "Scala"
     SCRUM = "SCRUM"
-    SCSS = "SCSS"
+    SCSS = "SCSS", ("sass",)
     SELENIUM = "Selenium"
     SENTRY = "Sentry"
     SEO = "SEO"
@@ -141,11 +162,13 @@ class SkillEnum(BaseAliasEnum):
     UNITTEST = "unittest"
     UX_UI = "UX/UI", ("ui/ux", "ui", "ux")
     VITE = "Vite"
+    VPN = "VPN"
     VUE_JS = "Vue.js", ("vue", "vuejs")
     VUEX = "Vuex"
     WEBPACK = "Webpack"
     WEBSOCKET = "WebSocket", ("websockets",)
     WINDOWS = "Windows"
+    WINDOWS_SERVER = "Windows Server"
     XML = "XML"
     YANDEX_CLOUD = "Yandex Cloud"
     ZABBIX = "Zabbix"
@@ -153,19 +176,31 @@ class SkillEnum(BaseAliasEnum):
 
     # TODO: добавить проверку, что паттерны не совпадают с алиасами
     __ignore_patterns__ = (
-        "аналитика",
-        "аналитическое",
-        "управление",
-        "деловая",
+        "adobe",
+        "администр",
+        "аналитик",
+        "анализ",
+        "управл",
+        "делов",
         "развитие",
         "организатор",
-        "деловое",
         "продаж",
         "переговор",
-        "переписка",
-        "продвижение",
-        "аналитика",
-        "привлечение",
-        "обучение",
-        "ответствен",
+        "перепис",
+        "продвиж",
+        "привлечен",
+        "обуч",
+        "ответств",
+        "настрой",
+        "постанов",
+        "финанс",
+        "работа",
+        "моделир",
+        "статист",
+        "тестир",
+        "визуализ",
+        "прототип",
+        "инвестиц",
+        "объем",
+        "маркет",
     )

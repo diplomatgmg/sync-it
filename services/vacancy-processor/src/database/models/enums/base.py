@@ -27,6 +27,9 @@ class BaseAliasEnum(StrEnum):
 
         cls._validate_register()
 
+        if hasattr(cls, "__ignore_patterns__"):
+            cls._validate_ignore_patterns_conflicts()
+
     @classmethod
     def get_safe(cls, label: str) -> Self | None:
         """Возвращает элемент Enum по строковому значению или алиасу."""
@@ -60,3 +63,26 @@ class BaseAliasEnum(StrEnum):
             if not all(a == a.lower() for a in value.aliases):
                 aliases = value.aliases[1:]  # Пропускаем оригинальный алиас (значение)
                 raise ValueError(f"{cls.__name__} has non-lowercase alias: {aliases}.")
+            if len(value.aliases) != len(set(value.aliases)):
+                duplicates = [a for a in value.aliases if value.aliases.count(a) > 1]
+                raise ValueError(f"{cls.__name__} member {key} has duplicate aliases: {duplicates}")
+
+    @classmethod
+    def _validate_ignore_patterns_conflicts(cls) -> None:
+        """Проверяет конфликты между паттернами в __ignore_patterns__"""
+        patterns = cls.__ignore_patterns__
+        conflicts = []
+
+        for i, pattern1 in enumerate(patterns):
+            if not pattern1.islower():
+                raise ValueError(f"{cls.__name__}: pattern '{pattern1}' is not lowercase")
+
+            for j, pattern2 in enumerate(patterns):
+                if i != j and pattern1 in pattern2:
+                    conflicts.append((pattern1, pattern2))
+
+        if conflicts:
+            error_message = f"{cls.__name__}: обнаружены конфликты в __ignore_patterns__:\n"
+            for pattern1, pattern2 in conflicts:
+                error_message += f"- '{pattern1}' является подстрокой '{pattern2}'\n"
+            raise ValueError(error_message)
