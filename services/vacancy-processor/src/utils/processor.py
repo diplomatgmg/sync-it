@@ -57,7 +57,7 @@ class VacancyProcessor:
         vacancies_to_delete: list[VacancySchema] = []
 
         results = await asyncio.gather(*process_prompts_task, return_exceptions=True)
-        for processed_vacancy, result in zip(vacancies_to_process, results, strict=False):
+        for processed_vacancy, result in zip(vacancies_to_process, results, strict=True):
             if isinstance(result, BaseException):
                 logger.error("Failed to process vacancy %s", processed_vacancy.link, exc_info=result)
                 continue
