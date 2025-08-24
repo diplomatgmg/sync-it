@@ -24,7 +24,7 @@ class _VacancyClient(BaseClient):
 
         return data.vacancies
 
-    @limit_requests(10)
+    @limit_requests(3)
     async def delete(self, vacancy: VacancySchema) -> bool:
         detail_vacancy_url = f"{self.url}/{vacancy.hash}"
 
