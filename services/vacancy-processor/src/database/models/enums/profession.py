@@ -12,9 +12,9 @@ class ProfessionEnum(BaseAliasEnum):
 
     UNKNOWN = "Неизвестно"
 
-    ANALYST = "Аналитик", ("системный аналитик", "аналитик 1с", "бизнес-аналитик", "финансовый аналитик", "аналитик данных")
-    BACKEND = "Backend developer", ("java-разработчик", "back-end developer", "python-разработчик", "backend-разработчик", "backend разработчик", "разработчик python", "python developer", "python разработчик")
-    DATA_ENGINEER = "Data Engineer"
+    ANALYST = "Аналитик", ("системный аналитик", "аналитик 1с", "бизнес-аналитик", "финансовый аналитик", "аналитик данных", "data analyst")
+    BACKEND = "Backend developer", ("java-разработчик", "back-end developer", "python-разработчик", "backend-разработчик", "backend разработчик", "разработчик python", "python developer", "python разработчик", "python-инженер")
+    DATA_ENGINEER = "Data Engineer", ("data engineering",)
     DATA_SCIENCE = "Data Science", ("data scientist",)
     DEVOPS = "DevOps", ("devops инженер", "devops-инженер", "devops engineer", "devops/mlops инженер")
     FRONTEND = "Frontend developer", ("frontend разработчик", "flutter-разработчик", "frontend-разработчик")

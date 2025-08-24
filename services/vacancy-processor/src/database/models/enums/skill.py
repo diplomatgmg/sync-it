@@ -56,6 +56,7 @@ class SkillEnum(BaseAliasEnum):
     GRAFANA = "Grafana"
     GRAPHQL = "GraphQL"
     GRPC = "gRPC"
+    GUNICORN = "Gunicorn"
     HADOOP = "Hadoop"
     HELM = "Helm"
     HTML = "HTML", ("html5",)
@@ -103,7 +104,7 @@ class SkillEnum(BaseAliasEnum):
     PROMETHEUS = "Prometheus"
     PYDANTIC = "Pydantic"
     PYTEST = "pytest"
-    PYTHON = "Python"
+    PYTHON = "Python", ("python 3.x",)
     PYTORCH = "PyTorch"
     QA = "QA"
     RABBITMQ = "RabbitMQ"
@@ -137,12 +138,13 @@ class SkillEnum(BaseAliasEnum):
     TERRAFORM = "Terraform"
     TYPESCRIPT = "TypeScript"
     UML = "UML"
+    UNITTEST = "unittest"
     UX_UI = "UX/UI", ("ui/ux", "ui", "ux")
     VITE = "Vite"
     VUE_JS = "Vue.js", ("vue", "vuejs")
     VUEX = "Vuex"
     WEBPACK = "Webpack"
-    WEBSOCKET = "WebSocket"
+    WEBSOCKET = "WebSocket", ("websockets",)
     WINDOWS = "Windows"
     XML = "XML"
     YANDEX_CLOUD = "Yandex Cloud"
