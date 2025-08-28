@@ -65,8 +65,6 @@ class VacancyRepository(BaseRepository):
             filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.grades.any(Grade.name.in_(grades)))
         if work_formats:
             filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
-        if skills:
-            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.skills.any(Skill.name.in_(skills)))
 
         # Создаем CTE с оконными функциями
         ranked_vacancies_cte = (
