@@ -59,7 +59,14 @@ class VacancyRepository(BaseRepository):
     ) -> tuple[int | None, Vacancy | None, int | None]:
         # Базовый запрос с фильтрацией
         filtered_ids_stmt = select(Vacancy.id)
-        filtered_ids_stmt = self._apply_filters_to_stmt(filtered_ids_stmt, professions, grades, work_formats, skills)
+        if professions:
+            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.profession.has(Profession.name.in_(professions)))
+        if grades:
+            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.grades.any(Grade.name.in_(grades)))
+        if work_formats:
+            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
+        if skills:
+            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.skills.any(Skill.name.in_(skills)))
 
         # Создаем CTE с оконными функциями
         ranked_vacancies_cte = (
@@ -102,21 +109,3 @@ class VacancyRepository(BaseRepository):
             joinedload(Vacancy.work_formats),
             joinedload(Vacancy.skills),
         )
-
-    @staticmethod
-    def _apply_filters_to_stmt(
-        stmt: TSelect,
-        professions: Sequence[ProfessionEnum],
-        grades: Sequence[GradeEnum],
-        work_formats: Sequence[WorkFormatEnum],
-        skills: Sequence[SkillEnum],
-    ) -> TSelect:
-        if professions:
-            stmt = stmt.filter(Vacancy.profession.has(Profession.name.in_(professions)))
-        if grades:
-            stmt = stmt.filter(Vacancy.grades.any(Grade.name.in_(grades)))
-        if work_formats:
-            stmt = stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
-        if skills:
-            stmt = stmt.filter(Vacancy.skills.any(Skill.name.in_(skills)))
-        return stmt
