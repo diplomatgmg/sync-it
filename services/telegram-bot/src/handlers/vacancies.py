@@ -66,8 +66,13 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
         work_format_names = [work_format.name for work_format in vacancy.work_formats]
         vacancy_text += f"<b>Формат работы:</b> {', '.join(work_format_names)}\n"
     if vacancy.skills:
-        skill_names = [skill.name for skill in vacancy.skills]
-        vacancy_text += f"<b>Ключевые навыки:</b> {', '.join(skill_names)}\n"
+        user_skills = set(categorized_prefs[PreferencesCategoryCodeEnum.SKILL])
+        skills = {s.name for s in vacancy.skills}
+
+        matched = ", ".join(f"<code>{s}</code>" for s in sorted(skills & user_skills))
+        unmatched = ", ".join(f"<s>{s}</s>" for s in sorted(skills - user_skills))
+
+        vacancy_text += f"<b>Ключевые навыки:</b> {matched}, {unmatched}\n"
     if vacancy.workplace_description:
         vacancy_text += f"\n<b>О месте работы:</b>\n{vacancy.workplace_description}\n"
     if vacancy.responsibilities:
