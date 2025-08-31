@@ -39,6 +39,10 @@ def main_keyboard() -> InlineKeyboardMarkup:
                 text="💻 Обновить навыки",
                 callback_data=PreferencesCallback(action=PreferencesActionEnum.UPDATE_SKILLS).pack(),
             ),
+            InlineKeyboardButton(
+                text="👀 Посмотреть навыки",
+                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_SKILLS).pack(),
+            ),
         ],
         [
             InlineKeyboardButton(

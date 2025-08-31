@@ -1,5 +1,8 @@
+from collections.abc import Sequence
+
 from common.shared.repositories import BaseRepository
-from database.models import UserPreference
+from database.models import User, UserPreference
+from database.models.enums import PreferencesCategoryCodeEnum
 from sqlalchemy import delete, select
 
 
@@ -7,7 +10,22 @@ __all__ = ["UserPreferenceRepository"]
 
 
 class UserPreferenceRepository(BaseRepository):
-    async def get_by_user_and_item(self, user_id: int, category_code: str, item_id: int) -> UserPreference | None:
+    async def filter_by_telegram_id_and_category(
+        self, telegram_id: int, category_code: PreferencesCategoryCodeEnum
+    ) -> Sequence[UserPreference]:
+        """Находит предпочтения по пользователю и категории."""
+        stmt = select(UserPreference).where(
+            User.telegram_id == telegram_id,
+            UserPreference.category_code == category_code,
+        )
+
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
+    async def get_by_user_and_item(
+        self, user_id: int, category_code: PreferencesCategoryCodeEnum, item_id: int
+    ) -> UserPreference | None:
         """Находит предпочтение по пользователю, категории и ID опции."""
         stmt = select(UserPreference).where(
             UserPreference.user_id == user_id,

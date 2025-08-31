@@ -2,6 +2,7 @@ from collections import defaultdict
 from contextlib import suppress
 
 from aiogram import F, Router
+from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 from clients.vacancy import vacancy_client
@@ -100,7 +101,7 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
                 previous_vacancy_id=prev_id,
                 next_vacancy_id=next_id,
             ),
-            parse_mode="HTML",
+            parse_mode=ParseMode.HTML,
             disable_web_page_preview=True,
         )
 

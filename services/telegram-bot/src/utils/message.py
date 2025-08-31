@@ -1,6 +1,6 @@
 from typing import NotRequired, TypedDict, Unpack
 
-from aiogram.client.default import Default
+from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from common.logger import get_logger
@@ -18,9 +18,9 @@ logger = get_logger(__name__)
 
 class EditMessageKwargs(TypedDict):
     text: NotRequired[str]
-    parse_mode: NotRequired[str | Default | None]
+    parse_mode: NotRequired[ParseMode | None]
     reply_markup: NotRequired[InlineKeyboardMarkup | None]
-    disable_web_page_preview: NotRequired[bool | Default | None]
+    disable_web_page_preview: NotRequired[bool | None]
 
 
 def make_linked(text: str, link: str | None, *, use_quotes: bool = True) -> str:
