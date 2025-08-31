@@ -17,7 +17,7 @@ from utils.message import safe_edit_message
 from utils.readers.enums import SupportedReaderExtensionsEnum
 
 
-__all__ = ()
+__all__ = ["update_skills"]
 
 logger = get_logger(__name__)
 
@@ -48,12 +48,16 @@ async def handle_update_skills_callback(callback: CallbackQuery, state: FSMConte
     await update_skills(callback, state)
 
 
-async def update_skills(entity: CallbackQuery | Message, state: FSMContext) -> None:
-    await safe_edit_message(
-        entity,
-        text=update_preferences_text,
-        reply_markup=main_menu_keyboard(),
-    )
+async def update_skills(entity: CallbackQuery | Message, state: FSMContext, *, need_edit: bool = True) -> None:
+    if need_edit:
+        await safe_edit_message(
+            entity,
+            text=update_preferences_text,
+            reply_markup=main_menu_keyboard(),
+        )
+    else:
+        await entity.answer(update_preferences_text, reply_markup=main_menu_keyboard())
+
     await state.set_state(PreferencesState.waiting_for_data)
 
 

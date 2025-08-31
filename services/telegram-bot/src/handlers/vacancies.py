@@ -1,18 +1,21 @@
+import asyncio
 from collections import defaultdict
 from contextlib import suppress
 
 from aiogram import F, Router
 from aiogram.enums import ParseMode
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 from clients.vacancy import vacancy_client
 from common.logger import get_logger
 from database.models.enums import PreferencesCategoryCodeEnum
 from exceptions import MessageNotModifiedError
+from handlers.skills import update_skills
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.vacancies import vacancies_keyboard
 from utils.formatters import format_publication_time
-from utils.message import safe_edit_message
+from utils.message import get_message, safe_edit_message
 
 from services import UserService
 
@@ -26,8 +29,8 @@ router = Router(name=VacancyCallback.__prefix__)
 
 
 @router.callback_query(VacancyCallback.filter(F.action == VacancyActionEnum.SHOW_VACANCY))
-async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
-    callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService
+async def handle_vacancies(  # noqa: PLR0912 C901 PLR0914 Too complex, too many branches, too many variables
+    callback: CallbackQuery, callback_data: VacancyCallback, user_service: UserService, state: FSMContext
 ) -> None:
     vacancy_id = callback_data.vacancy_id
 
@@ -36,6 +39,17 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
     categorized_prefs = defaultdict(list)
     for pref in user.preferences:
         categorized_prefs[pref.category_code].append(pref.item_name)
+
+    if not categorized_prefs[PreferencesCategoryCodeEnum.SKILL]:
+        message = await get_message(callback)
+        await message.answer(
+            "Бот ориентирован под выдачу релевантных вакансий, на основе ваших навыков, "
+            "но в вашем профиле они отсутствуют.\n\n"
+            "Пожалуйста, добавьте навыки, чтобы мы могли подобрать для вас вакансии 😉",
+        )
+        await asyncio.sleep(2)
+        await update_skills(message, state, need_edit=False)
+        return
 
     result = await vacancy_client.get_by_id_with_cursor_pagination(
         vacancy_id=vacancy_id,

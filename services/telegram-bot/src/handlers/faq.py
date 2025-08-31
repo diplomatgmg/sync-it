@@ -18,12 +18,12 @@ async def handle_faq_command(message: Message) -> None:
     await send_faq_message(message)
 
 
-async def send_faq_message(message: Message) -> None:
+async def send_faq_message(message: Message, *, need_reply_markup: bool = True) -> None:
     await message.answer(
         "ℹ️ <b>Что это за бот?</b>\n\n"
         "Этот бот помогает искать релевантные для Вас вакансии, "
         "основываясь на вашем опыте, технологиях и предпочтениях.\n\n"
         f"❓ Если возникли вопросы или ошибки — напишите в поддержку: @{service_config.support_username}",
         parse_mode=ParseMode.HTML,
-        reply_markup=main_menu_keyboard(),
+        reply_markup=main_menu_keyboard() if need_reply_markup else None,
     )
