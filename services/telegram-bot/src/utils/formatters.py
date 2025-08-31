@@ -33,6 +33,7 @@ def format_publication_time(vacancy_publication_date: datetime) -> str:  # noqa:
     - 2 дня назад
     - неделю назад
     - 2 недели назад
+    - 3 недели назад
     - 24.06.2025 (если прошло больше 3 недель)
     """
     now = datetime.now(UTC)
@@ -62,13 +63,12 @@ def format_publication_time(vacancy_publication_date: datetime) -> str:  # noqa:
         unit = _pluralize_ru(val, "день", "дня", "дней")
         return f"{val} {unit} назад"
 
-    match weeks:
-        case 1:
-            return "неделю назад"
-        case 2:
-            return "2 недели назад"
-        case 3:
-            return "3 недели назад"
+    if 1 <= weeks < 1.5:  # noqa: PLR2004
+        return "неделю назад"
+    if 1.5 <= weeks < 2.5:  # noqa: PLR2004
+        return "2 недели назад"
+    if 2.5 <= weeks < 3.5:  # noqa: PLR2004
+        return "3 недели назад"
 
-    # Если прошло более двух недель, возвращаем абсолютную дату
+    # Если прошло более 3-х недель, возвращаем абсолютную дату
     return vacancy_publication_date.strftime("%d.%m.%Y")
