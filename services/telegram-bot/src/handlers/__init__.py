@@ -13,11 +13,11 @@ def register_handler_routers(dp: Dispatcher) -> None:
     logger.info("Registering handlers")
 
     dp.include_routers(
-        vacancies.router,
-        skills.router,
-        preferences.router,
         menu.router,
         support.router,
         faq.router,
+        vacancies.router,
+        skills.router,
+        preferences.router,
         noop.router,  # Должен быть в самом низу
     )

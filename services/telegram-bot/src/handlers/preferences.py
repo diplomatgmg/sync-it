@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import F, Router
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
@@ -6,6 +8,7 @@ from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
 from clients import grade_client, profession_client, work_format_client
 from common.logger import get_logger
 from database.models.enums import PreferencesCategoryCodeEnum
+from handlers.skills import update_skills
 from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.preferences import options_keyboard
 from schemas.user_preference import UserPreferenceCreate
@@ -141,14 +144,25 @@ async def handle_show_skills(
     preferences = await user_preferences_service.filter_by_telegram_id_and_category(
         callback.from_user.id, PreferencesCategoryCodeEnum.SKILL
     )
+    if not preferences:
+        await safe_edit_message(callback, text="У вас пока нет добавленных навыков. \nПожалуйста, добавьте их.")
+        await asyncio.sleep(1)
+        await update_skills(callback, state, need_edit=False)
+        return
+
     sorted_preferences = sorted(preferences, key=lambda p: p.item_name.casefold())
     preferences_str = ", ".join(f"<code>{p.item_name}</code>" for p in sorted_preferences)
 
     await state.set_state(PreferencesState.waiting_toggle_skills)
     await safe_edit_message(
         callback,
-        text=f"Ваши навыки:\n{preferences_str}\n\n"
-        f"Если вы хотите добавить новый, или удалить существующий навык — перечислите их",
+        text=(
+            "🛠 <b>Ваши навыки</b>:\n"
+            f"{preferences_str}\n\n"
+            "➕ Чтобы <b>добавить</b> новый навык — просто отправьте его название.\n"
+            "➖ Чтобы <b>удалить</b> навык — отправьте его название из списка.\n\n"
+            "💡 Навыки помогают подбирать более релевантные вакансии!"
+        ),
         reply_markup=main_menu_keyboard(),
         parse_mode=ParseMode.HTML,
     )

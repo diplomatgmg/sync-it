@@ -4,7 +4,8 @@ from functools import wraps
 from typing import ParamSpec, TypeVar
 
 from common.logger import get_logger
-from common.redis.engine import get_sync_redis_cache_client
+from common.redis.config import redis_config
+from common.redis.engine import get_sync_redis_client
 
 
 __all__ = ["singleton"]
@@ -17,7 +18,7 @@ R = TypeVar("R")
 
 
 def singleton(cache_ttl: int | timedelta) -> Callable[[Callable[P, R]], Callable[P, R | None]]:
-    redis_client = get_sync_redis_cache_client()
+    redis_client = get_sync_redis_client(redis_config.cache_dsn)
 
     def decorator(func: Callable[P, R]) -> Callable[P, R | None]:
         @wraps(func)

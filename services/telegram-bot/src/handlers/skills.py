@@ -13,7 +13,7 @@ from schemas.user import UserRead
 from states import PreferencesState
 from tasks import process_resume
 from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
-from utils.message import safe_edit_message
+from utils.message import get_message, safe_edit_message
 from utils.readers.enums import SupportedReaderExtensionsEnum
 
 
@@ -25,7 +25,7 @@ logger = get_logger(__name__)
 router = Router(name=PreferencesActionEnum.UPDATE_SKILLS)
 
 
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 1 MB
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 MAX_MESSAGE_LENGTH = 4096
 
 
@@ -56,7 +56,8 @@ async def update_skills(entity: CallbackQuery | Message, state: FSMContext, *, n
             reply_markup=main_menu_keyboard(),
         )
     else:
-        await entity.answer(update_preferences_text, reply_markup=main_menu_keyboard())
+        message = await get_message(entity)
+        await message.answer(update_preferences_text, reply_markup=main_menu_keyboard())
 
     await state.set_state(PreferencesState.waiting_for_data)
 

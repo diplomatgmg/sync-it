@@ -15,6 +15,9 @@ class ServiceConfig(BaseSettings):
     webhook_url: HttpsUrl
     webhook_api_key: str
 
+    state_ttl: int
+    data_ttl: int
+
     model_config = SettingsConfigDict(env_prefix="TELEGRAM_BOT_")
 
 

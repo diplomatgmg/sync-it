@@ -1,22 +1,22 @@
 from functools import lru_cache
 from typing import cast
 
-from common.redis.config import redis_config
+from pydantic import RedisDsn
 from redis import Redis
 from redis.asyncio import Redis as AsyncRedis
 
 
 __all__ = [
-    "get_async_redis_cache_client",
-    "get_sync_redis_cache_client",
+    "get_async_redis_client",
+    "get_sync_redis_client",
 ]
 
 
 @lru_cache
-def get_async_redis_cache_client() -> AsyncRedis:
-    return cast("AsyncRedis", AsyncRedis.from_url(str(redis_config.cache_dsn)))
+def get_async_redis_client(dsn: RedisDsn) -> AsyncRedis:
+    return cast("AsyncRedis", AsyncRedis.from_url(str(dsn)))
 
 
 @lru_cache
-def get_sync_redis_cache_client() -> Redis:
-    return Redis.from_url(str(redis_config.cache_dsn))
+def get_sync_redis_client(dsn: RedisDsn) -> Redis:
+    return Redis.from_url(str(dsn))

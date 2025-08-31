@@ -3,7 +3,8 @@ from functools import wraps
 from typing import Any, ParamSpec, TypeVar, cast
 
 from common.logger import get_logger
-from common.redis.engine import get_async_redis_cache_client
+from common.redis.config import redis_config
+from common.redis.engine import get_async_redis_client
 from common.shared.serializers import AbstractSerializer, JSONSerializer
 from redis.asyncio import Redis
 
@@ -61,7 +62,7 @@ def cache(
     def decorator(fn: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
         @wraps(fn)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            redis_client = get_async_redis_cache_client()
+            redis_client = get_async_redis_client(redis_config.cache_dsn)
 
             key_build = key_builder(*args, **kwargs)
             key_prefix = get_key_prefix(fn)

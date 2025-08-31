@@ -21,9 +21,9 @@ class UserPreferenceService(BaseUOWService[UnitOfWork]):
         return [UserPreferenceRead.model_validate(p) for p in preferences]
 
     async def filter_by_telegram_id_and_category(
-        self, user_id: int, code: PreferencesCategoryCodeEnum
+        self, telegram_id: int, code: PreferencesCategoryCodeEnum
     ) -> list[UserPreferenceRead]:
-        preferences = await self._uow.user_preferences.filter_by_telegram_id_and_category(user_id, code)
+        preferences = await self._uow.user_preferences.filter_by_telegram_id_and_category(telegram_id, code)
 
         return [UserPreferenceRead.model_validate(p) for p in preferences]
 

@@ -22,7 +22,7 @@ class UserPreferenceRepository(BaseRepository):
     ) -> Sequence[UserPreference]:
         """Находит предпочтения по пользователю и категории."""
         stmt = select(UserPreference).where(
-            User.telegram_id == telegram_id,
+            UserPreference.user.has(User.telegram_id == telegram_id),
             UserPreference.category_code == category_code,
         )
 
