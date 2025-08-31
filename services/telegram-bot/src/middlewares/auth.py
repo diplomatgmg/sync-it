@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
 from handlers.faq import send_faq_message
+from handlers.skills import update_skills
 from schemas.user import UserCreate
 from sqlalchemy.exc import NoResultFound
 
@@ -52,5 +53,8 @@ class AuthMiddleware(BaseMiddleware):
         if is_new and isinstance(event, Message):
             await send_faq_message(event)
             await asyncio.sleep(3)
+            await update_skills(event, data["state"])
+            await asyncio.sleep(3)
+            return None
 
         return await handler(event, data)
