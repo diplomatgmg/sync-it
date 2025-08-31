@@ -53,7 +53,8 @@ async def handle_vacancies(  # noqa: PLR0912 C901 Too complex, too many branches
         )
         return
 
-    vacancy_text = f"<b>Должность:</b> {vacancy.profession.name if vacancy.profession else 'Неизвестно'}\n"
+    vacancy_text = f"<i>({vacancy.id})</i>\t"
+    vacancy_text += f"<b>Должность:</b> {vacancy.profession.name if vacancy.profession else 'Неизвестно'}\n"
 
     if vacancy.company_name:
         vacancy_text += f"<b>Компания:</b> {vacancy.company_name}\n"

@@ -1,20 +1,32 @@
 from collections.abc import Iterable, Sequence
+from datetime import UTC, datetime, timedelta
+import operator
 from typing import Any, TypeVar
 
+from common.logger import get_logger
 from common.shared.repositories import BaseRepository
-from database.models import Grade, Profession, Skill, Vacancy, WorkFormat
+from database.models import Grade, Profession, Vacancy, WorkFormat
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from sqlalchemy import Select, func, select
-from sqlalchemy.orm import joinedload
+from sqlalchemy import Select, select
+from sqlalchemy.orm import joinedload, selectinload
 
 
 __all__ = ["VacancyRepository"]
+
+
+logger = get_logger(__name__)
 
 TSelect = TypeVar("TSelect", bound=Select[Any])
 
 
 class VacancyRepository(BaseRepository):
     """Репозиторий для управления вакансиями."""
+
+    MIN_SIMILARITY_PERCENT = 75  # Минимальное соотношение совпадающих навыков
+    MIN_SKILLS_COUNT = 5
+    BONUS_MIN_SKILL = 5  # Бонус за каждый навык сверх MIN_SKILLS_COUNT
+    BEST_SKILLS_COUNT_BONUS = 10
+    DAYS_INTERVAL = timedelta(days=30)
 
     async def add(self, vacancy: Vacancy) -> Vacancy:
         """Добавляет экземпляр вакансии в сессию."""
@@ -49,7 +61,7 @@ class VacancyRepository(BaseRepository):
 
         return result.scalars().unique().all()
 
-    async def get_with_neighbors(
+    async def get_relevant_with_neighbors(  # noqa: C901 PLR0912
         self,
         vacancy_id: int | None,
         professions: Sequence[ProfessionEnum],
@@ -57,53 +69,77 @@ class VacancyRepository(BaseRepository):
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
     ) -> tuple[int | None, Vacancy | None, int | None]:
-        # Базовый запрос с фильтрацией
-        filtered_ids_stmt = select(Vacancy.id)
-        if professions:
-            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.profession.has(Profession.name.in_(professions)))
-        if grades:
-            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.grades.any(Grade.name.in_(grades)))
-        if work_formats:
-            filtered_ids_stmt = filtered_ids_stmt.filter(Vacancy.work_formats.any(WorkFormat.name.in_(work_formats)))
-
-        # Создаем CTE с оконными функциями
-        ranked_vacancies_cte = (
-            select(
-                Vacancy.id.label("vacancy_id"),
-                func.lag(Vacancy.id).over(order_by=Vacancy.published_at.desc()).label("prev_id"),
-                func.lead(Vacancy.id).over(order_by=Vacancy.published_at.desc()).label("next_id"),
-            )
-            .where(Vacancy.id.in_(filtered_ids_stmt))
-            .cte("ranked_vacancies")
+        """
+        Находит вакансию по ID и ее соседей в списке, отсортированном по релевантности,
+        выполняя все вычисления на стороне БД.
+        """
+        stmt = (
+            select(Vacancy).where(Vacancy.published_at >= (datetime.now(UTC) - self.DAYS_INTERVAL)).order_by(Vacancy.id)
         )
-
-        # Основной запрос
-        stmt = select(
-            ranked_vacancies_cte.c.prev_id,
-            Vacancy,
-            ranked_vacancies_cte.c.next_id,
-        ).join(ranked_vacancies_cte, Vacancy.id == ranked_vacancies_cte.c.vacancy_id)
-
         stmt = self._apply_vacancy_prefetch_details_to_stmt(stmt)
 
-        if vacancy_id:
-            stmt = stmt.where(Vacancy.id == vacancy_id)
-        else:
-            stmt = stmt.order_by(Vacancy.published_at.desc()).limit(1)
+        if professions:
+            stmt = stmt.join(Profession).filter(Profession.name.in_(professions))
+        if grades:
+            stmt = stmt.join(Vacancy.grades).filter(Grade.name.in_(grades))
+        if work_formats:
+            stmt = stmt.join(Vacancy.work_formats).filter(WorkFormat.name.in_(work_formats))
 
         result = await self._session.execute(stmt)
-        row = result.first()
+        vacancies = result.scalars().unique().all()
 
-        if not row:
+        scored_vacancies: list[tuple[float, Vacancy]] = []
+        user_skills_set = set(skills)
+
+        for vacancy in vacancies:
+            vacancy_skills_set = {skill.name for skill in vacancy.skills}
+
+            common_skills = user_skills_set & vacancy_skills_set
+            if not common_skills:
+                continue
+
+            common_count = len(common_skills)
+
+            similarity = (common_count / len(vacancy_skills_set)) * 100
+            if similarity < self.MIN_SIMILARITY_PERCENT:
+                continue
+
+            # Бонус за превышение минимального количества навыков
+            if common_count > self.MIN_SKILLS_COUNT:
+                bonus = (common_count - self.MIN_SKILLS_COUNT) * self.BONUS_MIN_SKILL
+                similarity += bonus
+
+            # Бонус за идеальное совпадение (все навыки пользователя есть в вакансии)
+            if user_skills_set.issubset(vacancy_skills_set):
+                similarity += 10
+
+            if similarity >= self.MIN_SIMILARITY_PERCENT:
+                scored_vacancies.append((similarity, vacancy))
+
+        if not scored_vacancies:
             return None, None, None
 
-        return row.prev_id, row.Vacancy, row.next_id
+        scored_vacancies.sort(key=operator.itemgetter(0), reverse=True)
+        sorted_vacancies = [v for _, v in scored_vacancies]
+
+        if vacancy_id:
+            try:
+                index = next(i for i, v in enumerate(sorted_vacancies) if v.id == vacancy_id)
+            except StopIteration:
+                return None, None, None
+        else:
+            index = 0
+
+        prev_id = sorted_vacancies[index - 1].id if index > 0 else None
+        next_id = sorted_vacancies[index + 1].id if index < len(sorted_vacancies) - 1 else None
+
+        return prev_id, sorted_vacancies[index], next_id
 
     @staticmethod
     def _apply_vacancy_prefetch_details_to_stmt(stmt: TSelect) -> TSelect:
         return stmt.options(
             joinedload(Vacancy.profession),
-            joinedload(Vacancy.grades),
-            joinedload(Vacancy.work_formats),
-            joinedload(Vacancy.skills),
+            selectinload(Vacancy.grades),
+            selectinload(Vacancy.work_formats),
+            selectinload(Vacancy.skills),
         )

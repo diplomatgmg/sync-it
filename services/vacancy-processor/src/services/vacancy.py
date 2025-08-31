@@ -55,7 +55,10 @@ class VacancyService(BaseUOWService[UnitOfWork]):
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
     ) -> tuple[int | None, VacancyRead | None, int | None]:
-        prev_id, vacancy, next_id = await self._uow.vacancies.get_with_neighbors(
+        if not skills:
+            return None, None, None
+
+        prev_id, vacancy, next_id = await self._uow.vacancies.get_relevant_with_neighbors(
             vacancy_id=vacancy_id,
             professions=professions,
             grades=grades,

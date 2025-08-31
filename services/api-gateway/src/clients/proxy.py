@@ -25,7 +25,7 @@ class _ProxyClient(BaseClient):
             method=request.method,
             url=str(url),
             headers=request.headers,
-            params=str(request.query_params), # Без str некорректно формирует list params
+            params=str(request.query_params),  # Без str некорректно формирует list params
             content=await request.body(),
         )
 
