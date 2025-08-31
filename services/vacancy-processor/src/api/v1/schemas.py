@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from schemas.grade import GradeRead
 from schemas.profession import ProfessionRead
 from schemas.skill import SkillRead
-from schemas.vacancy import VacancyRead
+from schemas.vacancy import VacanciesSummarySchema, VacancyRead
 from schemas.work_format import WorkFormatRead
 
 
@@ -11,6 +11,7 @@ __all__ = [
     "GradeListResponse",
     "ProfessionListResponse",
     "SkillListResponse",
+    "VacanciesSummaryResponse",
     "VacancyListResponse",
     "VacancyWithNeighborsResponse",
     "WorkFormatListResponse",
@@ -49,3 +50,7 @@ class VacancyWithNeighborsSchema(BaseModel):
 
 class VacancyWithNeighborsResponse(BaseModel):
     result: VacancyWithNeighborsSchema
+
+
+class VacanciesSummaryResponse(BaseModel):
+    result: VacanciesSummarySchema

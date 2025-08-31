@@ -1,4 +1,6 @@
 from clients.schemas import (
+    VacanciesSummaryResponse,
+    VacanciesSummarySchema,
     VacancyWithNeighborsRequest,
     VacancyWithNeighborsResponse,
     VacancyWithNeighborsSchema,
@@ -36,6 +38,16 @@ class _VacancyClient(BaseClient):
         )
         data = response.json()
         model_response = VacancyWithNeighborsResponse.model_validate(data)
+
+        return model_response.result
+
+    # FIXME: Добавить кеш
+    async def get_summary_vacancies(self) -> VacanciesSummarySchema:
+        response = await self.client.get(f"{self.url}/summary")
+        response.raise_for_status()
+
+        data = response.json()
+        model_response = VacanciesSummaryResponse.model_validate(data)
 
         return model_response.result
 

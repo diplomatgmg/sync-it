@@ -13,6 +13,7 @@ __all__ = [
     "ProfessionSchema",
     "SkillResponse",
     "SkillSchema",
+    "VacanciesSummaryResponse",
     "VacancyWithNeighborsRequest",
     "VacancyWithNeighborsResponse",
     "VacancyWithNeighborsSchema",
@@ -108,3 +109,14 @@ class VacancyWithNeighborsRequest(BaseModel):
 
 class VacancyWithNeighborsResponse(BaseModel):
     result: VacancyWithNeighborsSchema
+
+
+class VacanciesSummarySchema(BaseModel):
+    total: int
+    sources: dict[SourceEnum, int]
+    week_count: int
+    month_count: int
+
+
+class VacanciesSummaryResponse(BaseModel):
+    result: VacanciesSummarySchema

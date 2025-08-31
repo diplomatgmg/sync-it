@@ -11,6 +11,7 @@ from schemas.work_format import WorkFormatRead
 
 
 __all__ = [
+    "VacanciesSummarySchema",
     "VacancyCreate",
     "VacancyRead",
 ]
@@ -56,3 +57,10 @@ class VacancyRead(BaseVacancy):
     work_formats: list[WorkFormatRead]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class VacanciesSummarySchema(BaseModel):
+    total: int
+    sources: dict[SourceEnum, int]
+    week_count: int
+    month_count: int

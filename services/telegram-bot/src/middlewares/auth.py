@@ -1,8 +1,10 @@
+import asyncio
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message, TelegramObject
+from handlers.faq import send_faq_message
 from schemas.user import UserCreate
 from sqlalchemy.exc import NoResultFound
 
@@ -31,6 +33,7 @@ class AuthMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         user_service: UserService = data["user_service"]
+        is_new = False
 
         try:
             user = await user_service.get_by_telegram_id(telegram_user.id)
@@ -42,7 +45,12 @@ class AuthMiddleware(BaseMiddleware):
                 last_name=telegram_user.last_name,
             )
             user = await user_service.add_user(user_create)
+            is_new = True
 
         data["user"] = user
+
+        if is_new and isinstance(event, Message):
+            await send_faq_message(event)
+            await asyncio.sleep(3)
 
         return await handler(event, data)

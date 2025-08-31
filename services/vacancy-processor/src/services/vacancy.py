@@ -5,7 +5,7 @@ from database.models import Vacancy
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from schemas.grade import GradeRead
 from schemas.skill import SkillRead
-from schemas.vacancy import VacancyCreate, VacancyRead
+from schemas.vacancy import VacanciesSummarySchema, VacancyCreate, VacancyRead
 from schemas.work_format import WorkFormatRead
 from unitofwork import UnitOfWork
 
@@ -70,3 +70,6 @@ class VacancyService(BaseUOWService[UnitOfWork]):
             return None, None, None
 
         return prev_id, VacancyRead.model_validate(vacancy), next_id
+
+    async def get_summary_vacancies(self) -> VacanciesSummarySchema:
+        return await self._uow.vacancies.get_summary()

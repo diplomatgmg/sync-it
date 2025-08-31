@@ -10,6 +10,7 @@ __all__ = [
 
 class BotCommandEnum(CommandEnum):
     START = "start", "Запустить бота"
+    FAQ = "faq", "FAQ"
     UPDATE_SKILLS = "update_skills", "Обновить навыки на основе текста/файла"
     SUPPORT = "support", "Обратная связь"
 

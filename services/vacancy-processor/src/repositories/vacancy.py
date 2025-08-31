@@ -7,7 +7,8 @@ from common.logger import get_logger
 from common.shared.repositories import BaseRepository
 from database.models import Grade, Profession, Vacancy, WorkFormat
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
-from sqlalchemy import Select, select
+from schemas.vacancy import VacanciesSummarySchema
+from sqlalchemy import Select, func, select
 from sqlalchemy.orm import joinedload, selectinload
 
 
@@ -134,6 +135,39 @@ class VacancyRepository(BaseRepository):
         next_id = sorted_vacancies[index + 1].id if index < len(sorted_vacancies) - 1 else None
 
         return prev_id, sorted_vacancies[index], next_id
+
+    async def get_summary(self) -> VacanciesSummarySchema:
+        """Возвращает агрегированную статистику по вакансиям."""
+
+        now = datetime.now(UTC)
+        week_ago = now - timedelta(days=7)
+        month_ago = now - timedelta(days=30)
+
+        # Общее количество
+        total_stmt = select(func.count(Vacancy.id))
+        total = (await self._session.execute(total_stmt)).scalar_one()
+
+        # Количество по источникам
+        sources_stmt = select(Vacancy.source, func.count(Vacancy.id)).group_by(Vacancy.source)
+        sources_result = await self._session.execute(sources_stmt)
+        sources: dict[str, int] = dict(sources_result.tuples().all())
+
+        # За неделю
+        week_stmt = select(func.count(Vacancy.id)).where(Vacancy.published_at >= week_ago)
+        week_result = await self._session.execute(week_stmt)
+        week_count = week_result.scalar_one()
+
+        # За месяц
+        month_stmt = select(func.count(Vacancy.id)).where(Vacancy.published_at >= month_ago)
+        month_result = await self._session.execute(month_stmt)
+        month_count = month_result.scalar_one()
+
+        return VacanciesSummarySchema(
+            total=total,
+            sources=sources,
+            week_count=week_count,
+            month_count=month_count,
+        )
 
     @staticmethod
     def _apply_vacancy_prefetch_details_to_stmt(stmt: TSelect) -> TSelect:

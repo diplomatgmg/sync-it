@@ -1,7 +1,12 @@
 from typing import Annotated
 
 from api.depedencies import get_vacancy_service
-from api.v1.schemas import VacancyListResponse, VacancyWithNeighborsResponse, VacancyWithNeighborsSchema
+from api.v1.schemas import (
+    VacanciesSummaryResponse,
+    VacancyListResponse,
+    VacancyWithNeighborsResponse,
+    VacancyWithNeighborsSchema,
+)
 from common.logger import get_logger
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
 from fastapi import APIRouter, Depends, Query
@@ -52,3 +57,12 @@ async def get_vacancy_with_neighbors(
     )
 
     return VacancyWithNeighborsResponse(result=result)
+
+
+@router.get("/summary")
+async def get_summary_vacancies(
+    service: Annotated[VacancyService, Depends(get_vacancy_service)],
+) -> VacanciesSummaryResponse:
+    summary = await service.get_summary_vacancies()
+
+    return VacanciesSummaryResponse(result=summary)
