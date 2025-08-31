@@ -15,6 +15,11 @@ logger = get_logger(__name__)
 
 
 class UserPreferenceService(BaseUOWService[UnitOfWork]):
+    async def get_by_user_id(self, user_id: int) -> list[UserPreferenceRead]:
+        preferences = await self._uow.user_preferences.get_by_user_id(user_id)
+
+        return [UserPreferenceRead.model_validate(p) for p in preferences]
+
     async def filter_by_telegram_id_and_category(
         self, user_id: int, code: PreferencesCategoryCodeEnum
     ) -> list[UserPreferenceRead]:

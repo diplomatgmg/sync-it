@@ -3,6 +3,7 @@ from typing import Annotated
 from api.depedencies import get_skill_service
 from api.v1.schemas import ExtractSkillsRequest, SkillListResponse
 from clients import gpt_client
+from database.models.enums import SkillEnum
 from fastapi import APIRouter, Depends
 from schemas.skill import SkillRead
 from utils.extractor import VacancyExtractor
@@ -34,6 +35,6 @@ async def extract_skills(
     completion = await gpt_client.get_completion(prompt)
     extractor = VacancyExtractor()
     skill_enums = extractor.extract_skills(completion)
-    skills = await service.get_skills_by_enums(skill_enums)
+    skills = await service.get_skills_by_enums(s for s in skill_enums if s != SkillEnum.UNKNOWN)
 
     return SkillListResponse(skills=skills)

@@ -1,5 +1,6 @@
 from aiogram import F, Router
 from aiogram.enums import ParseMode
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
 from clients import grade_client, profession_client, work_format_client
@@ -9,6 +10,7 @@ from keyboard.inline.main import main_menu_keyboard
 from keyboard.inline.preferences import options_keyboard
 from schemas.user_preference import UserPreferenceCreate
 from services.user import UserService
+from states import PreferencesState
 from unitofwork import UnitOfWork
 from utils.clients import ClientType, get_client
 from utils.message import get_message, safe_edit_message
@@ -133,16 +135,20 @@ async def handle_select_option(
 
 
 @router.callback_query(PreferencesCallback.filter(F.action == PreferencesActionEnum.SHOW_SKILLS))
-async def handle_show_skills(callback: CallbackQuery, user_preferences_service: UserPreferenceService) -> None:
+async def handle_show_skills(
+    callback: CallbackQuery, user_preferences_service: UserPreferenceService, state: FSMContext
+) -> None:
     preferences = await user_preferences_service.filter_by_telegram_id_and_category(
         callback.from_user.id, PreferencesCategoryCodeEnum.SKILL
     )
     sorted_preferences = sorted(preferences, key=lambda p: p.item_name.casefold())
     preferences_str = ", ".join(f"<code>{p.item_name}</code>" for p in sorted_preferences)
 
+    await state.set_state(PreferencesState.waiting_toggle_skills)
     await safe_edit_message(
         callback,
-        text=f"Ваши предпочтения:\n{preferences_str}",
+        text=f"Ваши навыки:\n{preferences_str}\n\n"
+        f"Если вы хотите добавить новый, или удалить существующий навык — перечислите их",
         reply_markup=main_menu_keyboard(),
         parse_mode=ParseMode.HTML,
     )

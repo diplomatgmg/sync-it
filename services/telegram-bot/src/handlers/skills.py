@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from aiogram import F, Router
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
@@ -31,8 +31,9 @@ MAX_MESSAGE_LENGTH = 4096
 
 update_preferences_text = (
     "Пришлите информацию, где есть ваши навыки одним из способов:\n"
-    "\t- Текстом (до 4096 символов)\n"
-    f"\t- Файлом в формате: {', '.join(SupportedReaderExtensionsEnum)} (до {MAX_FILE_SIZE // 1024 // 1024} МБ)\n"
+    "— Текстом (до 4096 символов)\n"
+    f"— Файлом в формате: {', '.join(SupportedReaderExtensionsEnum)} (до {MAX_FILE_SIZE // 1024 // 1024} МБ)\n\n"
+    f"ℹ️ Все ваши прошлые навыки будут удалены."
 )
 
 
@@ -55,9 +56,10 @@ async def update_skills(entity: CallbackQuery | Message, state: FSMContext) -> N
     await state.set_state(PreferencesState.waiting_for_data)
 
 
-@router.message(PreferencesState.waiting_for_data)
+@router.message(StateFilter(PreferencesState.waiting_for_data, PreferencesState.waiting_toggle_skills))
 async def handle_resume_input(message: Message, state: FSMContext, user: UserRead) -> None:  # noqa: PLR0911
     resume_payload: TextResumePayloadSchema | FileResumePayloadSchema
+    need_toggle = await state.get_state() == PreferencesState.waiting_toggle_skills
 
     if text := message.text:
         if len(text) > MAX_MESSAGE_LENGTH:
@@ -125,5 +127,5 @@ async def handle_resume_input(message: Message, state: FSMContext, user: UserRea
         "ℹ️ Начинаю извлечение навыков из текста.\nПожалуйста, подождите, это может занять некоторое время.",
     )
 
-    process_resume.delay(user.id, message.chat.id, resume_payload.model_dump())
+    process_resume.delay(user.id, message.chat.id, resume_payload.model_dump(), toggle=need_toggle)
     await state.clear()

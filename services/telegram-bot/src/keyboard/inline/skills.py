@@ -4,7 +4,9 @@ from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 
 
-__all__ = ["update_skills_keyboard"]
+__all__ = [
+    "update_skills_keyboard",
+]
 
 
 def update_skills_keyboard() -> InlineKeyboardMarkup:

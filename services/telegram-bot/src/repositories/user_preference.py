@@ -10,6 +10,13 @@ __all__ = ["UserPreferenceRepository"]
 
 
 class UserPreferenceRepository(BaseRepository):
+    async def get_by_user_id(self, user_id: int) -> Sequence[UserPreference]:
+        """Находит предпочтения по пользователю."""
+        stmt = select(UserPreference).where(UserPreference.user_id == user_id)
+        result = await self._session.execute(stmt)
+
+        return result.scalars().all()
+
     async def filter_by_telegram_id_and_category(
         self, telegram_id: int, category_code: PreferencesCategoryCodeEnum
     ) -> Sequence[UserPreference]:
