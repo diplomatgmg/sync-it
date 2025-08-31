@@ -55,6 +55,15 @@ async def safe_edit_message(
     """
     message = await get_message(entity)
 
+    # Заново отправляет сообщение, если оно было 'reply', чтобы 'reply' не висел во время работы
+    if message.reply_to_message:
+        try:
+            await message.delete()
+        except Exception as e:
+            logger.exception("Failed deleting message", exc_info=e)
+        await message.answer(**kwargs)
+        return
+
     try:
         await message.edit_text(**kwargs)
     except Exception as err:

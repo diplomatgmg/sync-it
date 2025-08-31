@@ -18,6 +18,6 @@ def register_handler_routers(dp: Dispatcher) -> None:
         preferences.router,
         menu.router,
         support.router,
-        noop.router,
         faq.router,
+        noop.router,  # Должен быть в самом низу
     )
