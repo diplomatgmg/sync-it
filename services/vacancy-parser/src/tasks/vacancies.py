@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from celery_app import app
 from common.logger import get_logger
-from common.shared.decorators.singleton import singleton
+from common.redis.decorators.singleton import singleton
 from constants.telegram import channel_links
 from parsers import HeadHunterParser, TelegramParser
 from unitofwork import UnitOfWork

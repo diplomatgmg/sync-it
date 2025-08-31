@@ -17,17 +17,19 @@ __all__ = ["VacancyRepository"]
 
 logger = get_logger(__name__)
 
+
 TSelect = TypeVar("TSelect", bound=Select[Any])
 
 
 class VacancyRepository(BaseRepository):
     """Репозиторий для управления вакансиями."""
 
-    MIN_SIMILARITY_PERCENT = 75  # Минимальное соотношение совпадающих навыков
+    MIN_SIMILARITY_PERCENT = 25  # Минимальное соотношение совпадающих навыков
     MIN_SKILLS_COUNT = 5
     BONUS_MIN_SKILL = 5  # Бонус за каждый навык сверх MIN_SKILLS_COUNT
     BEST_SKILLS_COUNT_BONUS = 10
     DAYS_INTERVAL = timedelta(days=30)
+    DAYS_RELEVANCE_BONUS = 1
 
     async def add(self, vacancy: Vacancy) -> Vacancy:
         """Добавляет экземпляр вакансии в сессию."""
@@ -62,14 +64,13 @@ class VacancyRepository(BaseRepository):
 
         return result.scalars().unique().all()
 
-    async def get_relevant_with_neighbors(  # noqa: C901 PLR0912
+    async def get_relevant(
         self,
-        vacancy_id: int | None,
         professions: Sequence[ProfessionEnum],
         grades: Sequence[GradeEnum],
         work_formats: Sequence[WorkFormatEnum],
         skills: Sequence[SkillEnum],
-    ) -> tuple[int | None, Vacancy | None, int | None]:
+    ) -> list[Vacancy]:
         """
         Находит вакансию по ID и ее соседей в списке, отсортированном по релевантности,
         выполняя все вычисления на стороне БД.
@@ -114,27 +115,15 @@ class VacancyRepository(BaseRepository):
             if user_skills_set.issubset(vacancy_skills_set):
                 similarity += 10
 
+            # Бонус за актуальность вакансии
+            days_since_published = (datetime.now(UTC) - vacancy.published_at).days
+            relevance_bonus = max(0, 7 - days_since_published) * self.DAYS_RELEVANCE_BONUS
+            similarity += relevance_bonus
+
             if similarity >= self.MIN_SIMILARITY_PERCENT:
                 scored_vacancies.append((similarity, vacancy))
 
-        if not scored_vacancies:
-            return None, None, None
-
-        scored_vacancies.sort(key=operator.itemgetter(0), reverse=True)
-        sorted_vacancies = [v for _, v in scored_vacancies]
-
-        if vacancy_id:
-            try:
-                index = next(i for i, v in enumerate(sorted_vacancies) if v.id == vacancy_id)
-            except StopIteration:
-                return None, None, None
-        else:
-            index = 0
-
-        prev_id = sorted_vacancies[index - 1].id if index > 0 else None
-        next_id = sorted_vacancies[index + 1].id if index < len(sorted_vacancies) - 1 else None
-
-        return prev_id, sorted_vacancies[index], next_id
+        return [v for _, v in sorted(scored_vacancies, key=operator.itemgetter(0), reverse=True)]
 
     async def get_summary(self) -> VacanciesSummarySchema:
         """Возвращает агрегированную статистику по вакансиям."""

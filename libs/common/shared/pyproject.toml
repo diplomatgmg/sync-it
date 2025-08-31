@@ -6,6 +6,7 @@ dependencies = [
     "database-lib",
     "redis-lib",
     "logger-lib",
+    "orjson>=3.11.3",
 ]
 
 [tool.setuptools.packages.find]

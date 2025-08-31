@@ -2,7 +2,7 @@ import asyncio
 from datetime import timedelta
 
 from celery_app import app
-from common.shared.decorators.singleton import singleton
+from common.redis.decorators.singleton import singleton
 from unitofwork import UnitOfWork
 from utils.extractor import VacancyExtractor
 from utils.processor import VacancyProcessor

@@ -7,7 +7,9 @@ from clients.schemas import (
 )
 from common.gateway.enums import ServiceEnum
 from common.gateway.utils import build_service_url
+from common.redis.decorators.cache import cache
 from common.shared.clients import BaseClient
+from common.shared.serializers.pickle import PickleSerializer
 
 
 __all__ = ["vacancy_client"]
@@ -41,7 +43,7 @@ class _VacancyClient(BaseClient):
 
         return model_response.result
 
-    # FIXME: Добавить кеш
+    @cache(cache_ttl=60 * 30, serializer=PickleSerializer())
     async def get_summary_vacancies(self) -> VacanciesSummarySchema:
         response = await self.client.get(f"{self.url}/summary")
         response.raise_for_status()

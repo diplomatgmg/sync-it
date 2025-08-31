@@ -1,5 +1,7 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 
+from common.redis.decorators.cache import build_key, cache
+from common.shared.serializers.pickle import PickleSerializer
 from common.shared.services import BaseUOWService
 from database.models import Vacancy
 from database.models.enums import GradeEnum, ProfessionEnum, SkillEnum, WorkFormatEnum
@@ -11,6 +13,18 @@ from unitofwork import UnitOfWork
 
 
 __all__ = ["VacancyService"]
+
+
+def _neighbors_key_builder(
+    _self: "VacancyService",
+    professions: list[ProfessionEnum],
+    grades: list[GradeEnum],
+    work_formats: list[WorkFormatEnum],
+    skills: list[SkillEnum],
+) -> str:
+    enums_str = sorted(map(str, [*professions, *grades, *work_formats, *skills]))
+
+    return build_key(*enums_str)
 
 
 class VacancyService(BaseUOWService[UnitOfWork]):
@@ -50,26 +64,53 @@ class VacancyService(BaseUOWService[UnitOfWork]):
     async def get_vacancy_with_neighbors(
         self,
         vacancy_id: int | None,
-        professions: Sequence[ProfessionEnum],
-        grades: Sequence[GradeEnum],
-        work_formats: Sequence[WorkFormatEnum],
-        skills: Sequence[SkillEnum],
+        professions: list[ProfessionEnum],
+        grades: list[GradeEnum],
+        work_formats: list[WorkFormatEnum],
+        skills: list[SkillEnum],
     ) -> tuple[int | None, VacancyRead | None, int | None]:
         if not skills:
             return None, None, None
 
-        prev_id, vacancy, next_id = await self._uow.vacancies.get_relevant_with_neighbors(
-            vacancy_id=vacancy_id,
+        vacancies = await self._get_relevant_vacancies(
             professions=professions,
             grades=grades,
             work_formats=work_formats,
             skills=skills,
         )
 
-        if not vacancy:
+        if not vacancies:
             return None, None, None
 
-        return prev_id, VacancyRead.model_validate(vacancy), next_id
+        if vacancy_id:
+            try:
+                index = next(i for i, v in enumerate(vacancies) if v.id == vacancy_id)
+            except StopIteration:
+                return None, None, None
+        else:
+            index = 0
+
+        prev_id = vacancies[index - 1].id if index > 0 else None
+        next_id = vacancies[index + 1].id if index < len(vacancies) - 1 else None
+        current = vacancies[index]
+
+        return prev_id, VacancyRead.model_validate(current), next_id
 
     async def get_summary_vacancies(self) -> VacanciesSummarySchema:
         return await self._uow.vacancies.get_summary()
+
+    @cache(cache_ttl=60 * 10, key_builder=_neighbors_key_builder, serializer=PickleSerializer())
+    async def _get_relevant_vacancies(
+        self,
+        professions: list[ProfessionEnum],
+        grades: list[GradeEnum],
+        work_formats: list[WorkFormatEnum],
+        skills: list[SkillEnum],
+    ) -> list[Vacancy]:
+        """Возвращает только релевантные вакансии (для кеша)."""
+        return await self._uow.vacancies.get_relevant(
+            professions=professions,
+            grades=grades,
+            work_formats=work_formats,
+            skills=skills,
+        )
