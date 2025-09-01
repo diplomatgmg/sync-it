@@ -1,3 +1,4 @@
+import asyncio
 from typing import NotRequired, TypedDict, Unpack
 
 from aiogram.enums import ParseMode
@@ -59,6 +60,7 @@ async def safe_edit_message(
     if message.reply_to_message:
         try:
             await message.delete()
+            await asyncio.sleep(0.5)
         except Exception as e:
             logger.exception("Failed deleting message", exc_info=e)
         await message.answer(**kwargs)

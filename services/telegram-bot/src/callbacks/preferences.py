@@ -11,9 +11,6 @@ __all__ = [
 
 
 class PreferencesActionEnum(StrEnum):
-    UPDATE_SKILLS = "update_skills"
-    SHOW_SKILLS = "show_skills"
-
     SHOW_GRADES = "show_grades"
     SHOW_PROFESSIONS = "show_professions"
     SHOW_WORK_FORMATS = "show_work_formats"

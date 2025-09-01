@@ -1,14 +1,18 @@
+import asyncio
 from pathlib import Path
 
 from aiogram import F, Router
+from aiogram.enums import ParseMode
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
+from callbacks.skill import SkillActionEnum, SkillCallback
 from commands import BotCommandEnum
 from common.logger import get_logger
 from core.loader import bot
+from database.models.enums import PreferencesCategoryCodeEnum
 from keyboard.inline.main import main_menu_keyboard
+from keyboard.inline.skills import show_skills_keyboard, update_skills_keyboard
 from schemas.user import UserRead
 from states import PreferencesState
 from tasks import process_resume
@@ -16,13 +20,15 @@ from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
 from utils.message import get_message, safe_edit_message
 from utils.readers.enums import SupportedReaderExtensionsEnum
 
+from services import UserPreferenceService
+
 
 __all__ = ["update_skills"]
 
 logger = get_logger(__name__)
 
 
-router = Router(name=PreferencesActionEnum.UPDATE_SKILLS)
+router = Router(name=SkillCallback.__prefix__)
 
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
@@ -43,23 +49,39 @@ async def handle_update_skills_command(message: Message, state: FSMContext) -> N
     await update_skills(message, state)
 
 
-@router.callback_query(PreferencesCallback.filter(F.action == PreferencesActionEnum.UPDATE_SKILLS))
+@router.callback_query(SkillCallback.filter(F.action == SkillActionEnum.UPDATE_SKILLS))
 async def handle_update_skills_callback(callback: CallbackQuery, state: FSMContext) -> None:
     await update_skills(callback, state)
 
 
-async def update_skills(entity: CallbackQuery | Message, state: FSMContext, *, need_edit: bool = True) -> None:
-    if need_edit:
-        await safe_edit_message(
-            entity,
-            text=update_preferences_text,
-            reply_markup=main_menu_keyboard(),
-        )
-    else:
-        message = await get_message(entity)
-        await message.answer(update_preferences_text, reply_markup=main_menu_keyboard())
+@router.callback_query(SkillCallback.filter(F.action == SkillActionEnum.TOGGLE_SKILLS))
+async def handle_toggle_skills(
+    callback: CallbackQuery, user_preferences_service: UserPreferenceService, state: FSMContext
+) -> None:
+    preferences = await user_preferences_service.filter_by_telegram_id_and_category(
+        callback.from_user.id, PreferencesCategoryCodeEnum.SKILL
+    )
+    if not preferences:
+        await safe_edit_message(callback, text="У вас пока нет добавленных навыков. \nПожалуйста, добавьте их.")
+        await asyncio.sleep(1)
+        await update_skills(callback, state, need_edit=False)
+        return
 
-    await state.set_state(PreferencesState.waiting_for_data)
+    sorted_preferences = sorted(preferences, key=lambda p: p.item_name.casefold())
+    preferences_str = ", ".join(f"<code>{p.item_name}</code>" for p in sorted_preferences)
+
+    await state.set_state(PreferencesState.waiting_toggle_skills)
+    await safe_edit_message(
+        callback,
+        text=(
+            "📚 <b>Ваши навыки</b>:\n"
+            f"{preferences_str}\n\n"
+            "✅ Чтобы <b>добавить</b> новый навык — просто отправьте его название.\n"
+            "❌ Чтобы <b>удалить</b> навык — отправьте его название из списка."
+        ),
+        reply_markup=show_skills_keyboard(),
+        parse_mode=ParseMode.HTML,
+    )
 
 
 @router.message(StateFilter(PreferencesState.waiting_for_data, PreferencesState.waiting_toggle_skills))
@@ -135,3 +157,17 @@ async def handle_resume_input(message: Message, state: FSMContext, user: UserRea
 
     process_resume.delay(user.id, message.chat.id, resume_payload.model_dump(), toggle=need_toggle)
     await state.clear()
+
+
+async def update_skills(entity: CallbackQuery | Message, state: FSMContext, *, need_edit: bool = True) -> None:
+    if need_edit:
+        await safe_edit_message(
+            entity,
+            text=update_preferences_text,
+            reply_markup=update_skills_keyboard(),
+        )
+    else:
+        message = await get_message(entity)
+        await message.answer(update_preferences_text, reply_markup=update_skills_keyboard())
+
+    await state.set_state(PreferencesState.waiting_for_data)

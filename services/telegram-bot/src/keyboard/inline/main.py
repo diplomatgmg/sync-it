@@ -1,8 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from callbacks.main import MenuActionEnum, MenuCallback
-from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
-from callbacks.vacancy import VacancyActionEnum, VacancyCallback
+from keyboard.buttons import MainMenuInlineKeyboardButton, VacanciesInlineKeyboardButton
 
 
 __all__ = [
@@ -14,12 +13,7 @@ __all__ = [
 def main_menu_keyboard() -> InlineKeyboardMarkup:
     """Создает клавиатуру для возврата в главное меню."""
     buttons = [
-        [
-            InlineKeyboardButton(
-                text="🏠 В меню",
-                callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
-            ),
-        ],
+        [MainMenuInlineKeyboardButton()],
     ]
 
     return InlineKeyboardBuilder(markup=buttons).as_markup()
@@ -28,22 +22,7 @@ def main_menu_keyboard() -> InlineKeyboardMarkup:
 def main_keyboard() -> InlineKeyboardMarkup:
     """Используется в главном меню или при старте бота."""
     buttons = [
-        [
-            InlineKeyboardButton(
-                text="📋 Вакансии",
-                callback_data=VacancyCallback(action=VacancyActionEnum.SHOW_VACANCY).pack(),
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text="💻 Обновить навыки",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.UPDATE_SKILLS).pack(),
-            ),
-            InlineKeyboardButton(
-                text="👀 Посмотреть навыки",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_SKILLS).pack(),
-            ),
-        ],
+        [VacanciesInlineKeyboardButton()],
         [
             InlineKeyboardButton(
                 text="⚙️ Изменить предпочтения",

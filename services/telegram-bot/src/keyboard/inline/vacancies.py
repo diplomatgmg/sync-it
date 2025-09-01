@@ -1,9 +1,9 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.noop import NoopActionEnum, NoopCallback
 from callbacks.vacancy import VacancyActionEnum, VacancyCallback
 from common.shared.schemas import HttpsUrl
+from keyboard.buttons import MainMenuInlineKeyboardButton
 
 
 __all__ = ["vacancies_keyboard"]
@@ -69,11 +69,6 @@ def vacancies_keyboard(
         )
     )
 
-    builder.row(
-        InlineKeyboardButton(
-            text="🏠 В меню",
-            callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
-        )
-    )
+    builder.row(MainMenuInlineKeyboardButton())
 
     return builder.as_markup()

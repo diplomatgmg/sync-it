@@ -10,7 +10,7 @@ from core import service_config
 from core.loader import bot
 from database.models.enums import PreferencesCategoryCodeEnum
 from keyboard.inline.main import main_menu_keyboard
-from keyboard.inline.skills import update_skills_keyboard
+from keyboard.inline.skills import process_update_skills_keyboard
 from schemas.user_preference import UserPreferenceCreate
 from tasks.schemas import FileResumePayloadSchema, TextResumePayloadSchema
 from unitofwork import UnitOfWork
@@ -122,7 +122,7 @@ async def _extract_and_save_user_preferences(user_id: int, text: str, chat_id: i
                 f"Ваши актуальные навыки:\n{user_skills_str}\n\n{changed_skills_str}\n\n"
                 f"Если вы считаете, что какой-то навык не распознался, пожалуйста, обратитесь в поддержку: "
                 f"@{service_config.support_username}",
-                reply_markup=update_skills_keyboard(),
+                reply_markup=process_update_skills_keyboard(),
                 parse_mode=ParseMode.HTML,
             )
         else:
@@ -149,6 +149,6 @@ async def _extract_and_save_user_preferences(user_id: int, text: str, chat_id: i
                 f"✅ Ваши навыки успешно обновлены.\n\n"
                 f"Теперь вы будете получать вакансии, релевантные под ваши навыки:\n"
                 f"{added_skills_str}",
-                reply_markup=update_skills_keyboard(),
+                reply_markup=process_update_skills_keyboard(),
                 parse_mode=ParseMode.HTML,
             )

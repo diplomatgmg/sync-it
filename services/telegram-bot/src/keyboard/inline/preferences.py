@@ -2,10 +2,15 @@ from typing import TypeVar
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from callbacks.main import MenuActionEnum, MenuCallback
 from callbacks.preferences import PreferencesActionEnum, PreferencesCallback
+from callbacks.skill import SkillActionEnum, SkillCallback
 from clients.schemas import GradeSchema, ProfessionSchema, SkillSchema, WorkFormatSchema
 from database.models.enums import PreferencesCategoryCodeEnum
+from keyboard.buttons import (
+    BackToPreferencesInlineKeyboardButton,
+    MainMenuInlineKeyboardButton,
+    ProfessionInlineKeyboardButton,
+)
 from schemas.user import UserWithPreferences
 
 
@@ -19,10 +24,11 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [
             InlineKeyboardButton(
-                text="🎯 Направление",
-                callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_PROFESSIONS).pack(),
+                text="📚 Навыки",
+                callback_data=SkillCallback(action=SkillActionEnum.TOGGLE_SKILLS).pack(),
             ),
         ],
+        [ProfessionInlineKeyboardButton()],
         [
             InlineKeyboardButton(
                 text="🎓 Грейд",
@@ -35,12 +41,7 @@ def preferences_keyboard() -> InlineKeyboardMarkup:
                 callback_data=PreferencesCallback(action=PreferencesActionEnum.SHOW_WORK_FORMATS).pack(),
             ),
         ],
-        [
-            InlineKeyboardButton(
-                text="🏠 В меню",
-                callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
-            ),
-        ],
+        [MainMenuInlineKeyboardButton()],
     ]
 
     return InlineKeyboardBuilder(markup=buttons).as_markup()
@@ -77,18 +78,7 @@ def options_keyboard[OptionsType: (GradeSchema, ProfessionSchema, WorkFormatSche
 
     builder.adjust(1)
 
-    builder.row(
-        InlineKeyboardButton(
-            text="⬅️ К предпочтениям",
-            callback_data=MenuCallback(action=MenuActionEnum.PREFERENCES).pack(),
-        )
-    )
-
-    builder.row(
-        InlineKeyboardButton(
-            text="🏠 В меню",
-            callback_data=MenuCallback(action=MenuActionEnum.MAIN).pack(),
-        )
-    )
+    builder.row(BackToPreferencesInlineKeyboardButton())
+    builder.row(MainMenuInlineKeyboardButton())
 
     return builder.as_markup()
