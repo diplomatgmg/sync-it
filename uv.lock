@@ -500,6 +500,7 @@ source = { virtual = "services/gpt-api" }
 dependencies = [
     { name = "environment-lib" },
     { name = "fastapi" },
+    { name = "g4f" },
     { name = "logger-lib" },
     { name = "sentry-lib" },
     { name = "syncit-core" },
@@ -515,6 +516,7 @@ dev = [
 requires-dist = [
     { name = "environment-lib", editable = "libs/common/environment" },
     { name = "fastapi", specifier = ">=0.115.12" },
+    { name = "g4f", specifier = ">=0.6.2.8" },
     { name = "logger-lib", editable = "libs/common/logger" },
     { name = "sentry-lib", editable = "libs/common/sentry" },
     { name = "syncit-core", editable = "." },
@@ -1274,7 +1276,6 @@ dependencies = [
     { name = "celery" },
     { name = "database-lib" },
     { name = "fastapi" },
-    { name = "g4f" },
     { name = "gateway-lib" },
     { name = "logger-lib" },
     { name = "pypdf" },
@@ -1298,7 +1299,6 @@ requires-dist = [
     { name = "celery", specifier = ">=5.5.3" },
     { name = "database-lib", editable = "libs/common/database" },
     { name = "fastapi", specifier = ">=0.116.1" },
-    { name = "g4f", specifier = ">=0.6.2.8" },
     { name = "gateway-lib", editable = "libs/common/gateway" },
     { name = "logger-lib", editable = "libs/common/logger" },
     { name = "pypdf", specifier = ">=6.0.0" },
