@@ -27,7 +27,7 @@ async def get_gpt_response(prompt: str) -> str | None:
         try:
             response = await client.chat.completions.create(
                 provider=PollinationsAI,
-                model="gpt-4.1-nano",
+                model="gpt-4.1",
                 messages=[message],
             )
             content = cast("str", response.choices[0].message.content)
