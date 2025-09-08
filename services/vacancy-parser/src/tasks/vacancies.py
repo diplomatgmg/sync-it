@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 
 @app.task(name="parse_vacancies")
-@singleton(timedelta(minutes=30))
+@singleton(timedelta(minutes=60))
 def parse_vacancies() -> None:
     """Основная задача Celery для запуска всех парсеров."""
     loop = asyncio.get_event_loop()

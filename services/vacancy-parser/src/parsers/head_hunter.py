@@ -72,5 +72,4 @@ class HeadHunterParser(BaseParser["HeadHunterVacancyService"]):
             )
 
             await self.service.add_vacancy(vacancy)
-            await self.uow.commit()
             logger.info("Added vacancy %s", vacancy.link)

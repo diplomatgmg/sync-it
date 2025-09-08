@@ -14,7 +14,7 @@ __all__ = ["process_vacancies"]
 
 
 @app.task(name="process_vacancies")
-@singleton(timedelta(minutes=30))
+@singleton(timedelta(minutes=60))
 def process_vacancies() -> None:
     loop = asyncio.get_event_loop()
     loop.run_until_complete(async_process_vacancies())

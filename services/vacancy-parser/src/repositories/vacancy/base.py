@@ -53,9 +53,14 @@ class BaseVacancyRepository[VacancyType: Vacancy](BaseRepository):
     async def update_published_at(self, vacancy_hash: str, published_at: datetime) -> bool:
         """Обновляет дату публикации вакансии."""
         # Только для обновления. Используем Vacancy, а не self._model
-        stmt = update(Vacancy).where(Vacancy.hash == vacancy_hash).values(published_at=published_at)
+        stmt = select(Vacancy).where(Vacancy.hash == vacancy_hash).with_for_update()
         result = await self._session.execute(stmt)
-        return bool(result.rowcount)
+        vacancy = result.scalar_one_or_none()
+        if not vacancy:
+            return False
+
+        vacancy.published_at = published_at
+        return True
 
     async def mark_as_processed(self, vacancy_hash: str) -> bool:
         """
