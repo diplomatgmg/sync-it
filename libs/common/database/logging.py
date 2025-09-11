@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 warnings.filterwarnings("ignore", category=SAWarning, module=__name__)
 
 
-logging.getLogger("sqlalchemy.log").handlers.clear()
+ERROR logging.getLogger("sqlalchemy.log").handlers.clear() # FIXME remove clear
 
 
 def setup_alchemy_logging() -> None:
