@@ -1,4 +1,4 @@
-import logging
+from contextvars import ContextVar
 import time
 from typing import Any
 import warnings
@@ -16,29 +16,30 @@ __all__ = ["setup_alchemy_logging"]
 
 logger = get_logger(__name__)
 
-# Модуль подставляет значения в SQL запрос для логирования, поэтому корректность SQL запроса не так важна
-# Например, возникает предупреждение о необходимости использовать "is NULL", а не "= NULL"
-warnings.filterwarnings("ignore", category=SAWarning, module=__name__)
 
-
-ERROR logging.getLogger("sqlalchemy.log").handlers.clear() # FIXME remove clear
+alchemy_query_start_time = ContextVar("alchemy_query_start_time", default=0.0)
 
 
 def setup_alchemy_logging() -> None:
     @event.listens_for(Engine, "before_cursor_execute")
-    def before_cursor_execute(conn: Connection, *_: Any) -> None:
-        conn.info.setdefault("query_start_time", []).append(time.time())
+    def before_cursor_execute(*_: Any) -> None:
+        query_start_time = time.time()
+        alchemy_query_start_time.set(query_start_time)
 
     @event.listens_for(Engine, "after_cursor_execute")
     def after_cursor_execute(
-        conn: Connection,
+        _conn: Connection,
         _cursor: Any,
         statement: str,
         _parameters: Any,
         context: PGExecutionContext_asyncpg,
         _executemany: Any,
     ) -> None:
-        total = time.time() - conn.info["query_start_time"].pop(-1)
+        query_start_time = alchemy_query_start_time.get()
+        query_duration = time.time() - query_start_time
+
+        # В момент компиляции запроса объект ещё не имеет значения id, оно ещё не подтянуто из базы
+        warnings.filterwarnings("ignore", category=SAWarning, message=".*NULL.*")
 
         compiled = context.compiled
         if isinstance(compiled, Compiled) and isinstance(compiled.statement, ClauseElement):
@@ -47,4 +48,4 @@ def setup_alchemy_logging() -> None:
         else:
             formatted_sql = sqlparse.format(statement, reindent=True, keyword_case="upper")
 
-        logger.debug("Query Time: %.5fs\n%s", total, formatted_sql)
+        logger.debug("Query Time: %.5fs\n%s", query_duration, formatted_sql)
